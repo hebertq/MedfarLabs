@@ -1,4 +1,4 @@
-# 🏥 MedfarLabs.Core
+# 🏥 MedfarLab.Core
 
 ![Rest API](https://img.shields.io/badge/Rest--API-Blue) ![Lambda](https://img.shields.io/badge/AWS--Lambda-Orange) ![dotnet](https://img.shields.io/badge/dotnet-8.0-blue)
 
