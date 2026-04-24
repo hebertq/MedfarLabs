@@ -108,5 +108,11 @@ builder.Services.AddActionDispatching();
 // 2. Registro de Persistencia, Dapper y Seguridad AES
 builder.Services.AddInfrastructureServices(connString, aesKey, salt);
 ```
+// RECOMENDACIÓN: Cambiar Scoped por Singleton para evitar reflexiones repetitivas
+services.Scan(scan => scan
+    .FromAssemblies(assembly)
+    .AddClasses(classes => classes.AssignableTo<IDomain>())
+    .AsImplementedInterfaces()
+    .WithSingletonLifetime()); // <--- Mucho más eficiente
 
 
