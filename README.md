@@ -115,4 +115,27 @@ services.Scan(scan => scan
     .AsImplementedInterfaces()
     .WithSingletonLifetime()); // <--- Mucho más eficiente
 
+    
+namespace MedfarLabs.Core.Application.Common.Serialization
+{
+    [JsonSourceGenerationOptions(
+        PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        WriteIndented = false)]
+    // Registro de DTOs de Entrada
+    [JsonSerializable(typeof(DirectAdmissionRequestDTO))]
+    [JsonSerializable(typeof(PersonRequestDTO))]
+    [JsonSerializable(typeof(ConsultationRequestDTO))]
+    [JsonSerializable(typeof(PrescriptionRequestDTO))]
+    // Registro de Respuestas Genéricas
+    [JsonSerializable(typeof(BaseResponse<long>))]
+    [JsonSerializable(typeof(BaseResponse<object>))]
+    [JsonSerializable(typeof(BaseResponse<string>))]
+    // Tipos de AWS para el UniversalHandler
+    [JsonSerializable(typeof(APIGatewayProxyRequest))]
+    [JsonSerializable(typeof(APIGatewayProxyResponse))]
+    public partial class AppJsonContext : JsonSerializerContext
+    {
+    }
+}
 
