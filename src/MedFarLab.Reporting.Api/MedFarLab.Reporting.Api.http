@@ -1,0 +1,6 @@
+@MedFarLab.Reporting.Api_HostAddress = http://localhost:5002
+
+GET {{MedFarLab.Reporting.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

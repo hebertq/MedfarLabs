@@ -1,0 +1,34 @@
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="success" @bind-Errors="errors">
+            <MudTextField T="string" Label="Nombre Completo" @bind-Value="Model.FullName" Required="true" RequiredError="El nombre es obligatorio." />
+
+            <MudTextField T="string" Label="Teléfono" @bind-Value="Model.Phone" Class="mt-4" />
+
+            <MudTextField T="string" Label="Correo Electrónico" @bind-Value="Model.Email" Class="mt-4" />
+
+            <MudSelect T="int" Label="Parentesco / Relación" @bind-Value="Model.RelationshipId" Class="mt-4" Required="true">
+                @foreach (var parentesco in Enum.GetValues<MedfarLabs.Core.Domain.Enums.Parentesco>())
+                {
+                    <MudSelectItem Value="(int)parentesco">@parentesco.ToString()</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudSwitch T="bool" Label="Es Contacto Principal" @bind-Value="Model.IsPrimary" Color="Color.Primary" Class="mt-4" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit" Disabled="@(!success || isSubmitting)">
+            @if (isSubmitting)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                <MudText Class="ms-2">Guardando...</MudText>
+            }
+            else
+            {
+                <text>Guardar Contacto</text>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>

@@ -1,0 +1,115 @@
+@page "/onboarding"
+@layout MedFarLab.Pwa.Layout.MainLayout
+@using MedfarLabs.Core.Application.Features.Identity.Dtos.Request
+@using System.Net.Http.Json
+
+
+<PageTitle>Crear Organización - MedFarLab Onboarding</PageTitle>
+
+<PageActionHeader ShowBackButton="true" BackUrl="/admin/organizations">
+    <StatusContent>
+        <div>
+            <MudText Typo="Typo.h5" Class="text-success fw-bold">Volver al Directorio</MudText>
+        </div>
+    </StatusContent>
+</PageActionHeader>
+
+<div class="onboarding-container d-flex justify-center mt-4">
+    
+    @if (!IsSuccess)
+    {
+        <MudPaper Elevation="2" Class="pa-8 rounded-xl onboarding-card" Style="max-width: 800px; width: 100%; border-top: 4px solid var(--mud-palette-primary);">
+            
+            <div class="text-center mb-8">
+                <MudIcon Icon="@Icons.Material.Filled.AddBusiness" Size="Size.Large" Color="Color.Primary" />
+                <MudText Typo="Typo.h4" Class="fw-bold mt-2" Color="Color.Primary">Desplegar Nuevo Inquilino SaaS</MudText>
+                <MudText Typo="Typo.body1" Color="Color.Secondary">Configuremos la Organización Comercial B2B.</MudText>
+            </div>
+
+            <MudStepper Color="Color.Primary" Variant="Variant.Filled" @bind-ActiveIndex="_index">
+                <MudStep Title="1. Identidad" Icon="@Icons.Material.Filled.Domain">
+                    <MudForm @ref="form1" Class="mt-4">
+                        <MudText Typo="Typo.h6" Class="mb-4">Datos Legales y Corporativos</MudText>
+                        
+                        <div class="d-flex align-center justify-center mb-6">
+                            @if (!string.IsNullOrEmpty(FormModel.LogoBase64))
+                            {
+                                <MudImage Src="@FormModel.LogoBase64" Width="100" Height="100" ObjectFit="ObjectFit.Contain" Elevation="2" Class="rounded-lg mr-4" />
+                            }
+                            <MudFileUpload T="IBrowserFile" Accept=".png, .jpg, .jpeg" FilesChanged="UploadLogo">
+                                <ActivatorContent>
+                                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
+                                        Subir Logo de Empresa
+                                    </MudButton>
+                                </ActivatorContent>
+                            </MudFileUpload>
+                        </div>
+
+                        <MudTextField @bind-Value="FormModel.Name" Label="Razón Social / Nombre Comercial" Required="true" Variant="Variant.Outlined" Class="mb-4" />
+                        <MudTextField @bind-Value="FormModel.TaxId" Label="Identificación Fiscal (RUC/NIT)" Required="true" Variant="Variant.Outlined" Class="mb-4" />
+                    </MudForm>
+                </MudStep>
+
+                <MudStep Title="2. Sucursal" Icon="@Icons.Material.Filled.Store">
+                    <MudForm @ref="form2" Class="mt-4">
+                        <MudText Typo="Typo.h6" Class="mb-4">Sede Principal</MudText>
+                        <MudTextField @bind-Value="FormModel.BranchName" Label="Nombre de Sede (ej: Matriz)" Required="true" Variant="Variant.Outlined" Class="mb-4" />
+                        <MudTextField @bind-Value="FormModel.BranchAddress" Label="Dirección Física" Lines="3" Required="true" Variant="Variant.Outlined" Class="mb-4" />
+                    </MudForm>
+                </MudStep>
+
+                <MudStep Title="3. Suscripción SaaS" Icon="@Icons.Material.Filled.CardMembership">
+                    <MudText Typo="Typo.h6" Class="mb-4 mt-4">Plan B2B Seleccionado</MudText>
+                    
+                    <MudSelect T="long" @bind-Value="FormModel.PlanId" Label="Seleccione su Plan de Suscripción" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" Class="mb-6">
+                        <MudSelectItem T="long" Value="1">MedfarLabs Básico - $29.99/mes</MudSelectItem>
+                        <MudSelectItem T="long" Value="2">MedfarLabs Pro - $79.99/mes</MudSelectItem>
+                        <MudSelectItem T="long" Value="3">MedfarLabs Élite - $199.99/mes</MudSelectItem>
+                    </MudSelect>
+
+                    <MudAlert Severity="Severity.Info" Class="mt-4">
+                        Al finalizar, validaremos todo en tiempo real. Las facturas automáticas se generarán mediante el Motor SaaS basadas en tu selección.
+                    </MudAlert>
+
+                    @if (!string.IsNullOrEmpty(ErrorMessage))
+                    {
+                        <MudAlert Severity="Severity.Error" Class="mt-4">@ErrorMessage</MudAlert>
+                    }
+                </MudStep>
+            </MudStepper>
+
+            <div class="d-flex justify-end mt-8">
+                <MudButton Disabled="@(_index == 0 || IsSubmitting)" OnClick="PreviousStep" Class="mr-2" Variant="Variant.Text">Anterior</MudButton>
+                
+                @if (_index < 2)
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="NextStep">Continuar</MudButton>
+                }
+                else
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" Disabled="@IsSubmitting" OnClick="SubmitForm" StartIcon="@(IsSubmitting ? null : Icons.Material.Filled.Check)">
+                        @if (IsSubmitting)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                            <span class="ms-2">Generando Entorno...</span>
+                        }
+                        else
+                        {
+                            <span>Finalizar Onboarding</span>
+                        }
+                    </MudButton>
+                }
+            </div>
+        </MudPaper>
+    }
+    else
+    {
+        <MudPaper Elevation="2" Class="pa-10 rounded-xl onboarding-card text-center d-flex flex-column align-center justify-center success-state" Style="max-width: 600px; width: 100%;">
+            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Style="font-size: 6rem;" Class="mb-4 pulse-icon" />
+            <MudText Typo="Typo.h3" Color="Color.Success" Class="fw-bold mb-2">¡Despliegue Creado con Éxito!</MudText>
+            <MudText Typo="Typo.h6" Class="mb-6 text-muted">La instancia de la Organización ha sido inicializada en el clúster. La primera factura SaaS ya ha sido enrutada al panel administrativo.</MudText>
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-4 skeleton-loader" />
+            <MudText Typo="Typo.caption">Redirigiendo automáticamente...</MudText>
+        </MudPaper>
+    }
+</div>

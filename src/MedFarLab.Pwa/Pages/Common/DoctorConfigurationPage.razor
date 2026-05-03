@@ -1,0 +1,175 @@
+@page "/ajustes/medico"
+@using MedFarLab.Application.Features.Clinical.Models
+@using MedFarLab.Application.Features.Clinical.Commands.SetDoctorConfiguration
+@using MediatR
+@using MudBlazor
+@inject IMediator Mediator
+@inject ISnackbar Snackbar
+
+<PageTitle>Configuración Operativa del Médico - MedFarLab</PageTitle>
+
+<div class="glass-header mb-4">
+    <div>
+        <MudText Typo="Typo.h5" Class="text-primary fw-bold">Configuración Operativa</MudText>
+        <MudText Typo="Typo.body2" Class="text-muted">Ajusta tus horarios de atención y la duración predeterminada de tus citas.</MudText>
+    </div>
+</div>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="pa-0">
+    <MudPaper Class="pa-8 slide-in-bottom" Elevation="3" Style="border-radius: 16px; border: 1px solid rgba(var(--mud-palette-primary-rgb), 0.1);">
+        
+        <MudForm Model="@Model" @ref="form" ValidationDelay="0">
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                
+                <div>
+                    <div class="d-flex align-center gap-3 mb-3">
+                        <MudAvatar Color="Color.Primary" Variant="Variant.Filled" Style="height: 40px; width: 40px;">
+                            <MudIcon Icon="@Icons.Material.Filled.Timer" Size="Size.Small" />
+                        </MudAvatar>
+                        <MudText Typo="Typo.h6" Class="fw-bold">Parámetros de Consulta</MudText>
+                    </div>
+                    <MudText Typo="Typo.body2" Class="text-muted mb-4">La longitud en minutos dictaminará de qué tamaño son los bloques en tu agenda central médica.</MudText>
+                    
+                    <MudNumericField @bind-Value="Model.MinConsultationTimeMins" 
+                                     Label="Duración Mínima (Minutos)" 
+                                     Variant="Variant.Outlined" 
+                                     Min="10" Max="120" 
+                                     Adornment="Adornment.End" 
+                                     AdornmentText="min"
+                                     Style="background: rgba(255,255,255,0.05); max-width: 300px;" />
+                </div>
+
+                <MudDivider />
+
+                <div>
+                    <div class="d-flex align-center gap-3 mb-3">
+                        <MudAvatar Color="Color.Success" Variant="Variant.Filled" Style="height: 40px; width: 40px;">
+                            <MudIcon Icon="@Icons.Material.Filled.AccountBalanceWallet" Size="Size.Small" />
+                        </MudAvatar>
+                        <MudText Typo="Typo.h6" Class="fw-bold">Flujo de Facturación y Cajas</MudText>
+                    </div>
+                    <MudText Typo="Typo.body2" Class="text-muted mb-4">Define quién se encarga de emitir las facturas y si se permiten alteraciones audaces en el catálogo de servicios.</MudText>
+                    
+                    <MudSwitch @bind-Value="Model.DoctorBillsDirectly" Color="Color.Success" Label="El Médico factura y cobra directamente en la consulta (Sin recepcionista)" Class="mb-2" />
+                    <MudSwitch @bind-Value="Model.AllowManualPriceEdit" Color="Color.Warning" Label="Permitir a este consultorio alterar precios al momento de facturar" Class="mb-4" />
+                    
+                    <MudSelect @bind-Value="Model.PrintFormat" Label="Formato de Impresión Predeterminado" Variant="Variant.Outlined" Style="max-width:300px;">
+                        <MudSelectItem Value="@("A4")">Documento Completo A4</MudSelectItem>
+                        <MudSelectItem Value="@("Ticket")">Ticket Canón/Térmico (80mm)</MudSelectItem>
+                    </MudSelect>
+                </div>
+
+                <MudDivider />
+
+                <div>
+                    <div class="d-flex align-center gap-3 mb-3">
+                        <MudAvatar Color="Color.Secondary" Variant="Variant.Filled" Style="height: 40px; width: 40px;">
+                            <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Small" />
+                        </MudAvatar>
+                        <MudText Typo="Typo.h6" Class="fw-bold">Disponibilidad Semanal</MudText>
+                    </div>
+                    <MudText Typo="Typo.body2" Class="text-muted mb-4">Escribe un rango general descriptivo para que los recepcionistas y pacientes web conozcan tus horas hábiles.</MudText>
+                    
+                    <MudTextField @bind-Value="Model.AvailableHours" 
+                                  Label="Horarios de Atención Publicos" 
+                                  Variant="Variant.Outlined" 
+                                  Lines="3" 
+                                  Placeholder="Ej. Lunes a Viernes de 08:00 a 16:00, Sábados de 09:00 a 13:00"
+                                  Style="background: rgba(255,255,255,0.05);" />
+                </div>
+
+                <div class="d-flex justify-end mt-4">
+                    <MudButton Variant="Variant.Filled" 
+                               Color="Color.Primary" 
+                               Size="Size.Large" 
+                               DropShadow="false"
+                               Class="rounded-pill px-6"
+                               OnClick="SaveConfigurationAsync" 
+                               Disabled="@isSaving">
+                        @if (isSaving)
+                        {
+                            <MudProgressCircular Class="ms-n1 me-2" Size="Size.Small" Indeterminate="true" Color="Color.Default"/>
+                            <span>Guardando...</span>
+                        }
+                        else
+                        {
+                            <span class="fw-bold">Guardar Preferencias</span>
+                        }
+                    </MudButton>
+                </div>
+                
+            </div>
+        </MudForm>
+    </MudPaper>
+</MudContainer>
+
+<style>
+    .slide-in-bottom {
+        animation: slide-in-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+    }
+    @@keyframes slide-in-bottom {
+        0% { transform: translateY(20px); opacity: 0; }
+        100% { transform: translateY(0); opacity: 1; }
+    }
+</style>
+
+@code {
+    private MudForm? form;
+    private DoctorConfigurationVM Model = new DoctorConfigurationVM();
+    private bool isSaving = false;
+
+    // Hardcoded for demo purposes (would normally be bound to AuthState)
+    private long LoggedDoctorUserId = 1; 
+
+    protected override void OnInitialized()
+    {
+        // Valores por defecto
+        Model.MinConsultationTimeMins = 15;
+        Model.AvailableHours = "Lunes a Viernes, 08:00 - 17:00";
+    }
+
+    private async Task SaveConfigurationAsync()
+    {
+        if (form is not null)
+        {
+            await form.Validate();
+            if (form.IsValid)
+            {
+                isSaving = true;
+                StateHasChanged();
+
+                // Simulación visual intencional de 800ms para efecto UI Premium
+                await Task.Delay(800); 
+
+                Model.DoctorUserId = LoggedDoctorUserId;
+                var command = new SetDoctorConfigurationCommand(Model);
+                
+                try
+                {
+                    var response = await Mediator.Send(command);
+
+                    if (response.IsSuccess)
+                    {
+                        Snackbar.Add("Preferencias actualizadas correctamente.", Severity.Success, config => {
+                            config.Icon = Icons.Material.Filled.CheckCircle;
+                            config.IconColor = Color.Success;
+                        });
+                    }
+                    else
+                    {
+                        Snackbar.Add("No se pudo guardar la configuración.", Severity.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Snackbar.Add($"Error de conexión: {ex.Message}", Severity.Warning);
+                }
+                finally
+                {
+                    isSaving = false;
+                    StateHasChanged();
+                }
+            }
+        }
+    }
+}

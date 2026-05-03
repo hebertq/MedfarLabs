@@ -1,0 +1,5 @@
+.pointer-hover:hover {
+    cursor: pointer;
+    background-color: rgba(var(--mud-palette-primary), 0.05);
+    transition: background-color 0.2s ease-in-out;
+}

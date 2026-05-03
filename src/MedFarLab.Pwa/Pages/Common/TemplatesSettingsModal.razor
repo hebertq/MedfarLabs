@@ -1,0 +1,112 @@
+@using MudBlazor
+@using MediatR
+@using MedFarLab.Application.Features.Settings.Commands.UpdateOrganizationTemplates
+@using MedfarLabs.Core.Domain.Enums
+
+<MudDialog>
+    <DialogContent>
+        <div class="pa-2">
+            <MudText Typo="Typo.body2" Class="text-muted mb-4">
+                Elige el formato de preferencia por defecto ("A4" o "Voucher-Ticket") para tus facturas y selecciona un diseño visual.
+            </MudText>
+
+            <MudSelect T="InvoiceFormatType" @bind-Value="SelectedFormat" Label="Formato Físico Favorito" Variant="Variant.Outlined" Class="mb-4">
+                <MudSelectItem Value="InvoiceFormatType.A4">Hoja de Tamaño A4</MudSelectItem>
+                <MudSelectItem Value="InvoiceFormatType.Ticket">Voucher POS (Ticket 80mm)</MudSelectItem>
+            </MudSelect>
+
+            <MudSelect T="InvoiceTemplateStyle" @bind-Value="SelectedTemplate" Label="Diseño Gráfico (Color/Tipografía)" Variant="Variant.Outlined" Class="mb-4">
+                <MudSelectItem Value="InvoiceTemplateStyle.Classic">Clásico (Blanco y Negro)</MudSelectItem>
+                <MudSelectItem Value="InvoiceTemplateStyle.Modern">Moderno (Sombreado Índigo)</MudSelectItem>
+            </MudSelect>
+
+            <MudDivider Class="my-4" />
+            <MudText Typo="Typo.body2" Class="text-muted mb-2">
+                Si ya facturabas anteriormente, indica desde qué número quieres empezar.
+            </MudText>
+            <MudNumericField @bind-Value="StartingInvoiceSequence" Label="Secuencia Inicial de Facturación" Variant="Variant.Outlined" Min="0" />
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Text">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="SaveSettings" Disabled="IsSaving">
+            @(IsSaving ? "Guardando..." : "Aplicar Diseño")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IMediator Mediator { get; set; } = default!;
+    [Inject] private Microsoft.JSInterop.IJSRuntime JSRuntime { get; set; } = default!;
+    
+    // In real app, MediatR should fetch this via GetOrganizationSettingsQuery.
+    public InvoiceFormatType SelectedFormat { get; set; } = InvoiceFormatType.A4;
+    public InvoiceTemplateStyle SelectedTemplate { get; set; } = InvoiceTemplateStyle.Classic;
+    public long StartingInvoiceSequence { get; set; } = 0;
+    public bool IsSaving { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try 
+        {
+            var savedTemplate = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "DefaultInvoiceTemplate");
+            var savedFormat = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "DefaultInvoiceFormat");
+
+            if (!string.IsNullOrEmpty(savedTemplate) && Enum.TryParse<InvoiceTemplateStyle>(savedTemplate, out var parsedTemplate)) 
+                SelectedTemplate = parsedTemplate;
+            if (!string.IsNullOrEmpty(savedFormat) && Enum.TryParse<InvoiceFormatType>(savedFormat, out var parsedFormat)) 
+                SelectedFormat = parsedFormat;
+        }
+        catch { /* Fallback ya activo por defecto */ }
+    }
+
+    private async Task SaveSettings()
+    {
+        IsSaving = true;
+        StateHasChanged();
+
+        var command = new UpdateOrganizationTemplatesCommand 
+        { 
+            DefaultInvoiceFormat = SelectedFormat, 
+            DefaultInvoiceTemplate = SelectedTemplate 
+        };
+
+        var response = await Mediator.Send(command);
+
+        // Actualizar Configuración API para Secuencia (1 para pruebas locales, esto vendrá del context)
+        var configCommand = new MedFarLab.Application.Features.Identity.Commands.UpdateOrganizationConfig.UpdateOrganizationConfigCommand 
+        {
+            ConfigRequest = new MedfarLabs.Core.Application.Features.Identity.Dtos.Request.UpdateOrganizationConfigDTO(1, StartingInvoiceSequence)
+        };
+        await Mediator.Send(configCommand);
+
+        // Guardamos también de manera offline (en memoria browser) como fallback por si se usa la PWA sin backend
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "DefaultInvoiceFormat", SelectedFormat.ToString());
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "DefaultInvoiceTemplate", SelectedTemplate.ToString());
+        }
+        catch { /* Ignorar en caso de error JS */ }
+
+        if (response.IsSuccess)
+        {
+            Snackbar.Add($"Configuración guardada (Formato: {SelectedFormat}, Diseño: {SelectedTemplate}).", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            Snackbar.Add(response.Message ?? "Error guardando en BD. Preferencias offline aplicadas.", Severity.Warning);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+
+        IsSaving = false;
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
+

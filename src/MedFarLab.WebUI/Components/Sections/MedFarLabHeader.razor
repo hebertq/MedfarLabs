@@ -1,0 +1,181 @@
+@rendermode InteractiveServer
+<header class="header">
+    <div class="container flex-row align-center justify-between">
+        <!-- Logo -->
+        <a href="/" class="logo-container" @onclick="CloseMenu">
+            <picture>
+                <img src="/images/logo.png" alt="MedFarLab Logo" class="header-logo-img">
+            </picture>
+        </a>
+
+        <!-- Hamburger Icon (Mobile Only) -->
+        <button class="mobile-toggle" @onclick="ToggleMenu" aria-label="Toggle Navigation">
+            @if (isMenuOpen)
+            {
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-dark)" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            }
+            else
+            {
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-dark)" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+            }
+        </button>
+
+        <!-- Navigation -->
+        <nav class="nav-links @(isMenuOpen ? "active" : "")">
+            <a href="/" @onclick="CloseMenu">Inicio</a>
+            <a href="/nosotros" @onclick="CloseMenu">Nosotros</a>
+            <a href="/caracteristicas" @onclick="CloseMenu">Características</a>
+            <a href="/precios" @onclick="CloseMenu">Precios</a>
+            <a href="/seguridad" @onclick="CloseMenu">Seguridad</a>
+            <a href="/contacto" @onclick="CloseMenu">Contacto</a>
+        </nav>
+
+        <!-- CTA -->
+        <div class="header-actions desktop-cta">
+            <a href="/login" class="btn btn-primary" style="padding: 0.6rem 1.5rem; border-radius: 99px;">Acceso Médicos</a>
+        </div>
+    </div>
+</header>
+
+@code {
+    private bool isMenuOpen = false;
+
+    private void ToggleMenu()
+    {
+        isMenuOpen = !isMenuOpen;
+    }
+
+    private void CloseMenu()
+    {
+        isMenuOpen = false;
+    }
+}
+
+<style>
+    .header {
+        border-bottom: 3px solid var(--color-primary); /* Ancla visual fuerte */
+        padding: 0.5rem 0; /* Un poco menos padding para compensar el logo gigante */
+        position: sticky;
+        top: 0;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        overflow: visible; /* Importante para que el logo pueda sobresalir si es necesario */  
+        z-index: 100;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        background-color: rgba(241, 245, 249, 0.98); /* Slate-100: Más gris/oscuro que el blanco puro */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Sombra pesada pero suave */
+    }
+    
+    .logo-container {
+        display: flex;
+        align-items: center;
+        height: 100%; /* Se mantiene dentro del alto del header */
+    }
+
+    .header-logo-img {
+        /* Ajustamos el alto de la imagen */
+        height: 150px; /* El logo sobresale porque el header es de 80px */
+        width: auto;
+        object-fit: contain;
+        
+        /* Desplazamos el logo hacia arriba según solicitado */
+        margin-top: -30px; 
+        margin-bottom: -30px; /* Balanceamos para no estirar el contenedor */
+        
+        /* Evita que el logo sea recortado */
+        max-height: none !important;
+        position: relative;
+        z-index: 105; /* Asegura que pinte por encima del resto del contenido */
+        transition: all 0.3s ease;
+    }
+    
+    .mobile-toggle {
+        display: none;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        z-index: 101;
+    }
+    
+    .desktop-cta {
+        display: none;
+    }
+    
+    /* MOBILE NAVIGATION DEFAULT */
+    .nav-links {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 300px;
+        height: 100vh;
+        background: white; /* Panel móvil blanco */
+        padding: 6rem 2rem 2rem 2rem;
+        box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+        transition: right 0.4s ease;
+        z-index: 100;
+        gap: 1.5rem;
+    }
+    
+    .nav-links.active {
+        right: 0;
+    }
+    
+    .nav-links a { 
+        color: var(--color-text-main); 
+        opacity: 0.75;
+        font-weight: 600; 
+        font-size: 1.1rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .nav-links a:hover { 
+        color: var(--color-primary-dark); 
+        opacity: 1;
+        border-bottom-color: var(--color-secondary);
+    }
+    
+    @@media (max-width: 1024px) {
+        .mobile-toggle {
+            display: block;
+        }
+        
+        .header-logo-img {
+            height: 90px;
+            margin-bottom: -10px; /* Ajuste para que se vea más proporcionado en móviles */
+        }
+    }
+    
+    @@media (min-width: 1025px) {
+        .mobile-toggle { display: none; }
+        .desktop-cta { display: block; }
+        
+        .nav-links {
+            position: static;
+            flex-direction: row;
+            height: auto;
+            width: auto;
+            background: transparent;
+            padding: 0;
+            box-shadow: none;
+            gap: 1rem;
+        }
+        
+        .nav-links a {
+            font-size: 0.95rem;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .nav-links a:hover {
+            border-bottom: none;
+        }
+    }
+</style>

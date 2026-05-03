@@ -1,0 +1,199 @@
+@page "/"
+
+<PageTitle>MedFarLab - Software Clínico Integral</PageTitle>
+
+<!-- 1. FRONT HERO (ASIMÉTRICO / SALES DRIVEN) -->
+<section class="landing-hero diagonal-cut-bottom bg-gradient-fade-dark">
+    <div class="container grid md-grid-cols-2 align-center gap-xl">
+        <!-- Copywriting -->
+        <div class="hero-content reveal">
+            
+            <h1 class="landing-title text-white">
+                El <span class="text-secondary">Motor Clínico</span> de Centroamérica.
+            </h1>
+            
+            <p class="landing-subtitle">
+                Destruye las ineficiencias del papel. Orquestamos una red cifrada e inmediata entre Clínicas, Laboratorios y Farmacias, recuperando el tiempo de tus consultas.
+            </p>
+            
+            <div class="hero-actions flex-row mt-lg" style="gap: 1rem;">
+                <a href="/contacto" class="btn btn-primary btn-lg shine-effect">
+                    Unirme Ahora
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ml-sm"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </a>
+                <a href="/precios" class="btn btn-outline-light btn-lg">
+                    Ver Planes
+                </a>
+            </div>
+        </div>
+
+        <!-- Arte / Mockup -->
+        <div class="hero-artwork reveal delay-2">
+            <!-- Glassmorphism Abstract Showcase en caso de que fallen las imgs, es hermoso por sí mismo -->
+            <div class="abstract-mockup">
+                <div class="mockup-header flex-row align-center">
+                    <div class="mac-dot" style="background:#EF4444"></div>
+                    <div class="mac-dot" style="background:#FBBF24"></div>
+                    <div class="mac-dot" style="background:#10B981"></div>
+                    <span style="margin-left:auto; font-size:0.75rem; color: #64748B;">MedFarLab.WebUI</span>
+                </div>
+                <div class="mockup-body" style="background-image: url('/images/hero-home.png'); background-size: cover; background-position: center;">
+                    <!-- Simulando una carga segura -->
+                    <div class="secure-layer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 3. Workflow Timeline Dinámico -->
+<MedFarLab.Components.Sections.WorkflowSection />
+
+<!-- 4. Asymmetric Bento Grid (Velocidad y Analíticas) -->
+<MedFarLab.Components.Sections.BentoGridSection />
+
+<!-- 5. Contraste Final - Pasado vs Futuro -->
+<MedFarLab.Components.Sections.ProblemSolutionSection />
+
+<style>
+    /* CSS del Front Hero Específico */
+    .landing-hero {
+        padding: 8rem 0 10rem 0; /* Padding extra para el corte en cuña */
+        position: relative;
+        overflow: hidden;
+    }
+
+    .landing-title {
+        font-size: 4rem;
+        line-height: 1.05;
+        letter-spacing: -0.04em;
+        margin-bottom: 1.5rem;
+    }
+
+    .landing-subtitle {
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 1.35rem;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        font-weight: 300;
+        max-width: 90%;
+    }
+
+    .launch-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.4rem 1.2rem;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 50px;
+        color: white;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .live-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background-color: var(--color-secondary);
+        box-shadow: 0 0 10px var(--color-secondary);
+        animation: heartbeat 1.5s infinite;
+    }
+
+    .abstract-mockup {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.1);
+        transform: rotateY(-10deg) rotateX(10deg);
+        transform-style: preserve-3d;
+        transition: transform 0.5s ease;
+    }
+    
+    .abstract-mockup:hover {
+        transform: rotateY(-5deg) rotateX(5deg) translateY(-10px);
+    }
+    
+    .mockup-header {
+        background: #F8FAFC;
+        padding: 0.8rem 1rem;
+        border-bottom: 1px solid #E2E8F0;
+        gap: 0.4rem;
+    }
+    
+    .mac-dot {
+        width: 12px; height: 12px; border-radius: 50%;
+    }
+
+    .mockup-body {
+        height: 380px;
+        width: 100%;
+        background-color: #FAFAFA;
+        position: relative;
+    }
+
+    .secure-layer {
+        position: absolute; top:0; left:0; right:0; bottom:0;
+        background: linear-gradient(135deg, rgba(30, 58, 138, 0) 40%, rgba(30, 58, 138, 0.05) 100%);
+    }
+
+    /* CSS del Ticker Marquee Infinito */
+    .ticker-wrapper {
+        z-index: 10;
+        pointer-events: none; /* Que el usuario no lo seleccione */
+    }
+    
+    .ticker-tape {
+        background: var(--color-primary-dark);
+        border-top: 1px solid rgba(255,255,255,0.05);
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        padding: 1.2rem 0;
+        overflow: hidden;
+        white-space: nowrap;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+    
+    .ticker-content {
+        display: inline-flex;
+        animation: scrollLeft 35s linear infinite;
+        align-items: center;
+    }
+    
+    .ticker-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        color: rgba(255,255,255,0.7);
+        font-family: var(--font-heading);
+        font-size: 1.1rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+    
+    .ticker-item svg {
+        color: var(--color-secondary);
+    }
+    
+    .ticker-sep {
+        color: var(--color-accent);
+        margin: 0 2.5rem;
+        font-size: 1.5rem;
+    }
+    
+    @@keyframes scrollLeft {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+
+    /* Utilitario Mobile Fix */
+    @@media (max-width: 768px) {
+        .landing-title { font-size: 2.8rem; }
+        .hero-actions.flex-row { flex-direction: column; width: 100%; }
+        .hero-actions .btn { width: 100%; text-align: center; }
+        .abstract-mockup { transform: none; margin-top: 2rem; }
+    }
+</style>

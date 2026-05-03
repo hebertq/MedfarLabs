@@ -1,0 +1,40 @@
+@using MedFarLab.Application.Features.Care.Models
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6"><MudIcon Icon="@Icons.Material.Filled.Event" Class="mr-2 mb-n1"/> Agendar Nueva Cita</MudText>
+    </TitleContent>
+    <DialogContent>
+        <EditForm Model="@Model" OnValidSubmit="Submit">
+            <DataAnnotationsValidator />
+            <MudStack Spacing="4" Class="py-4">
+                <div class="d-flex gap-2 align-start">
+                    <MudTextField Value="@PatientName" Label="Paciente Seleccionado" 
+                                  Variant="Variant.Outlined" FullWidth="@true" ReadOnly="true" Required="true" />
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenPatientSearch" Style="height: 40px; margin-top: 5px;">
+                        <MudIcon Icon="@Icons.Material.Filled.PersonSearch" />
+                    </MudButton>
+                </div>
+
+                <MudDatePicker Label="Fecha" @bind-Date="Model.Date" 
+                               For="@(() => Model.Date)"
+                               Variant="Variant.Outlined" FullWidth="@true" Editable="@true" />
+                               
+                <MudTimePicker Label="Hora" @bind-Time="Model.SelectedTime" 
+                               For="@(() => Model.SelectedTime)"
+                               Variant="Variant.Outlined" FullWidth="@true" Editable="@true" />
+
+                <MudTextField Label="Motivo de Consulta" @bind-Value="Model.Reason" 
+                              For="@(() => Model.Reason)"
+                              Variant="Variant.Outlined" Lines="3" FullWidth="@true" />
+            </MudStack>
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">Guardar Cita</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+

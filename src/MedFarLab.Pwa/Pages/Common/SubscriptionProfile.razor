@@ -1,0 +1,211 @@
+@page "/ajustes/suscripcion"
+@using MedFarLab.Application.Features.Billing.Commands.SubscribeOrganization
+@using MedFarLab.Application.Features.Billing.Commands.PaySubscription
+@using MediatR
+@using MudBlazor
+@inject IMediator Mediator
+@inject ISnackbar Snackbar
+
+<PageTitle>Suscripción y Facturación - MedFarLab</PageTitle>
+
+<div class="glass-header mb-4">
+    <div>
+        <MudText Typo="Typo.h5" Class="text-primary fw-bold">Perfil de Suscripción</MudText>
+        <MudText Typo="Typo.body2" Class="text-muted">Administra tu plan SaaS, consulta tus facturas y gestiona los métodos de pago de tu organización B2B.</MudText>
+    </div>
+</div>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="pa-0">
+    <MudGrid>
+        <!-- Columna Izquierda: Planes B2B -->
+        <MudItem xs="12" md="8">
+            <MudText Typo="Typo.h6" Class="fw-bold mb-4">Planes Disponibles</MudText>
+            
+            <MudGrid>
+                <!-- Plan 1 -->
+                <MudItem xs="12" sm="6" md="4">
+                    <MudPaper Class="pa-6 d-flex flex-column" Elevation="3" Style="height: 100%; border-radius: 12px; border: 1px solid rgba(var(--mud-palette-lines-default));">
+                        <MudText Typo="Typo.h5" Class="fw-bold text-primary mb-2">Solo Citas</MudText>
+                        <MudText Typo="Typo.h4" Class="fw-bold mb-4">$99<span style="font-size: 14px; color: gray;">/m</span></MudText>
+                        <MudText Typo="Typo.body2" Class="text-muted mb-4 flex-grow-1">Acceso restringido a central de agenda. Ideal para consultorios médicos independientes.</MudText>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true" OnClick="@(() => SubscribeOrg(1))">Contratar Plan</MudButton>
+                    </MudPaper>
+                </MudItem>
+                
+                <!-- Plan 2 -->
+                <MudItem xs="12" sm="6" md="4">
+                    <MudPaper Class="pa-6 d-flex flex-column" Elevation="4" Style="height: 100%; border-radius: 12px; border: 2px solid var(--mud-palette-secondary);">
+                        <MudChip T="string" Color="Color.Secondary" Size="Size.Small" Class="align-self-start mb-2">Popular</MudChip>
+                        <MudText Typo="Typo.h5" Class="fw-bold text-secondary mb-2">Labs & Clínicas</MudText>
+                        <MudText Typo="Typo.h4" Class="fw-bold mb-4">$199<span style="font-size: 14px; color: gray;">/m</span></MudText>
+                        <MudText Typo="Typo.body2" Class="text-muted mb-4 flex-grow-1">Expedientes clínicos completos, sistema de LIMS y control de inventario de farmacia.</MudText>
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true" OnClick="@(() => SubscribeOrg(3))">Cambiar a Plan</MudButton>
+                    </MudPaper>
+                </MudItem>
+                
+                <!-- Plan 3 -->
+                <MudItem xs="12" sm="6" md="4">
+                    <MudPaper Class="pa-6 d-flex flex-column" Elevation="3" Style="height: 100%; border-radius: 12px; border: 1px solid rgba(var(--mud-palette-lines-default)); background: #fafafa;">
+                        <MudText Typo="Typo.h5" Class="fw-bold text-dark mb-2">Enterprise B2B</MudText>
+                        <MudText Typo="Typo.h4" Class="fw-bold mb-4">$299<span style="font-size: 14px; color: gray;">/m</span></MudText>
+                        <MudText Typo="Typo.body2" Class="text-muted mb-4 flex-grow-1">Red Multi-Sede global (Laboratorios y Clínicas satélite) y reportes de PowerBI.</MudText>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Dark" FullWidth="true" OnClick="@(() => SubscribeOrg(4))">Contactar Ventas</MudButton>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+        
+        <!-- Columna Derecha: Facturación -->
+        <MudItem xs="12" md="4">
+            <MudPaper Class="pa-6 mb-4 slide-in-bottom" Elevation="2" Style="border-radius: 12px; border-left: 5px solid var(--mud-palette-success);">
+                <MudText Typo="Typo.subtitle2" Class="text-muted text-uppercase fw-bold mb-1">Tu Estado Actual</MudText>
+                @if (IsSubscribed) {
+                    <div class="d-flex align-center justify-space-between mb-3">
+                        <MudText Typo="Typo.h6" Class="fw-bold">@CurrentPlanName</MudText>
+                        <MudChip T="string" Color="Color.Success" Size="Size.Small">Activo</MudChip>
+                    </div>
+                    <MudText Typo="Typo.body2" Class="text-muted">Próximo cobro: @DateTime.UtcNow.AddMonths(1).ToString("dd MMM yyyy")</MudText>
+                } else {
+                    <MudText Typo="Typo.body2" Class="text-muted">No cuentas con un plan de cobro activo. Por favor, selecciona uno de la izquierda para evitar cortes de acceso.</MudText>
+                }
+            </MudPaper>
+            
+            <MudPaper Class="pa-4" Elevation="1" Style="border-radius: 12px;">
+                <MudText Typo="Typo.subtitle1" Class="fw-bold mb-3 d-flex align-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Receipt" Size="Size.Small" Class="mr-2"/> Facturas Organizacionales
+                </MudText>
+                <MudDivider Class="mb-3"/>
+
+                @if (mockInvoices.Any())
+                {
+                    @foreach (var invoice in mockInvoices)
+                    {
+                        <div class="d-flex justify-space-between align-center py-2" style="border-bottom: 1px dashed rgba(var(--mud-palette-lines-default));">
+                            <div>
+                                <MudText Typo="Typo.body2" Class="fw-bold">@invoice.InvoiceRef</MudText>
+                                <MudText Typo="Typo.caption" Class="text-muted">@invoice.Date.ToString("dd MMM yyyy")</MudText>
+                            </div>
+                            <div class="text-right">
+                                <MudText Typo="Typo.body2" Class="@($"fw-bold {(invoice.IsPaid ? "text-success" : "text-error")}")">$@invoice.Amount.ToString("0.00")</MudText>
+                                @if (invoice.IsPaid)
+                                {
+                                    <MudChip T="string" Color="Color.Success" Size="Size.Small" Variant="Variant.Outlined">Pagado</MudChip>
+                                }
+                                else
+                                {
+                                    <MudButton Size="Size.Small" Color="Color.Primary" Variant="Variant.Filled" DisableElevation="true" OnClick="@(() => PayInvoice(invoice.Id, invoice.Amount))">Pagar</MudButton>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <MudText Typo="Typo.body2" Class="text-muted py-4 text-center">No hay facturas emitidas por MedFarLab hacia tu Organización.</MudText>
+                }
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+<style>
+    .slide-in-bottom {
+        animation: slide-in-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+    }
+    @@keyframes slide-in-bottom {
+        0% { transform: translateY(20px); opacity: 0; }
+        100% { transform: translateY(0); opacity: 1; }
+    }
+</style>
+
+@code {
+    private bool IsSubscribed = false;
+    private string CurrentPlanName = "";
+    private long TempOrganizationId = 1;
+
+    private List<MockInvoice> mockInvoices = new();
+
+    private async Task SubscribeOrg(int planId)
+    {
+        var planName = planId switch {
+            1 => "Solo Citas",
+            3 => "Labs & Clínicas",
+            4 => "Enterprise B2B",
+            _ => "Estándar"
+        };
+        var planPrice = planId switch {
+            1 => 99.00m,
+            3 => 199.00m,
+            4 => 299.00m,
+            _ => 0m
+        };
+
+        var command = new SubscribeOrganizationCommand(new SubscribeOrganizationPayload
+        {
+            OrganizationId = TempOrganizationId,
+            PlanId = planId,
+            MonthlyPrice = planPrice
+        });
+
+        var result = await Mediator.Send(command);
+
+        if (result.IsSuccess)
+        {
+            IsSubscribed = true;
+            CurrentPlanName = planName;
+            
+            // Simular DB de tabla SubscriptionInvoice que nos devuelve el API al suscribirlo
+            mockInvoices.Insert(0, new MockInvoice { 
+                Id = result.Data, 
+                InvoiceRef = $"SUB-{DateTime.UtcNow:yyyyMMdd}-{result.Data}", 
+                Amount = planPrice, 
+                Date = DateTime.UtcNow, 
+                IsPaid = false 
+            });
+
+            Snackbar.Add($"Suscripción global {planName} configurada para tu Organización.", Severity.Success);
+            StateHasChanged();
+        }
+        else
+        {
+            Snackbar.Add("Ocurrió un error al intentar contratar el plan.", Severity.Error);
+        }
+    }
+
+    private async Task PayInvoice(long invoiceId, decimal amount)
+    {
+        var command = new PaySubscriptionCommand(new PaySubscriptionPayload
+        {
+            OrganizationId = TempOrganizationId,
+            InvoiceId = invoiceId,
+            AmountPaid = amount,
+            PaymentMethod = "CREDIT_CARD_B2B_SIMULATED"
+        });
+
+        var result = await Mediator.Send(command);
+
+        if (result.IsSuccess)
+        {
+            var inv = mockInvoices.FirstOrDefault(x => x.Id == invoiceId);
+            if (inv != null) inv.IsPaid = true;
+
+            Snackbar.Add($"¡Operación B2B completada! Factura cubierta con éxito, No. de pago: {result.Data}.", Severity.Success, config => {
+                config.Icon = Icons.Material.Filled.CheckCircle;
+            });
+            StateHasChanged();
+        }
+        else
+        {
+            Snackbar.Add("Pago declinado.", Severity.Error);
+        }
+    }
+
+    public class MockInvoice
+    {
+        public long Id { get; set; }
+        public string InvoiceRef { get; set; } = "";
+        public decimal Amount { get; set; }
+        public DateTime Date { get; set; }
+        public bool IsPaid { get; set; }
+    }
+}

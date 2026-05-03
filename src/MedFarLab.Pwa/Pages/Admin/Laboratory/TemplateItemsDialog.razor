@@ -1,0 +1,111 @@
+@using MudBlazor
+@using MediatR
+@using MedFarLab.Application.Features.Laboratory.Queries.GetLabExamTemplateItems
+@using MedfarLabs.Core.Application.Features.Laboratory.Dtos.Response
+
+<MudDialog>
+    <DialogContent>
+        <div class="mb-4 d-flex justify-space-between align-center">
+            <MudText Typo="Typo.h6">@TemplateName</MudText>
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Size="Size.Small" OnClick="OpenAddItemModal">
+                Añadir Analito
+            </MudButton>
+        </div>
+
+        @if (IsLoading)
+        {
+            <div class="d-flex justify-center p-4">
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            </div>
+        }
+        else
+        {
+            <MudDataGrid Items="@Items" Dense="true" Hover="true" Bordered="true" Striped="true">
+                <Columns>
+                    <PropertyColumn Property="x => x.SortOrder" Title="Orden" />
+                    <PropertyColumn Property="x => x.AnalyteName" Title="Nombre" />
+                    <PropertyColumn Property="x => x.Unit" Title="Unidad" />
+                    <PropertyColumn Property="x => x.RefMin" Title="Mínimo" />
+                    <PropertyColumn Property="x => x.RefMax" Title="Máximo" />
+                    <PropertyColumn Property="x => x.ValueType" Title="Tipo">
+                        <CellTemplate>
+                            @if (context.Item.ValueType == "Qualitative")
+                            {
+                                <MudChip T="string" Color="Color.Warning" Size="Size.Small">Cualitativo</MudChip>
+                            }
+                            else
+                            {
+                                <MudChip T="string" Color="Color.Info" Size="Size.Small">Cuantitativo</MudChip>
+                            }
+                        </CellTemplate>
+                    </PropertyColumn>
+                    <TemplateColumn Title="Acciones">
+                        <CellTemplate>
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Small" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" />
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+            </MudDataGrid>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Default" OnClick="Close">Cerrar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public long TemplateId { get; set; }
+    [Parameter] public string TemplateName { get; set; } = string.Empty;
+
+    [Inject] private IMediator Mediator { get; set; } = default!;
+    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+
+    private bool IsLoading = true;
+    private List<LabExamTemplateItemResponseDTO> Items = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadItems();
+    }
+
+    private async Task LoadItems()
+    {
+        IsLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var response = await Mediator.Send(new GetLabExamTemplateItemsQuery(TemplateId));
+            if (response != null && response.IsSuccess && response.Data != null)
+            {
+                Items = response.Data.OrderBy(x => x.SortOrder).ToList();
+            }
+            else
+            {
+                Snackbar.Add($"Error cargando ítems: {response?.Message}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Excepción cargando ítems: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void OpenAddItemModal()
+    {
+        Snackbar.Add("Funcionalidad de agregar analito pendiente de implementar Command en la API.", Severity.Info);
+    }
+
+    private void Close()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}

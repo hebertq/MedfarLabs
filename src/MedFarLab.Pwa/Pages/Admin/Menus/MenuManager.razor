@@ -1,0 +1,90 @@
+@page "/admin/menus"
+@using MudBlazor
+@using MediatR
+@using MedfarLabs.Core.Application.Features.System.Dtos
+@using MedfarLabs.Core.Application.Features.System.Commands.CreateMenu
+@using MedfarLabs.Core.Application.Features.System.Commands.UpdateMenu
+@using MedFarLab.Application.Features.System.Queries.GetMenus
+
+
+
+<PageTitle>Gestor de Menús Dinámicos</PageTitle>
+
+<PageActionHeader ShowBackButton="true" BackUrl="/admin/dashboard">
+    <StatusContent>
+        <div>
+            <MudText Typo="Typo.h5" Class="fw-bold gradient-text">Gestor de Menús Dinámicos</MudText>
+            <MudText Typo="Typo.subtitle2" Class="text-muted">Parametrización de accesos directos por tipo de organización</MudText>
+        </div>
+    </StatusContent>
+    <ActionContent>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenNewDialog">
+            Nuevo Menú
+        </MudButton>
+    </ActionContent>
+</PageActionHeader>
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudSelect T="int" Label="Filtrar por Tipo de Organización" ValueChanged="OnOrgTypeChanged" Value="SelectedOrgTypeId" Variant="Variant.Outlined" Class="mb-4 bg-white">
+            <MudSelectItem Value="124">Clínica / Sector Médico</MudSelectItem>
+            <MudSelectItem Value="125">Farmacia</MudSelectItem>
+            <MudSelectItem Value="15">Laboratorio</MudSelectItem>
+        </MudSelect>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudTable Items="@MenusList" Hover="true" Loading="@IsLoading" Elevation="1" Style="border-radius: 12px;" Striped="true">
+            <HeaderContent>
+                <MudTh>Icono</MudTh>
+                <MudTh>Título Visible</MudTh>
+                <MudTh>Ruta (URL)</MudTh>
+                <MudTh>Orden</MudTh>
+                <MudTh>Acciones</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Icono"><MudIcon Icon="@context.Icon" Color="Color.Secondary" /></MudTd>
+                <MudTd DataLabel="Título Visible" Style="font-weight: 500;">@context.Title</MudTd>
+                <MudTd DataLabel="Ruta (URL)" Class="text-muted">@context.Route</MudTd>
+                <MudTd DataLabel="Orden">
+                    <MudChip T="string" Color="Color.Dark" Size="Size.Small">@context.OrderIndex</MudChip>
+                </MudTd>
+                <MudTd DataLabel="Acciones">
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" Size="Size.Small" OnClick="@(() => OpenEditDialog(context))" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" />
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </MudItem>
+</MudGrid>
+
+<MudDialog @bind-Visible="ShowDialog" Options="new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true }">
+    <TitleContent>
+        <span class="fw-bold">@(MenuModel.Id == 0 ? "Crear Nuevo Entorno Menú" : "Modificar Menú Existente")</span>
+    </TitleContent>
+    <DialogContent>
+        <EditForm Model="MenuModel" OnValidSubmit="SaveMenu">
+            <MudSelect @bind-Value="MenuModel.OrganizationTypeId" Label="Aplica a" Variant="Variant.Outlined" Class="mb-3">
+                <MudSelectItem Value="124">Clínica (CLI)</MudSelectItem>
+                <MudSelectItem Value="125">Farmacia (PHA)</MudSelectItem>
+                <MudSelectItem Value="15">Laboratorio (LAB)</MudSelectItem>
+            </MudSelect>
+
+            <MudTextField @bind-Value="MenuModel.Title" Label="Etiqueta del Menú" Placeholder="Ej. Mis Pacientes" Variant="Variant.Outlined" Class="mb-3" Required />
+            <MudTextField @bind-Value="MenuModel.Route" Label="URL Interna" Placeholder="Ej. /patients/list" Variant="Variant.Outlined" Class="mb-3" Required />
+            <MudTextField @bind-Value="MenuModel.Icon" Label="Ícono (MudBlazor)" Placeholder="Icons.Material.Filled.Person" Variant="Variant.Outlined" Class="mb-3" />
+            
+            <MudNumericField @bind-Value="MenuModel.OrderIndex" Label="Peso de Orden" Variant="Variant.Outlined" Class="mb-3" Min="0" Max="100" />
+            
+            <div class="d-flex justify-end pt-3">
+                <MudButton OnClick="CloseDialog" Class="mr-2">Cancelar</MudButton>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Disabled="IsSaving">
+                    @(IsSaving ? "Guardando..." : "Confirmar Cambios")
+                </MudButton>
+            </div>
+        </EditForm>
+    </DialogContent>
+</MudDialog>

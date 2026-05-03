@@ -1,0 +1,84 @@
+@page "/billing/history"
+@page "/billing/invoices"
+@using MudBlazor
+
+<PageTitle>Directorio de Facturas - MedFarLab</PageTitle>
+
+<PageActionHeader Sticky="false">
+    <ActionContent>
+        <MudButton Href="/billing/new" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+            Emitir Nueva
+        </MudButton>
+    </ActionContent>
+    <DropdownActions>
+        <MudMenuItem OnClick="ExportToExcelAsync">
+            <div class="d-flex align-center"><MudIcon Icon="@Icons.Material.Filled.FileDownload" Class="mr-2"/> Exportar a Excel (CSV)</div>
+        </MudMenuItem>
+    </DropdownActions>
+</PageActionHeader>
+
+<div class="glass-header mb-4 d-flex justify-space-between align-center">
+    <div>
+        <MudText Typo="Typo.h5" Class="text-primary fw-bold">Directorio de Facturación</MudText>
+        <MudText Typo="Typo.body2" Class="text-muted">Explorar el registro histórico de facturas emitidas y cerradas.</MudText>
+    </div>
+</div>
+
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Style="background: white; border: 1px solid var(--mud-palette-lines-default);">
+    <MudTabPanel Text="Facturas Pendientes" Icon="@Icons.Material.Filled.AccessTime">
+        <MudDataGrid Items="@PendingInvoices" Hover="true" Elevation="0" Dense="true" Style="border: 1px solid var(--mud-palette-lines-default); border-radius: 8px;">
+            <Columns>
+                <PropertyColumn Property="x => x.InvoiceNumber" Title="N° Factura" />
+                <PropertyColumn Property="x => x.IssuedDate" Title="Fecha" Format="dd MMM yyyy HH:mm" />
+                <PropertyColumn Property="x => x.PatientName" Title="Paciente" />
+                <PropertyColumn Property="x => x.TotalAmount" Title="Monto a Cobrar">
+                    <CellTemplate>
+                        <MudText Typo="Typo.body2" Class="fw-bold text-warning">$@context.Item.TotalAmount.ToString("0.00")</MudText>
+                    </CellTemplate>
+                </PropertyColumn>
+                <PropertyColumn Property="x => x.Status" Title="Estado">
+                    <CellTemplate>
+                        <MudChip Size="Size.Small" Color="Color.Warning">Por Pagar</MudChip>
+                    </CellTemplate>
+                </PropertyColumn>
+                <TemplateColumn Title="Acción" Sortable="false">
+                    <CellTemplate>
+                        <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Href="@($"/billing/invoice/{@context.Item.InvoiceId}")">
+                            Procesar Factura
+                        </MudButton>
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+        </MudDataGrid>
+    </MudTabPanel>
+    <MudTabPanel Text="Historial (Pagadas)" Icon="@Icons.Material.Filled.History">
+        <MudDataGrid Items="@Invoices" Hover="true" Elevation="0" Dense="true" Style="border: 1px solid var(--mud-palette-lines-default); border-radius: 8px;">
+            <Columns>
+                <PropertyColumn Property="x => x.InvoiceNumber" Title="N° Factura" />
+                <PropertyColumn Property="x => x.IssuedDate" Title="Fecha" Format="dd MMM yyyy" />
+                <PropertyColumn Property="x => x.PatientName" Title="Paciente" />
+                <PropertyColumn Property="x => x.TotalAmount" Title="Monto Pagado">
+                    <CellTemplate>
+                        <MudText Typo="Typo.body2" Class="fw-bold text-success">$@context.Item.TotalAmount.ToString("0.00")</MudText>
+                    </CellTemplate>
+                </PropertyColumn>
+                <PropertyColumn Property="x => x.Status" Title="Estado">
+                    <CellTemplate>
+                        <MudChip Size="Size.Small" Color="Color.Success">Pagada</MudChip>
+                    </CellTemplate>
+                </PropertyColumn>
+                <TemplateColumn Title="Acción" Sortable="false">
+                    <CellTemplate>
+                        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary" Href="@($"/billing/view/{@context.Item.InvoiceId}")">
+                            Ver o Imprimir
+                        </MudButton>
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+            <PagerContent>
+                <MudDataGridPager T="InvoiceHistoryDto" />
+            </PagerContent>
+        </MudDataGrid>
+    </MudTabPanel>
+</MudTabs>
+

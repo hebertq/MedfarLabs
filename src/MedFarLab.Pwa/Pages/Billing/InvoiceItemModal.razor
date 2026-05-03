@@ -1,0 +1,52 @@
+﻿@using MudBlazor
+@using MedFarLab.Application.Features.Inventory.Models
+@using MedFarLab.Pwa.Pages.Billing
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6" Class="fw-bold">@((Model.Quantity == 0 && string.IsNullOrEmpty(Model.Description)) ? "Añadir Servicio" : "Editar Servicio")</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MedFarLab.Pwa.Shared.PageActionHeader>
+            <ActionContent>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit" StartIcon="@Icons.Material.Filled.Save">Guardar Ítem</MudButton>
+            </ActionContent>
+            <DropdownActions>
+                <MudMenuItem OnClick="Cancel">
+                    <div class="d-flex align-center"><MudIcon Icon="@Icons.Material.Filled.Cancel" Class="mr-2" Color="Color.Error"/> <MudText Color="Color.Error">Cancelar</MudText></div>
+                </MudMenuItem>
+            </DropdownActions>
+        </MedFarLab.Pwa.Shared.PageActionHeader>
+
+        <EditForm Model="@Model" OnValidSubmit="Submit">
+            <DataAnnotationsValidator />
+            
+            <MudAutocomplete T="ServiceItemVM"
+                             Value="@Model.SelectedService"
+                             ValueChanged="OnServiceSelected"
+                             SearchFunc="SearchServices"
+                             ToStringFunc="@(s => s == null ? Model.Description : s.Name)"
+                             Label="Buscar Servicio o Producto..."
+                             Variant="Variant.Outlined"
+                             Clearable="true"
+                             ResetValueOnEmptyText="true"
+                             CoerceText="false"
+                             Class="mb-4" />
+
+            <MudTextField @bind-Value="Model.Description" Label="DescripciÃ³n (Manual si no estÃ¡ en catÃ¡logo)" Variant="Variant.Outlined" Class="mb-4" Required="true" />
+            
+            <div class="d-flex gap-4">
+                <MudNumericField T="int" @bind-Value="Model.Quantity" Label="Cantidad" Variant="Variant.Outlined" Min="1" Required="true" />
+                <MudNumericField T="decimal" @bind-Value="Model.UnitPrice" Label="Precio Unitario" Variant="Variant.Outlined" Disabled="!AllowManualPriceEdit" Required="true" />
+            </div>
+
+            <div class="mt-4 text-end">
+                <MudText Typo="Typo.h6">Subtotal: <span class="fw-bold text-primary">$@Model.Subtotal.ToString("0.00")</span></MudText>
+            </div>
+        </EditForm>
+    </DialogContent>
+</MudDialog>
+
+
+
+

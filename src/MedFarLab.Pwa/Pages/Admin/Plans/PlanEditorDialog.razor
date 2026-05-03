@@ -1,0 +1,28 @@
+@using MudBlazor
+@using MedfarLabs.Core.Application.Features.Billing.Dtos.Request
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form">
+            <MudTextField @bind-Value="PlanToEdit.Name" Label="Nombre del Plan" Required="true" Variant="Variant.Outlined" Class="mb-4" />
+            <MudNumericField @bind-Value="PlanToEdit.MonthlyPrice" Label="Precio Mensual ($)" Required="true" Variant="Variant.Outlined" Class="mb-4" Min="0" />
+            <MudTextField @bind-Value="PlanToEdit.Description" Label="Descripción Corta" Required="true" Variant="Variant.Outlined" Class="mb-4" Lines="2" />
+            
+            <MudSelect @bind-Value="PlanToEdit.OrganizationTypeId" Label="Tipo de Organización" Variant="Variant.Outlined" Class="mb-4" AnchorOrigin="Origin.BottomCenter">
+                @foreach (var tipo in Enum.GetValues<MedfarLabs.Core.Domain.Enums.TipoOrganizacion>())
+                {
+                    <MudSelectItem Value="(int)tipo">@tipo.ToString().Replace("_", " ")</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudAlert Severity="Severity.Warning" Class="mt-2">
+                En esta versión (B2B MVP), los cambios en los Planes son visualizaciones locales front-end.
+            </MudAlert>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Save">@(IsNew ? "Crear Plan" : "Guardar Cambios")</MudButton>
+    </DialogActions>
+</MudDialog>
+

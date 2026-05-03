@@ -1,0 +1,162 @@
+<section id="problema-solucion" class="section glass-split-section" style="padding: 0; background-color: var(--color-bg-light);">
+    
+    <div class="split-container grid md-grid-cols-2">
+        
+        <!-- Lado Izquierdo: El Caos (Pasado) - AHORA LUMINOSO Y CLARO -->
+        <div class="split-pane pane-chaos">
+            <div class="pane-content reveal delay-1">
+                <h3 class="pane-title mb-md" style="display: flex; align-items: center; gap: 0.75rem; color: #475569;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="9" y1="14" x2="15" y2="20"/><line x1="15" y1="14" x2="9" y2="20"/></svg>
+                    El Viejo Estándar
+                </h3>
+                
+                <ul class="comparison-list chaos-list">
+                    <li>
+                        <!-- SVGs reemplazando la "X" unicode que fallaba -->
+                        <span class="icon text-negative bg-negative-light">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </span>
+                        <div class="list-text">
+                            <strong>Expedientes Físicos</strong>
+                            <p>Riesgo constante de daño, deterioro o pérdida médica.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="icon text-negative bg-negative-light">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </span>
+                        <div class="list-text">
+                            <strong>Caligrafía Riesgosa</strong>
+                            <p>Malas interpretaciones en Farmacia que cuestan vidas.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="icon text-negative bg-negative-light">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </span>
+                        <div class="list-text">
+                            <strong>Clínica Aislada</strong>
+                            <p>Obliga al paciente a transportar papeles entre centros.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Lado Derecho: El Orden (Futuro) - AHORA CORPORATIVO -->
+        <div class="split-pane pane-order">
+            <div class="pane-content reveal delay-2">
+                <h3 class="pane-title text-primary mb-md" style="display: flex; align-items: center; gap: 0.75rem;">
+                    <picture>
+                        <img src="/images/nodo.png" alt="MedFarLab Nodo" style="height: 38px; width: auto; object-fit: contain; margin-top: -8px;">
+                    </picture>
+                    El Estándar MedFarLab
+                </h3>
+                
+                <ul class="comparison-list order-list">
+                    <li>
+                        <span class="icon text-white bg-primary">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </span>
+                        <div class="list-text">
+                            <strong>Historial Inmortal en la Nube</strong>
+                            <p>Respaldo cifrado instantáneo. Acceso a 1 clic globalmente.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="icon text-white bg-primary">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </span>
+                        <div class="list-text">
+                            <strong>Receta Digital (QR)</strong>
+                            <p>Lectura robótica. Farmacias verifican autenticidad sin errores.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="icon text-white bg-primary">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </span>
+                        <div class="list-text">
+                            <strong>Ecosistema Integrado</strong>
+                            <p>Resultados retornan solos a la patalla de tu consultorio.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<style>
+    .split-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        background: white;
+        border-top: 1px solid rgba(0,0,0,0.05);
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    @@media (min-width: 900px) {
+        .split-container { flex-direction: row; }
+    }
+    
+    .split-pane {
+        padding: 4rem 2rem;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    @@media (min-width: 900px) {
+        .split-pane { padding: 8rem 4rem; }
+    }
+    
+    .pane-content {
+        max-width: 500px;
+        width: 100%;
+    }
+    
+    .pane-title { margin-bottom: 2rem; font-size: 2rem; }
+    
+    .text-negative { color: #EF4444; }
+    .bg-negative-light { background: #fee2e2; }
+    .text-primary { color: var(--color-primary); }
+    .bg-primary { background: var(--color-primary); }
+    .text-white { color: white; }
+
+    /* Panel Izquierdo (Problema) */
+    .pane-chaos {
+        background-color: #FAFAFA; /* Gris casi blanco super limpio */
+        border-right: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    /* Panel Derecho (Solución) */
+    .pane-order {
+        background-color: #FFFFFF; /* Blanco puro médico */
+    }
+
+    /* List Properties comunes con contraste correcto */
+    .comparison-list { list-style: none; padding: 0; margin: 0; }
+    
+    .comparison-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.2rem;
+        margin-bottom: 2rem;
+    }
+
+    .icon {
+        padding: 0.5rem;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+    }
+    
+    .list-text strong { color: var(--color-primary); font-size: 1.15rem; }
+    .list-text p { color: var(--color-text-muted); font-size: 0.95rem; margin-top: 0.2rem; line-height: 1.6;}
+</style>

@@ -1,0 +1,157 @@
+<section class="section dark-section" style="background-color: #03050B; padding: 6rem 0;">
+    <div class="container">
+        <div class="text-center reveal mb-xl">
+            <h2 class="section-title text-white">Diseñado para la Velocidad</h2>
+            <p style="color: rgba(255,255,255,0.6); max-width: 600px; margin: 0 auto;">No es solo otra interfaz médica. Es un panel de control avanzado que procesa miles de historiales en milisegundos sin consumir memoria de tu equipo físico.</p>
+        </div>
+
+        <div class="bento-grid">
+            
+            <!-- Bento Item 1: High Tech Analytics (Tall) -->
+            <div class="bento-item bento-tall reveal delay-1" style="background: linear-gradient(145deg, rgba(16, 25, 48, 0.9), rgba(5, 8, 20, 0.9));">
+                <div class="bento-content">
+                    <span class="bento-badge text-accent">Inteligencia Nativa</span>
+                    <h3 class="bento-title mb-sm mt-md">Analíticas en Tiempo Real</h3>
+                    <p class="bento-desc">Convierte cada consulta en datos estructurados. Observa cuántas recetas despachaste, demografía de tus pacientes y proyecciones de ingresos mensuales al vuelo.</p>
+                    <div class="bento-visual">
+                        <!-- Abstract Chart UI -->
+                        <div class="bar-chart">
+                            <div class="bar" style="height: 40%"></div>
+                            <div class="bar" style="height: 70%; background: var(--color-accent)"></div>
+                            <div class="bar" style="height: 50%"></div>
+                            <div class="bar" style="height: 90%; background: var(--color-secondary)"></div>
+                            <div class="bar" style="height: 30%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bento Item 2: Cloud Sync (Wide Focus) -->
+            <div class="bento-item reveal delay-2" style="background: linear-gradient(135deg, rgba(8, 24, 40, 0.8), rgba(0,0,0,1)); border-color: rgba(41, 121, 255, 0.2);">
+                <div class="bento-content text-center flex-col align-center">
+                    <div class="bento-icon mb-sm text-accent">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M12 12v7"/><path d="m9 16 3 3 3-3"/></svg>
+                    </div>
+                    <h3 class="bento-title mt-sm">Cero Instalaciones</h3>
+                    <p class="bento-desc text-center">Accede al expediente de tus pacientes de manera inmediata desde cualquier dispositivo o computadora conectada a internet.</p>
+                </div>
+            </div>
+
+            <!-- Bento Item 3: Paperless Metric -->
+            <div class="bento-item reveal delay-3" style="background: rgba(10, 17, 40, 0.6); display: flex; align-items: center; justify-content: center;">
+                <div class="bento-content text-center">
+                    <div class="massive-number text-gradient" style="font-size: 4rem; line-height: 1;">100%</div>
+                    <p class="bento-title mt-sm" style="font-size: 1.1rem; color: white;">Clínicas sin Papel</p>
+                </div>
+            </div>
+
+            <!-- Bento Item 4: Ecosystem (Wide Bottom) -->
+            <div class="bento-item bento-wide reveal delay-1" style="background: radial-gradient(circle at right, rgba(0, 230, 118, 0.1), transparent), rgba(16, 25, 48, 0.5);">
+                <div class="bento-content flex-row align-center justify-between" style="gap: 2rem;">
+                    <div style="flex: 1;">
+                        <span class="bento-badge text-secondary">Ecosistema Base</span>
+                        <h3 class="bento-title mt-sm">Interoperabilidad Perfecta</h3>
+                        <p class="bento-desc">Las impresoras son historia. Cuando expides una orden, el laboratorio la recibe digitalmente antes de que tu paciente cruce la puerta de tu clínica.</p>
+                    </div>
+                    <div style="flex: 1; text-align: right;" class="desktop-only text-secondary">
+                        <svg width="100" height="60" viewBox="0 0 100 60" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10 30h80M80 20l10 10-10 10M30 10v40M60 10v40" opacity="0.3"></path>
+                            <!-- Animated Pulse Line -->
+                            <circle cx="50" cy="30" r="5" fill="currentColor">
+                                <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" />
+                            </circle>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<style>
+    .bento-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    @@media (min-width: 768px) {
+        .bento-grid {
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, minmax(200px, auto));
+        }
+        
+        .bento-tall { grid-row: span 2; }
+        .bento-wide { grid-column: span 2; }
+    }
+    
+    .bento-item {
+        border-radius: 24px;
+        border: 1px solid rgba(255,255,255,0.05);
+        overflow: hidden;
+        position: relative;
+        transition: transform var(--transition-bounce), border-color 0.4s ease;
+    }
+    
+    .bento-item:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255,255,255,0.15);
+    }
+    
+    .bento-content { padding: 2.5rem; height: 100%; display: flex; flex-direction: column; }
+    
+    .bento-badge {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        display: inline-block;
+    }
+    
+    .bento-title {
+        color: white;
+        font-size: 1.5rem;
+        letter-spacing: -0.02em;
+    }
+    
+    .bento-desc {
+        color: rgba(255,255,255,0.55);
+        font-size: 0.95rem;
+        flex-grow: 1;
+    }
+    
+    .mt-sm { margin-top: 0.5rem; }
+    .mt-md { margin-top: 1.5rem; }
+    
+    .bento-visual {
+        margin-top: 2rem;
+        background: rgba(0,0,0,0.3);
+        border-radius: 12px;
+        height: 140px;
+        position: relative;
+        border: 1px solid rgba(255,255,255,0.03);
+        padding: 1rem;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+    }
+    
+    .bar-chart {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .bar {
+        width: 15%;
+        background: rgba(255,255,255,0.1);
+        border-radius: 4px 4px 0 0;
+        transition: height 1s ease-out;
+    }
+    
+    .massive-number { font-family: var(--font-heading); font-weight: 800; }
+</style>

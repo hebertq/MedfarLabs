@@ -1,0 +1,35 @@
+@using MudBlazor
+@using MedfarLabs.Core.Application.Features.Clinical.Dtos.Response
+
+<MudDialog>
+    <DialogContent>
+        @if (Diagnosis != null)
+        {
+            <div class="d-flex flex-column gap-3 py-2">
+                <MudText Typo="Typo.body1">
+                    Usted está a punto de agregar el siguiente diagnóstico clínico al expediente del paciente:
+                </MudText>
+
+                <MudPaper Outlined="true" Class="pa-3" Style="background-color: var(--mud-palette-background-grey);">
+                    <MudText Typo="Typo.subtitle1" Color="Color.Primary" Style="font-weight: 600;">
+                        @Diagnosis.Code
+                    </MudText>
+                    <MudText Typo="Typo.body1">
+                        @Diagnosis.Description
+                    </MudText>
+                </MudPaper>
+
+                <MudSelect T="string" @bind-Value="DiagnosisType" Label="Tipo de Diagnóstico" Variant="Variant.Outlined" Margin="Margin.Dense" Required="true">
+                    <MudSelectItem Value="@("Presuntivo")">Diagnóstico Presuntivo</MudSelectItem>
+                    <MudSelectItem Value="@("Definitivo")">Diagnóstico Definitivo</MudSelectItem>
+                </MudSelect>
+
+                <MudTextField @bind-Value="Observations" Label="Observaciones / Notas (Opcional)" Variant="Variant.Outlined" Lines="3" Placeholder="Escriba alguna nota clínica si es necesario..." />
+            </div>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit" StartIcon="@Icons.Material.Filled.Save">Confirmar y Agregar</MudButton>
+    </DialogActions>
+</MudDialog>

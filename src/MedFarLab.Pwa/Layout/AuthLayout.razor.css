@@ -1,0 +1,17 @@
+.auth-layout-container {
+    height: 100vh;
+    width: 100vw;
+    background: radial-gradient(circle at center, #F1F5F9 0%, #E2E8F0 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.auth-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

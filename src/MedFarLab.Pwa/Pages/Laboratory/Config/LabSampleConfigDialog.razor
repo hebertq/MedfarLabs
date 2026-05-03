@@ -1,0 +1,37 @@
+@using MedfarLabs.Core.Domain.Entities.Common
+@using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success">
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudAutocomplete T="string" Label="Tipo de Muestra" @bind-Value="Model.SampleType" 
+                                     SearchFunc="@SearchSampleType" ResetValueOnEmptyText="true" 
+                                     AdornmentIcon="@Icons.Material.Filled.Add" AdornmentColor="Color.Primary"
+                                     OnAdornmentClick="AddSampleType" CoerceText="true" CoerceValue="true" 
+                                     Required="true" RequiredError="Debe especificar el tipo de muestra." />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudAutocomplete T="string" Label="Tipo de Contenedor" @bind-Value="Model.ContainerType" 
+                                     SearchFunc="@SearchContainerType" ResetValueOnEmptyText="true" 
+                                     AdornmentIcon="@Icons.Material.Filled.Add" AdornmentColor="Color.Primary"
+                                     OnAdornmentClick="AddContainerType" CoerceText="true" CoerceValue="true" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="Model.RequiredVolume" Label="Volumen Requerido" Placeholder="Ej. 3 ml" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudSwitch @bind-Value="Model.IsActive" Label="Activo" Color="Color.Primary" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Model.SpecialInstructions" Label="Instrucciones Especiales" Lines="3" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit" Disabled="@(!success)">Guardar</MudButton>
+    </DialogActions>
+</MudDialog>

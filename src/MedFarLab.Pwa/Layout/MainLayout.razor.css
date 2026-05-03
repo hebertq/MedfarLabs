@@ -1,0 +1,123 @@
+/* Layout adaptativo CSS (Layout/MainLayout.razor.css) */
+.app-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    background-color: transparent; /* Hereda de app.css */
+    overflow: hidden;
+    padding: 1.5rem; /* Asymmetrical Margin from screen edges */
+    gap: 1.5rem; /* Space between sidebar and content */
+}
+
+/* Floating Glass Sidebar */
+.sidebar-wrapper {
+    width: 260px;
+    display: flex;
+    flex-direction: column;
+    z-index: 50;
+    flex-shrink: 0;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+}
+
+.content-scrollable {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 0.5rem;
+    padding-right: 1.5rem; /* Scrollbar breathing room */
+}
+
+/* Scrollbar aesthetic */
+.content-scrollable::-webkit-scrollbar { width: 6px; }
+.content-scrollable::-webkit-scrollbar-track { background: transparent; }
+.content-scrollable::-webkit-scrollbar-thumb { background: rgba(0, 80, 210, 0.15); border-radius: 6px; }
+.content-scrollable::-webkit-scrollbar-thumb:hover { background: rgba(0, 80, 210, 0.3); }
+
+.d-md-none { display: none; }
+
+/* Inyección de estilos para Desktop Sidebar via Scoped CSS Deep selector */
+::deep .desktop-sidebar {
+    display: flex; flex-direction: column; height: 100%;
+}
+::deep .sidebar-header {
+    height: 100px; display: flex; align-items: center; justify-content: center; padding: 0 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.03); margin-bottom: 0.5rem;
+}
+::deep .d-logo-img { height: auto; width: 85%; max-width: 190px; }
+::deep .d-nav-links { flex: 1; padding: 1rem 1.2rem; display: flex; flex-direction: column; gap: 0.4rem; overflow-y: auto;}
+
+/* Nav Items Modernized */
+::deep .d-nav-item {
+    display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.2rem;
+    color: var(--text-muted); border-radius: var(--radius-sm); text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative; overflow: hidden;
+}
+
+::deep .d-nav-item::before {
+    content: ''; position: absolute; left: 0; top: 15%; height: 70%; width: 4px; border-radius: 0 4px 4px 0; background: var(--emerald-500); transform: scaleY(0); transition: transform 0.25s ease;
+}
+
+::deep .d-nav-item:hover { 
+    background: rgba(255,255,255,0.6); color: var(--brand-blue-800); transform: translateX(3px); 
+}
+::deep .d-nav-item.active { 
+    background: white; color: var(--brand-blue-600); box-shadow: 0 4px 15px -3px rgba(0, 80, 210, 0.1); font-weight: 600;
+}
+::deep .d-nav-item.active::before { transform: scaleY(1); }
+::deep .d-nav-item .icon { width: 22px; height: 22px; transition: transform 0.2s ease; opacity: 0.8; stroke-width: 2.2px; }
+::deep .d-nav-item:hover .icon, ::deep .d-nav-item.active .icon { opacity: 1; transform: scale(1.1); stroke: var(--brand-blue-600); }
+
+::deep .sidebar-footer { padding: 1.5rem; border-top: 1px solid rgba(0,0,0,0.03); }
+::deep .logout-btn { 
+    display: flex; align-items: center; justify-content: center; width: 100%; gap: 0.8rem; background: rgba(239, 68, 68, 0.1); border: none; border-radius: var(--radius-sm); padding: 0.75rem; color: var(--color-negative); font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+::deep .logout-btn:hover { background: var(--color-negative); color: white; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); }
+
+
+/* MOBILE RESPONSIVE (max-width 768px) */
+@media (max-width: 768px) {
+    .app-container { flex-direction: column; padding: 0; gap: 0; }
+    .sidebar-wrapper { display: none; }
+    .main-content { border-radius: 0; }
+    .d-md-none { display: flex; }
+
+    .mobile-topbar {
+        height: 70px; display: flex; align-items: center; justify-content: space-between;
+        padding: 0 1.5rem; z-index: 40; border-bottom: 1px solid rgba(0,0,0,0.05); background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    }
+    
+    .doctor-avatar-glass { 
+        width: 36px; height: 36px; background: linear-gradient(135deg, var(--brand-blue-500), var(--brand-blue-800)); border-radius: 50%; box-shadow: 0 2px 8px rgba(0,80,210,0.3); border: 2px solid white;
+    }
+
+    .content-scrollable { padding-bottom: 90px; padding-left: 1rem; padding-right: 1rem; }
+
+    /* Modern Pill Navbar Mobile */
+    .mobile-navbar-wrapper {
+        position: fixed; bottom: 15px; left: 15px; right: 15px; height: 65px;
+        z-index: 50; padding-bottom: max(0px, env(safe-area-inset-bottom));
+    }
+    
+    .mobile-navbar-glass {
+        height: 100%; width: 100%; border-radius: var(--radius-lg); background: var(--bg-card-glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: var(--border-glass);
+    }
+
+    ::deep .mobile-nav-links { display: flex; justify-content: space-around; align-items: center; height: 100%; width: 100%; margin: 0; padding: 0 10px; }
+    ::deep .m-nav-item { 
+        display: flex; flex-direction: column; align-items: center; justify-content: center; width: 60px; height: 50px; color: #94a3b8; text-decoration: none; gap: 0.2rem; border-radius: 12px; transition: all 0.2s; position: relative;
+    }
+    ::deep .m-nav-item span { font-size: 0.65rem; font-weight: 600; opacity: 0; transform: translateY(5px); transition: all 0.2s; position: absolute; bottom: 4px; }
+    ::deep .m-nav-item .icon { width: 22px; height: 22px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    
+    /* Animation for active icon jumping up and showing text */
+    ::deep .m-nav-item.active { color: var(--brand-blue-600); background: transparent; }
+    ::deep .m-nav-item.active .icon { transform: translateY(-8px); stroke: var(--brand-blue-600); }
+    ::deep .m-nav-item.active span { opacity: 1; transform: translateY(0); color: var(--brand-blue-600); }
+}

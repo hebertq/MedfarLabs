@@ -1,0 +1,45 @@
+@using MudBlazor
+@using MedfarLabs.Core.Application.Features.Clinical.Dtos.Request
+
+
+<MudDialog>
+    <DialogContent>
+        <EditForm Model="@Model" OnValidSubmit="Submit">
+            <DataAnnotationsValidator />
+            
+            <MudSelect T="int?" Value="Model.ConsentTypeId" ValueChanged="@((int? val) => OnTypeChanged(val))" Label="Tipo de Consentimiento*" Placeholder="Seleccione un propósito..." Clearable="true" Variant="Variant.Outlined" Required="true" Class="mb-3">
+                <MudSelectItem T="int?" Value="1">Diagnóstico / Tratamiento Médico General</MudSelectItem>
+                <MudSelectItem T="int?" Value="2">Intervención Quirúrgica Menor / Mayor</MudSelectItem>
+                <MudSelectItem T="int?" Value="3">Protección y Tratamiento de Datos Personales</MudSelectItem>
+                <MudSelectItem T="int?" Value="4">Exámenes y Laboratorios</MudSelectItem>
+            </MudSelect>
+
+            <MudTextField @bind-Value="Model.DigitalFormUrl" 
+                          Label="Enlace de Formulario (JotForm, TypeForm, Google Forms)*" 
+                          Variant="Variant.Outlined" 
+                          InputType="InputType.Url"
+                          Required="true"
+                          Placeholder="https://forms.gle/..."
+                          HelperText="Pegue el enlace virtual de la encuesta que completará el paciente."
+                          Class="mb-5" />
+
+            <MudPaper Class="pa-4 rounded-lg d-flex flex-column align-center" Elevation="0" Style="background-color: rgba(37, 211, 102, 0.05); border: 1px dashed rgba(37, 211, 102, 0.5);">
+                <MudText Typo="Typo.body2" Class="mb-2 text-center" Color="Color.Secondary">Para agilizar, envíe el enlace directamente al WhatsApp del paciente tras pegar la URL arriba.</MudText>
+                
+                <MudButton StartIcon="@Icons.Material.Filled.Chat" 
+                           Color="Color.Success" 
+                           Variant="Variant.Filled" 
+                           Disabled="@string.IsNullOrWhiteSpace(Model.DigitalFormUrl)"
+                           OnClick="ShareViaWhatsApp">
+                    Compartir vía WhatsApp
+                </MudButton>
+            </MudPaper>
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Default">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit" StartIcon="@Icons.Material.Filled.Save">Vincular y Guardar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+

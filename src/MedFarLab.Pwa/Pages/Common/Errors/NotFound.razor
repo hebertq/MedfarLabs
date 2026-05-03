@@ -1,0 +1,13 @@
+@using MudBlazor
+
+<div class="d-flex flex-column align-center justify-center fade-in" style="height: 80vh;">
+    <MudIcon Icon="@Icons.Material.Filled.SearchOff" Color="Color.Warning" Style="font-size: 120px;" Class="mb-4" />
+    <MudText Typo="Typo.h2" Color="Color.Primary" Class="fw-bold mb-2">404</MudText>
+    <MudText Typo="Typo.h5" Class="mb-2">Documento Clínico No Encontrado</MudText>
+    <MudText Typo="Typo.body1" Class="text-muted mb-6 text-center" Style="max-width: 450px;">
+        La ruta que intentas buscar no existe o ha sido movida. Verifica que el enlace sea correcto.
+    </MudText>
+    <MudButton Href="/clinical/dashboard" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" StartIcon="@Icons.Material.Filled.Dashboard">
+        Regresar al Tablero
+    </MudButton>
+</div>

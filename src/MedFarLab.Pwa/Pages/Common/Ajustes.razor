@@ -1,0 +1,78 @@
+@page "/ajustes"
+@using MudBlazor
+
+<PageTitle>Ajustes Generales - MedFarLab</PageTitle>
+
+<div class="glass-header mb-4">
+    <div>
+        <MudText Typo="Typo.h5" Class="text-primary fw-bold">Configuración Organizacional</MudText>
+        <MudText Typo="Typo.body2" Class="text-muted">Gestión maestra de datos de la empresa, sucursales y permisos de sistema.</MudText>
+    </div>
+</div>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="pa-0">
+    <MudPaper Class="pa-6" Elevation="1" Style="border-radius: 12px;">
+        <MudText Typo="Typo.h6" Class="mb-4" Color="Color.Primary">Gestión de la Entidad</MudText>
+        <MudDivider Class="mb-6" />
+
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Info Fiscal -->
+            <MudPaper Outlined="true" Class="pa-4 d-flex align-center justify-space-between" Style="border-color: var(--mud-palette-lines-default);">
+                <div>
+                    <MudText Typo="Typo.subtitle1" Class="fw-bold">Información Fiscal</MudText>
+                    <MudText Typo="Typo.body2" Class="text-muted">RUT/Registro, Razón Social y Dirección Fiscal matriz.</MudText>
+                </div>
+                <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="@(() => OpenSettingsModal("Fiscales"))">Actualizar</MudButton>
+            </MudPaper>
+
+            <!-- Sucursales -->
+            <MudPaper Outlined="true" Class="pa-4 d-flex align-center justify-space-between" Style="border-color: var(--mud-palette-lines-default);">
+                <div>
+                    <MudText Typo="Typo.subtitle1" Class="fw-bold">Catálogo de Sucursales</MudText>
+                    <MudText Typo="Typo.body2" Class="text-muted">Consultorios, Laboratorios satélite o Farmacias afiliadas.</MudText>
+                </div>
+                <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="@(() => OpenSettingsModal("Sucursales"))">Administrar Red</MudButton>
+            </MudPaper>
+
+            <!-- Suscripción -->
+            <MudPaper Outlined="true" Class="pa-4 d-flex align-center justify-space-between" Style="border-color: var(--mud-palette-lines-default); border-left: 4px solid var(--mud-palette-warning);">
+                <div>
+                    <MudText Typo="Typo.subtitle1" Class="fw-bold text-warning">Planes B2B y Facturación</MudText>
+                    <MudText Typo="Typo.body2" Class="text-muted">Administra el plan maestro de software, licencias de Laboratorio y paga tus facturas.</MudText>
+                </div>
+                <MudButton Href="/ajustes/suscripcion" Variant="Variant.Filled" Color="Color.Warning" DisableElevation="true">Gestionar Plan</MudButton>
+            </MudPaper>
+
+            <!-- Preferencias Médico -->
+            <MudPaper Outlined="true" Class="pa-4 d-flex align-center justify-space-between" Style="border-color: var(--mud-palette-lines-default); border-left: 4px solid var(--mud-palette-secondary);">
+                <div>
+                    <MudText Typo="Typo.subtitle1" Class="fw-bold text-secondary">Configuración del Médico</MudText>
+                    <MudText Typo="Typo.body2" Class="text-muted">Ajusta disponibilidad horaria y el tiempo por cita.</MudText>
+                </div>
+                <MudButton Href="/ajustes/medico" Variant="Variant.Filled" Color="Color.Secondary" DisableElevation="true">Configurar</MudButton>
+            </MudPaper>
+
+            <!-- Plantillas Odoo-like -->
+            <MudPaper Outlined="true" Class="pa-4 d-flex align-center justify-space-between" Style="border-color: var(--mud-palette-lines-default); border-left: 4px solid var(--mud-palette-info);">
+                <div>
+                    <MudText Typo="Typo.subtitle1" Class="fw-bold text-info">Plantillas de Facturación</MudText>
+                    <MudText Typo="Typo.body2" Class="text-muted">Elige el formato de impresión y personaliza el aspecto visual de la clínica.</MudText>
+                </div>
+                <MudButton Variant="Variant.Filled" Color="Color.Info" DisableElevation="true" OnClick="OpenTemplatesModalAsync">Diseños</MudButton>
+            </MudPaper>
+
+            <!-- Respaldos -->
+            <MudPaper Outlined="true" Class="pa-4 d-flex align-center justify-space-between" Style="border-color: var(--mud-palette-lines-default); background-color: rgba(var(--mud-palette-primary-rgb), 0.05);">
+                <div>
+                    <MudText Typo="Typo.subtitle1" Class="fw-bold text-primary">Respaldos de Base de Datos</MudText>
+                    <MudText Typo="Typo.body2" Class="text-muted">Descargar copias simétricas de historiales clínicos (HIPAA compliant).</MudText>
+                </div>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="CreateBackupAsync" Disabled="IsSending">
+                    @(IsSending ? "Creando..." : "Crear Respaldo Local")
+                </MudButton>
+            </MudPaper>
+
+        </div>
+    </MudPaper>
+</MudContainer>

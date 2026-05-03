@@ -1,0 +1,97 @@
+@page "/admin/organizations"
+@using System.Net.Http.Json
+<PageTitle>SaaS - Control de Entidades Comerciales</PageTitle>
+
+@if (!AppState.IsMasterAdmin)
+{
+    <MudContainer MaxWidth="MaxWidth.Large" Class="mt-16 d-flex flex-column align-center justify-center">
+        <MudIcon Icon="@Icons.Material.Filled.Security" Color="Color.Error" Style="font-size: 6rem;" />
+        <MudText Typo="Typo.h4" Color="Color.Error" Class="mt-4 fw-bold">Acceso Denegado</MudText>
+    </MudContainer>
+}
+else
+{
+    <PageActionHeader ShowBackButton="true" BackUrl="/admin/dashboard">
+        <StatusContent>
+            <div>
+                <MudText Typo="Typo.h5" Class="text-success fw-bold">Organizaciones (Tenants)</MudText>
+                <MudText Typo="Typo.body2" Class="text-muted">Directorio comercial, Status de Suscripción y Módulos permitidos.</MudText>
+            </div>
+        </StatusContent>
+        <ActionContent>
+            <MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Filled.AddBusiness" OnClick='() => NavManager.NavigateTo("/onboarding")'>Forzar Nuevo Onboarding</MudButton>
+        </ActionContent>
+    </PageActionHeader>
+
+    <MudContainer MaxWidth="MaxWidth.Large" Class="pa-0 fade-in-up">
+        <MudDataGrid Items="@mockOrgs" Filterable="true" SortMode="SortMode.Multiple" Elevation="2" Style="border-radius: 12px; overflow: hidden;" Dense="true">
+            <Columns>
+                <PropertyColumn Property="x => x.Id" Title="ID" />
+                <TemplateColumn Title="Cliente (Organización)">
+                    <CellTemplate>
+                        <div class="d-flex align-center">
+                            @if (!string.IsNullOrEmpty(context.Item.LogoUrl))
+                            {
+                                <MudAvatar Image="@context.Item.LogoUrl" Size="Size.Small" Class="mr-3"/>
+                            }
+                            else
+                            {
+                                <MudAvatar Color="Color.Primary" Size="Size.Small" Class="mr-3">@(context.Item.Name.Substring(0, 1))</MudAvatar>
+                            }
+                            <div>
+                                <MudText Typo="Typo.body2" Class="fw-bold">@context.Item.Name</MudText>
+                                <MudText Typo="Typo.caption" Class="text-muted">RUC: @context.Item.IdentifierCode</MudText>
+                            </div>
+                        </div>
+                    </CellTemplate>
+                </TemplateColumn>
+                <PropertyColumn Property="x => x.PlanName" Title="Plan SaaS" />
+                
+                <TemplateColumn Title="Módulos Asignados">
+                    <CellTemplate>
+                        <div class="d-flex flex-wrap gap-1">
+                            @foreach (var module in context.Item.Modules)
+                            {
+                                <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="GetModuleColor(module)">@module</MudChip>
+                            }
+                        </div>
+                    </CellTemplate>
+                </TemplateColumn>
+
+                <TemplateColumn Title="Status">
+                    <CellTemplate>
+                        @if (context.Item.IsActive)
+                        {
+                            <MudChip T="string" Color="Color.Success" Size="Size.Small"><MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Small" Class="mr-1"/> Activo</MudChip>
+                        }
+                        else
+                        {
+                            <MudChip T="string" Color="Color.Error" Size="Size.Small"><MudIcon Icon="@Icons.Material.Filled.Block" Size="Size.Small" Class="mr-1"/> Suspendido</MudChip>
+                        }
+                    </CellTemplate>
+                </TemplateColumn>
+
+                <TemplateColumn Title="Acciones">
+                    <CellTemplate>
+                        <MudMenu Icon="@Icons.Material.Filled.MoreVert" DisableElevation="true" Size="Size.Small">
+                            <MudMenuItem Icon="@Icons.Material.Filled.Edit" OnClick="@(() => OpenProfileDialog(context.Item))">Editar Perfil</MudMenuItem>
+                            <MudMenuItem Icon="@Icons.Material.Filled.Extension" OnClick="@(() => TogglePermissions(context.Item))">Asignar Módulos</MudMenuItem>
+                            <MudDivider />
+                            @if (context.Item.IsActive)
+                            {
+                                <MudMenuItem Icon="@Icons.Material.Filled.Lock" IconColor="Color.Error" OnClick="@(() => ToggleStatus(context.Item))">Suspender Inquilino</MudMenuItem>
+                            }
+                            else
+                            {
+                                <MudMenuItem Icon="@Icons.Material.Filled.LockOpen" IconColor="Color.Success" OnClick="@(() => ToggleStatus(context.Item))">Reactivar Inquilino</MudMenuItem>
+                            }
+                        </MudMenu>
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+            <PagerContent>
+                <MudDataGridPager T="OrganizationDto" />
+            </PagerContent>
+        </MudDataGrid>
+    </MudContainer>
+}

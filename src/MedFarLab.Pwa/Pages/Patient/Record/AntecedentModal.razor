@@ -1,0 +1,29 @@
+@using MudBlazor
+@using MedfarLabs.Core.Application.Features.Clinical.Dtos.Request
+
+<MudDialog>
+    <DialogContent>
+        <EditForm Model="@Model" OnValidSubmit="Submit">
+            <DataAnnotationsValidator />
+            
+            <MudSelect T="long?" @bind-Value="Model.TypeId" Label="Tipo de Antecedente*" Placeholder="Seleccione un tipo de antecedente..." Clearable="true" Variant="Variant.Outlined" Required="true" Class="mb-3">
+                <MudSelectItem T="long?" Value="1L">Antecedente Patológico (Ej. Diabetes, Hipertensión)</MudSelectItem>
+                <MudSelectItem T="long?" Value="2L">Alergia Constatada (Ej. Penicilina, Látex)</MudSelectItem>
+                <MudSelectItem T="long?" Value="3L">Antecedente Familiar (Ej. Enfermedad Cardíaca en Padres)</MudSelectItem>
+            </MudSelect>
+
+            <MudTextField @bind-Value="Model.Description" 
+                          Label="Descripción Detallada" 
+                          Variant="Variant.Outlined" 
+                          Lines="3" 
+                          Required="true"
+                          HelperText="Indique toda la información relevante de forma concisa." />
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Default">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit" StartIcon="@Icons.Material.Filled.Save">Guardar Antecedente</MudButton>
+    </DialogActions>
+</MudDialog>
+
+

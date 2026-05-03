@@ -1,0 +1,128 @@
+<section id="inicio" class="section hero-section">
+    <div class="container grid md-grid-cols-2 align-center gap-lg">
+        <!-- Texto (Izquierda) -->
+        <div class="hero-content">
+            <span class="badge mb-sm">Lanzamiento en Nicaragua</span>
+            <h1 class="hero-title">El Primer Ecosistema Digital de Salud en Nicaragua que Conecta tu Consulta con el Futuro.</h1>
+            <p class="hero-subtitle mb-md">
+                Gestiona expedientes, recetas y órdenes de laboratorio de forma segura. Paga solo por consulta atendida, sin mensualidades fijas. Diseñado para clínicas en Managua, León, Estelí y todo el país.
+            </p>
+            <div class="hero-actions flex-col md-flex-row gap-sm">
+                <button class="btn btn-primary">Solicitar Demo Gratuita</button>
+                <button class="btn btn-secondary">Saber Más</button>
+            </div>
+            
+            <div class="trust-indicators mt-md">
+                <small>+50 médicos en Managua ya lo utilizan.</small>
+            </div>
+        </div>
+
+        <!-- Visual (Derecha) -->
+        <div class="hero-visual">
+            <div class="mockup-container">
+                <!-- Se usará la imagen generada por IA posteriormente o se puede poner un placeholder -->
+                <img src="/images/hero-mockup.png" alt="Dashboard MedFarLab en Laptop y Smartphone" class="mockup-image" onerror="this.src='https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'" />
+                
+                <!-- Floating elements for dynamic feel -->
+                <div class="floating-card user-card">
+                    <div class="avatar bg-primary"></div>
+                    <div class="user-info">
+                        <strong>Dr. José Pérez</strong>
+                        <span>Cardiología - Hospital Metropolitano Vivian Pellas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, rgba(11,37,56,0.03) 0%, rgba(99,102,241,0.05) 100%);
+        overflow: hidden;
+    }
+    .align-center { align-items: center; }
+    
+    .badge {
+        display: inline-block;
+        padding: 0.35rem 1rem;
+        background-color: rgba(0, 208, 132, 0.15);
+        color: var(--color-secondary-dark);
+        border-radius: 9999px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+    
+    .hero-title {
+        font-size: 2.2rem;
+        color: var(--color-primary-dark);
+        letter-spacing: -0.02em;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.1rem;
+        color: var(--color-text-muted);
+    }
+    
+    .mt-md { margin-top: var(--spacing-md); }
+    
+    .md-flex-row { display: flex; flex-direction: column; }
+    
+    .hero-visual {
+        position: relative;
+    }
+    
+    .mockup-container {
+        position: relative;
+        border-radius: var(--border-radius-lg);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        background: white;
+        padding: 0.5rem;
+    }
+    
+    .mockup-image {
+        border-radius: var(--border-radius);
+        width: 100%;
+        object-fit: cover;
+    }
+    
+    .floating-card {
+        position: absolute;
+        bottom: -20px;
+        left: -20px;
+        background: white;
+        padding: 0.75rem 1rem;
+        border-radius: var(--border-radius);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+    .bg-primary { background-color: var(--color-primary); }
+    
+    .user-info { display: flex; flex-direction: column; }
+    .user-info strong { font-size: 0.9rem; color: var(--color-text-main); }
+    .user-info span { font-size: 0.7rem; color: var(--color-text-muted); }
+    
+    @@keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+    
+    @@media (min-width: 768px) {
+        .hero-title { font-size: 3rem; }
+        .hero-subtitle { font-size: 1.25rem; }
+        .md-flex-row { flex-direction: row; }
+        .hero-section { padding-top: calc(var(--spacing-xl) + 2rem); }
+    }
+</style>

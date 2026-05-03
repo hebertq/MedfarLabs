@@ -1,0 +1,13 @@
+@page "/acceso-denegado"
+@using MudBlazor
+
+<div class="d-flex flex-column align-center justify-center fade-in" style="height: 80vh;">
+    <MudIcon Icon="@Icons.Material.Filled.GppBad" Color="Color.Error" Style="font-size: 100px;" Class="mb-4" />
+    <MudText Typo="Typo.h3" Color="Color.Error" Class="fw-bold mb-2">Acceso Restringido</MudText>
+    <MudText Typo="Typo.h6" Class="text-muted mb-6 text-center" Style="max-width: 500px;">
+        No cuentas con los privilegios clínicos o administrativos necesarios para visualizar este documento o sección.
+    </MudText>
+    <MudButton Href="/clinical/dashboard" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" StartIcon="@Icons.Material.Filled.Home">
+        Volver al Inicio
+    </MudButton>
+</div>

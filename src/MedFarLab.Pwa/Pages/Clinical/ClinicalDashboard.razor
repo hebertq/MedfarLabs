@@ -1,0 +1,125 @@
+@page "/clinical/dashboard"
+@using MudBlazor
+
+<div class="glass-header mb-4 fade-in-up">
+    <div>
+        <MudText Typo="Typo.h5" Class="gradient-text-primary fw-bold">Dashboard Clínico</MudText>
+        <MudText Typo="Typo.body2" Class="text-muted">Vista panorámica de la operación médica diaria</MudText>
+    </div>
+    
+    <div style="display: flex; gap: 1rem;">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.PersonSearch" OnClick="OpenPatientSearch">
+            Buscar Paciente
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Description">
+            Nueva Receta
+        </MudButton>
+        <MudBadge Content="3" Color="Color.Error" Overlap="true" Class="mx-2">
+            <MudButton Variant="Variant.Outlined" Color="Color.Warning" StartIcon="@Icons.Material.Filled.ReceiptLong" OnClick="OpenPendingInvoices">
+                Facturas Pendientes
+            </MudButton>
+        </MudBadge>
+    </div>
+</div>
+
+<MudGrid Class="mb-6 fade-in-up delay-1">
+    <MudItem xs="12" sm="4">
+        <div class="glass-panel pa-4 d-flex align-center justify-space-between" style="border-left: 4px solid var(--mud-palette-primary);">
+            <div>
+                <MudText Typo="Typo.subtitle2" Class="text-muted">Citas de Hoy</MudText>
+                <MudText Typo="Typo.h4" Color="Color.Primary">@Model.TotalAppointmentsToday</MudText>
+            </div>
+            <MudIcon Icon="@Icons.Material.Filled.Event" Color="Color.Primary" Size="Size.Large" />
+        </div>
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <div class="glass-panel pa-4 d-flex align-center justify-space-between" style="border-left: 4px solid var(--mud-palette-error);">
+            <div>
+                <MudText Typo="Typo.subtitle2" Class="text-muted">En Sala de Espera</MudText>
+                <MudText Typo="Typo.h4" Color="Color.Error">@Model.PatientsWaiting</MudText>
+            </div>
+            <MudIcon Icon="@Icons.Material.Filled.AirlineSeatReclineNormal" Color="Color.Error" Size="Size.Large" />
+        </div>
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <div class="glass-panel pa-4 d-flex align-center justify-space-between" style="border-left: 4px solid var(--mud-palette-success);">
+            <div>
+                <MudText Typo="Typo.subtitle2" Class="text-muted">Resultados Listos</MudText>
+                <MudText Typo="Typo.h4" Color="Color.Success">@Model.LabResultsReady</MudText>
+            </div>
+            <MudIcon Icon="@Icons.Material.Filled.Science" Color="Color.Success" Size="Size.Large" />
+        </div>
+    </MudItem>
+</MudGrid>
+
+<div class="glass-panel pa-6 fade-in-up delay-2">
+    <div class="d-flex justify-space-between align-center mb-4">
+        <MudText Typo="Typo.h6" Class="fw-bold">En Fila de Atención</MudText>
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="/care/appointments">Ver Agenda</MudButton>
+    </div>
+
+    <MudTimeline TimelinePosition="TimelinePosition.Start">
+        @if (Model.PatientQueue.Any())
+        {
+            @foreach (var patient in Model.PatientQueue)
+            {
+                <MudTimelineItem Color="Color.Primary" Size="Size.Small">
+                    <ItemContent>
+                        <MudPaper Elevation="0" Class="pa-3 mb-2" Style="background-color: var(--mud-palette-background-grey); border-radius: 8px;">
+                            <div class="d-flex justify-space-between align-center mb-1">
+                                <MudText Typo="Typo.subtitle1" Class="fw-bold">@patient.StartTime.ToString("HH:mm") - @patient.PatientName</MudText>
+                                <MudChip T="string" Color="@(patient.StatusId == 2 ? Color.Success : Color.Info)" Size="Size.Small">@patient.StatusName</MudChip>
+                            </div>
+                            <MudText Typo="Typo.body2" Class="text-muted mb-3">@patient.ConsultationReason</MudText>
+                            
+                            <div class="d-flex gap-2">
+                                <MudButton Variant="Variant.Filled" Color="Color.Info" Size="Size.Small" OnClick="@(() => OpenVitalsModal(patient.AppointmentId, patient.PatientId))">Signos Vitales</MudButton>
+                                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Href="@($"/care/consultation/realizar/{patient.AppointmentId}")">Ir a Consulta</MudButton>
+                            </div>
+                        </MudPaper>
+                    </ItemContent>
+                </MudTimelineItem>
+            }
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Info" Class="mt-4">No hay pacientes asignados a tu fila de atención hoy.</MudAlert>
+        }
+    </MudTimeline>
+</div>
+
+<MudDialog @bind-Visible="ShowVitalsModal" Options="new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true }">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Signos Vitales del Paciente</MudText>
+    </TitleContent>
+    <DialogContent>
+        <EditForm Model="VitalsModel" OnValidSubmit="HandleSubmitVitals">
+            <MudGrid>
+                <MudItem xs="6">
+                    <MudNumericField @bind-Value="VitalsModel.Systolic" Label="Sistólica (mmHg)" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudNumericField @bind-Value="VitalsModel.Diastolic" Label="Diastólica (mmHg)" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudNumericField @bind-Value="VitalsModel.HeartRate" Label="Rimto Cardíaco (LPM)" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudNumericField @bind-Value="VitalsModel.Temperature" Label="Temperatura (°C)" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudNumericField @bind-Value="VitalsModel.Weight" Label="Peso (Kg)" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudNumericField @bind-Value="VitalsModel.Height" Label="Altura (cm)" Variant="Variant.Outlined" />
+                </MudItem>
+            </MudGrid>
+            <div class="d-flex justify-end mt-4">
+                <MudButton OnClick="CloseVitalsModal" Class="mr-2">Cancelar</MudButton>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Disabled="IsSending">
+                    @(IsSending ? "Guardando..." : "Guardar Historial")
+                </MudButton>
+            </div>
+        </EditForm>
+    </DialogContent>
+</MudDialog>

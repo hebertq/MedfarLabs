@@ -1,0 +1,5 @@
+.add-plan-card:hover {
+    background-color: var(--mud-palette-action-default-hover) !important;
+    transform: scale(1.02);
+    transition: all 0.3s;
+}

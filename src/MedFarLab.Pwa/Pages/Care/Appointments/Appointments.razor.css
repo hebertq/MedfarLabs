@@ -1,0 +1,108 @@
+/* Contenedor Principal */
+.scheduler-container {
+    background: #fff;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Filas */
+.time-row {
+    display: flex;
+    min-height: 52px; /* Más compacto, como Google */
+    border-bottom: 1px solid #f1f3f4;
+    position: relative;
+    cursor: pointer;
+}
+
+    .time-row:last-child {
+        border-bottom: none;
+    }
+
+.time-label {
+    width: 85px;
+    padding: 10px 12px;
+    font-size: 11px;
+    color: #70757a;
+    text-align: right;
+    border-right: 1px solid #dadce0;
+    user-select: none;
+    background-color: #fff;
+}
+
+.slot-content {
+    flex: 1;
+    padding: 2px 8px;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+/* Efecto Hover para Citas Libres */
+.time-row.free:hover {
+    background-color: #f1f3f4;
+}
+
+.add-event-placeholder {
+    display: none;
+    color: #70757a;
+    font-size: 12px;
+    align-items: center;
+    padding-left: 8px;
+}
+
+.time-row.free:hover .add-event-placeholder {
+    display: flex;
+}
+
+/* Tarjeta de Cita (El bloque azul) */
+.appointment-card-google {
+    background-color: #1a73e8; /* Azul Google */
+    color: white;
+    border-radius: 4px;
+    padding: 6px 12px;
+    width: 100%;
+    margin: 2px 0;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+    transition: filter 0.2s;
+}
+
+    .appointment-card-google:hover {
+        filter: brightness(90%);
+    }
+
+/* Badges de Estado internos */
+.status-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+    .status-badge.confirmada {
+        background: #34a853;
+    }
+    /* Verde Google */
+    .status-badge.pendiente {
+        background: #fbbc04;
+        color: #3c4043;
+    }
+/* Amarillo Google */
+
+/* Utilidades */
+.text-white-50 {
+    color: rgba(255,255,255,0.6) !important;
+}
+
+.text-white-70 {
+    color: rgba(255,255,255,0.8) !important;
+}
+
+.truncate-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

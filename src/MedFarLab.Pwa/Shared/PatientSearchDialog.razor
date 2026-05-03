@@ -1,0 +1,69 @@
+@using MudBlazor
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6" Class="d-flex align-center gap-2">
+            <MudIcon Icon="@Icons.Material.Filled.PersonSearch" Color="Color.Primary" /> 
+            Buscador Global de Personas y Pacientes
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper Class="pa-4 mb-4 surface-glass" Elevation="0">
+            <div class="d-flex gap-2">
+                <MudTextField @bind-Value="SearchQuery" Placeholder="Ej. Nombre, Apellido, o ID de Expediente..." Variant="Variant.Outlined" Margin="Margin.Dense" Immediate="true" FullWidth Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" />
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Search" Disabled="IsSearching">
+                    @if (IsSearching)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                        <span>Buscando...</span>
+                    }
+                    else
+                    {
+                        <span>Buscar</span>
+                    }
+                </MudButton>
+            </div>
+        </MudPaper>
+
+        <MudTable Items="@Results" Dense="true" Hover="true" Elevation="0" Class="border-solid border-1 mud-border-lines-default" Striped="true" Loading="@IsSearching">
+            <HeaderContent>
+                <MudTh>ID Expediente / Persona</MudTh>
+                <MudTh>Nombre</MudTh>
+                <MudTh>Edad/Sexo</MudTh>
+                <MudTh>Acción</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="ID Expediente">
+                    @if (context.IsPatient)
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Success" Variant="Variant.Outlined">@context.RecordId</MudChip>
+                    }
+                    else
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Warning" Variant="Variant.Outlined">Identidad: @context.PersonId</MudChip>
+                    }
+                </MudTd>
+                <MudTd DataLabel="Nombre">
+                    <MudText Typo="Typo.body2" Class="fw-bold">@context.FullName</MudText>
+                </MudTd>
+                <MudTd DataLabel="Edad/Sexo">@context.AgeAndSex</MudTd>
+                <MudTd DataLabel="Acción">
+                    @if (context.IsPatient)
+                    {
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="@(() => SelectPatient(context))">Ir al Expediente</MudButton>
+                    }
+                    else
+                    {
+                        <MudButton Variant="Variant.Filled" Color="Color.Warning" Size="Size.Small" OnClick="@(() => ConvertToPatient(context))">Crear Paciente</MudButton>
+                    }
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText Typo="Typo.body2" Class="pa-4 text-center">No se encontraron personas o no has realizado una búsqueda.</MudText>
+            </NoRecordsContent>
+        </MudTable>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Text" OnClick="Cancel">Cerrar Buzón</MudButton>
+    </DialogActions>
+</MudDialog>

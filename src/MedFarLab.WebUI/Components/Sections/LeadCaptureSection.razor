@@ -1,0 +1,319 @@
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
+
+<section class="section lead-capture diagonal-cut">
+    <!-- Componente inmersivo con diseño diagonal poligonal y fondo degradado -->
+    <div class="container grid md-grid-cols-2 align-center gap-lg pos-relative">
+        
+        <!-- Copywriting Left Side -->
+        <div class="lead-text reveal">
+            <h2 class="section-title text-white mb-md" style="font-size: 3rem; line-height: 1.1;">¿Listo para tu <span class="text-accent">Evolución</span>?</h2>
+            <p class="lead-desc mb-md">
+                No somos un software, somos tu partner tecnológico. Solicita tu plan de suscripción oficial y descubre cómo el ecosistema MedFarLab impulsará tu rentabilidad operativa diaria.
+            </p>
+            <div class="benefits-list text-white opacity-90">
+                <p>
+                    <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> 
+                    Configuración híbrida en menos de 24 horas
+                </p>
+                <p>
+                    <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> 
+                    Onboarding especializado para tus asistentes
+                </p>
+            </div>
+        </div>
+
+        <!-- Blazor Smart Form Right Side -->
+        <div class="lead-form-card card reveal delay-2">
+            @if (isSuccess)
+            {
+                <div class="success-alert" role="alert">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-secondary mb-sm"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><path d="M22 4L12 14.01l-3-3"></path></svg>
+                    <h3 style="margin-bottom: 0;">¡Información Recibida!</h3>
+                    <p style="color: var(--color-text-muted); margin-top: 5px;">Un especialista se pondrá en contacto pronto.</p>
+                    <button class="btn btn-outline-light mt-sm" style="color:var(--color-primary); border-color:var(--color-border); width: 100%" @onclick="ResetForm">Agendar otra clínica</button>
+                </div>
+            }
+            else
+            {
+                <h3 class="text-center mb-md" style="font-size: 1.5rem;">Solicitud de Suscripción</h3>
+                
+                <EditForm Model="Lead" OnValidSubmit="HandleValidSubmit" class="flex-col gap-sm">
+                    <DataAnnotationsValidator />
+                    
+                    <div class="form-group">
+                        <label for="nombre">Nombre del Gestor a Cargo</label>
+                        <InputText id="nombre" class="form-control" @bind-Value="Lead.NombreCompleto" placeholder="Ej. Dra. María González" />
+                        <ValidationMessage For="@(() => Lead.NombreCompleto)" class="validation-message" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Correo Electrónico Oficial</label>
+                        <InputText id="email" type="email" class="form-control" @bind-Value="Lead.Email" placeholder="contacto@institucion.com.ni" />
+                        <ValidationMessage For="@(() => Lead.Email)" class="validation-message" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tipo">Tipo de Institución a Suscribir</label>
+                        <InputSelect id="tipo" class="form-control custom-select" @bind-Value="Lead.TipoEntidad">
+                            <option value="" disabled selected>Selecciona tu rubro</option>
+                            <option value="clinica">Médico Independiente o Clínica</option>
+                            <option value="laboratorio">Laboratorio Diagnóstico</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => Lead.TipoEntidad)" class="validation-message" />
+                    </div>
+
+                    @if (Lead.TipoEntidad == "clinica")
+                    {
+                        <div class="form-group slide-down">
+                            <label for="institucion">Nombre Comercial Clínico</label>
+                            <InputText id="institucion" class="form-control" @bind-Value="Lead.NombreInstitucion" placeholder="Ej. Policlínica San Juan" />
+                        </div>
+                        <div class="form-group slide-down">
+                            <label for="usuarios">Total de Médicos a Conectar</label>
+                            <InputSelect id="usuarios" class="form-control custom-select" @bind-Value="Lead.NumeroUsuarios">
+                                <option value="" disabled selected>Selecciona una estimación</option>
+                                <option value="1">Solo yo (Consulta Privada Autónoma)</option>
+                                <option value="2-5">Pequeño Centro (2 a 5 médicos)</option>
+                                <option value="6-15">Mediana (6 a 15 médicos)</option>
+                                <option value="15+">Hospital Mayor (Más de 15 médicos)</option>
+                            </InputSelect>
+                        </div>
+                    }
+                    else if (Lead.TipoEntidad == "laboratorio")
+                    {
+                        <div class="form-group slide-down">
+                            <label for="institucion">Nombre del Laboratorio</label>
+                            <InputText id="institucion" class="form-control" @bind-Value="Lead.NombreInstitucion" placeholder="Ej. Bioclin Lab" />
+                        </div>
+                        <div class="form-group slide-down">
+                            <label for="usuarios">Volumen Promedio Diario</label>
+                            <InputSelect id="usuarios" class="form-control custom-select" @bind-Value="Lead.NumeroUsuarios">
+                                <option value="" disabled selected>Exámenes aproximados por día</option>
+                                <option value="1-30">1 a 30 Pruebas diarias</option>
+                                <option value="31-100">31 a 100 Pruebas diarias</option>
+                                <option value="101-300">101 a 300 Pruebas diarias</option>
+                                <option value="300+">Alta Capacidad (+300 Pruebas)</option>
+                            </InputSelect>
+                        </div>
+                    }
+                    
+                    <button type="submit" class="btn btn-primary submit-btn mt-md" disabled="@isSubmitting">
+                        @if (isSubmitting)
+                        {
+                            <span class="spinner-border"></span>
+                            <span>Procesando Entorno...</span>
+                        }
+                        else
+                        {
+                            <span>Tramitar mi Suscripción Segura</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:8px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        }
+                    </button>
+                    
+                    <small class="text-center text-muted badge-secure">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        Tus datos están encriptados y protegidos por protocolos SSL.
+                    </small>
+                </EditForm>
+            }
+        </div>
+
+    </div>
+</section>
+
+@code {
+    public class ContactLead
+    {
+        [Required(ErrorMessage = "El nombre del enlace es obligatorio.")]
+        public string NombreCompleto { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Necesitamos tu correo de contacto oficial.")]
+        [EmailAddress(ErrorMessage = "Por favor, ingresa un correo electrónico válido.")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Debes indicar si eres Clínica o Laboratorio.")]
+        public string TipoEntidad { get; set; } = string.Empty;
+        
+        public string NombreInstitucion { get; set; } = string.Empty;
+        public string NumeroUsuarios { get; set; } = string.Empty;
+    }
+
+    private ContactLead Lead = new();
+    private bool isSubmitting = false;
+    private bool isSuccess = false;
+
+    private async Task HandleValidSubmit()
+    {
+        isSubmitting = true;
+        
+        // Simulando delay de red (API call a microservicio de ventas)
+        await Task.Delay(1800);
+        
+        isSubmitting = false;
+        isSuccess = true;
+    }
+
+    private void ResetForm()
+    {
+        Lead = new ContactLead();
+        isSuccess = false;
+    }
+}
+
+<style>
+    /* Diseño de Layout Moderno y Poligonal */
+    .lead-capture {
+        background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 70%, var(--color-secondary-dark) 150%);
+        color: white;
+        padding: 8rem 0; /* Más espaciado interno */
+        position: relative;
+    }
+    
+    .diagonal-cut {
+        /* Rompe los rectángulos usando un clip poligonal diagonal, creando ángulo inferior/superior */
+        clip-path: polygon(0 4vw, 100% 0%, 100% calc(100% - 4vw), 0% 100%);
+    }
+
+    .pos-relative { position: relative; z-index: 2; }
+    .text-white { color: white !important; }
+    .text-accent { color: var(--color-secondary); }
+    .opacity-90 { opacity: 0.9; }
+    .mb-md { margin-bottom: var(--spacing-md); }
+    .mb-sm { margin-bottom: var(--spacing-sm); }
+    .mt-md { margin-top: 1.5rem; }
+    .mt-sm { margin-top: var(--spacing-sm); }
+    .text-center { text-align: center; }
+    
+    .lead-title { font-size: 2.5rem; }
+    .lead-desc { font-size: 1.15rem; color: rgba(255,255,255,0.85); line-height: 1.7; }
+    
+    .check-icon { width: 1.4rem; height: 1.4rem; color: var(--color-secondary); margin-right: 0.5rem; vertical-align: middle; }
+    .benefits-list p { margin-bottom: 0.8rem; color: white !important; font-size: 1.1rem; display: flex; align-items: center;}
+    
+    /* El Formulario Elevado y Curvo */
+    .lead-form-card {
+        background: white;
+        color: var(--color-text-main);
+        padding: 3rem 2.5rem;
+        border-radius: 24px; /* Bordes altamente redondeados (Friendly UI) */
+        box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .lead-form-card::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; height: 6px;
+        background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    }
+    
+    /* Input Styling Mejorado */
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-group label {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--color-primary-dark);
+    }
+    
+    .form-control {
+        padding: 0.9rem 1.2rem;
+        border: 2px solid #E2E8F0;
+        border-radius: 12px; /* Redondeo amigable internamente */
+        font-family: var(--font-body);
+        font-size: 1.05rem;
+        transition: all var(--transition-bounce);
+        background-color: #F8FAFC;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: var(--color-primary-light);
+        background-color: white;
+        box-shadow: 0 5px 15px rgba(59, 130, 246, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .custom-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1.2rem;
+    }
+    
+    /* Mensajes de Validación Blazor Puros */
+    .validation-message {
+        color: #EF4444; /* Rojo Alerta */
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 0.2rem;
+        display: flex;
+        align-items: center;
+    }
+    .validation-message::before {
+        content: "⚠️";
+        margin-right: 0.4rem;
+        font-size: 0.9rem;
+    }
+    
+    /* UI Estados Específicos */
+    .submit-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.2rem;
+        border-radius: 999px;
+        font-size: 1.1rem;
+    }
+    
+    .submit-btn:disabled {
+        background-color: var(--color-text-muted);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .badge-secure {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid #E2E8F0;
+    }
+    
+    .success-alert {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 2rem 0;
+    }
+    
+    /* Loading Spinner */
+    .spinner-border {
+        display: inline-block;
+        width: 1.5rem;
+        height: 1.5rem;
+        vertical-align: text-bottom;
+        border: 0.2em solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: spinner-border .75s linear infinite;
+        margin-right: 0.8rem;
+    }
+    
+    @@keyframes spinner-border {
+        100% { transform: rotate(360deg); }
+    }
+</style>

@@ -1,0 +1,44 @@
+@using MudBlazor
+@using System.Reflection
+
+<div class="action-header mb-4">
+    <div class="action-header-inner d-flex justify-space-between align-center p-2">
+        
+        <!-- Left Side: Action Buttons -->
+        <div class="d-flex gap-2 align-center">
+            @if (ShowBackButton)
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Inherit" OnClick="HandleBackClick" Class="mr-2" />
+            }
+            @if (ActionContent != null)
+            {
+                @ActionContent
+            }
+            
+            @if (DropdownActions != null || ExportData != null)
+            {
+                <MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Default" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft" Dense="true">
+                    @DropdownActions
+                    @if (ExportData != null)
+                    {
+                        <MudMenuItem OnClick="HandleExportExcel">
+                            <div class="d-flex align-center"><MudIcon Icon="@Icons.Material.Filled.TableChart" Color="Color.Success" Class="mr-2"/> Exportar a Excel</div>
+                        </MudMenuItem>
+                    }
+                </MudMenu>
+            }
+        </div>
+
+        <!-- Right Side: Status Badges -->
+        <div class="d-flex align-center">
+            @if (StatusContent != null)
+            {
+                <div class="action-status-container">
+                    @StatusContent
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+

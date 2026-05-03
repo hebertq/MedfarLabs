@@ -1,0 +1,109 @@
+@page "/pharmacy/dashboard"
+@using MudBlazor
+
+<div class="glass-header mb-4 fade-in-up">
+    <div>
+        <MudText Typo="Typo.h5" Class="gradient-text-success fw-bold">Dashboard de Farmacia</MudText>
+        <MudText Typo="Typo.body2" Class="text-muted">Control de inventario, dispensación y alertas de caducidad.</MudText>
+    </div>
+    
+    <div style="display: flex; gap: 1rem;">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Medication">
+            Dispensar Receta
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Inventory">
+            Revisar Inventario
+        </MudButton>
+    </div>
+</div>
+
+<MudGrid Class="mb-6 fade-in-up delay-1">
+    <MudItem xs="12" sm="4">
+        <div class="glass-panel pa-4 d-flex align-center justify-space-between" style="border-left: 4px solid var(--mud-palette-success);">
+            <div>
+                <MudText Typo="Typo.subtitle2" Class="text-muted">Recetas Surtidas Hoy</MudText>
+                <MudText Typo="Typo.h4" Color="Color.Success">@Model.PrescriptionsDispensedToday</MudText>
+            </div>
+            <MudIcon Icon="@Icons.Material.Filled.Checklist" Color="Color.Success" Size="Size.Large" />
+        </div>
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <div class="glass-panel pa-4 d-flex align-center justify-space-between" style="border-left: 4px solid var(--mud-palette-warning);">
+            <div>
+                <MudText Typo="Typo.subtitle2" Class="text-muted">Desabasto Crítico</MudText>
+                <MudText Typo="Typo.h4" Color="Color.Warning">@Model.LowStockAlerts</MudText>
+            </div>
+            <MudIcon Icon="@Icons.Material.Filled.ProductionQuantityLimits" Color="Color.Warning" Size="Size.Large" />
+        </div>
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <div class="glass-panel pa-4 d-flex align-center justify-space-between" style="border-left: 4px solid var(--mud-palette-error);">
+            <div>
+                <MudText Typo="Typo.subtitle2" Class="text-muted">Próximos a Caducar</MudText>
+                <MudText Typo="Typo.h4" Color="Color.Error">@Model.NearExpiryAlerts</MudText>
+            </div>
+            <MudIcon Icon="@Icons.Material.Filled.EventBusy" Color="Color.Error" Size="Size.Large" />
+        </div>
+    </MudItem>
+</MudGrid>
+
+<div class="glass-panel pa-6 fade-in-up delay-2">
+    <div class="d-flex justify-space-between align-center mb-4">
+        <MudText Typo="Typo.h6">Centro de Alertas (Inventario)</MudText>
+    </div>
+
+    <MudTable Items="@Model.InventoryAlerts" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Style="border: 1px solid var(--mud-palette-lines-default); border-radius: 8px;">
+        <HeaderContent>
+            <MudTh>Código Item</MudTh>
+            <MudTh>Medicamento</MudTh>
+            <MudTh>Stock Actual</MudTh>
+            <MudTh>Detalles Alerta</MudTh>
+            <MudTh>Acciones</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Código Item">#PHM-@context.ItemId.ToString("D5")</MudTd>
+            <MudTd DataLabel="Medicamento">@context.MedicationName</MudTd>
+            <MudTd DataLabel="Stock Actual">
+                <MudText Color="@(context.CurrentStock <= context.MinimumStock ? Color.Error : Color.Default)">
+                    @context.CurrentStock (Mín: @context.MinimumStock)
+                </MudText>
+            </MudTd>
+            <MudTd DataLabel="Detalles Alerta">
+                @if (context.AlertType == "LowStock")
+                {
+                    <MudChip T="string" Color="Color.Warning" Size="Size.Small">Poco Inventario</MudChip>
+                }
+                else
+                {
+                    <MudChip T="string" Color="Color.Error" Size="Size.Small">Caduca: @context.ExpiryDate</MudChip>
+                }
+            </MudTd>
+            <MudTd DataLabel="Acciones">
+                @if (context.AlertType == "LowStock")
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="@(() => OpenRestockModal(context.ItemId))">Reabastecer</MudButton>
+                }
+                else
+                {
+                    <MudButton Variant="Variant.Outlined" Color="Color.Error" Size="Size.Small">Desechar / Mermar</MudButton>
+                }
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</div>
+
+<MudDialog @bind-Visible="ShowRestockModal" Options="new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true }">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Solicitud de Reabastecimiento</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Class="mb-3">Ingresa la cantidad de cajas/unidades entrantes de proveedor.</MudText>
+        <MudNumericField @bind-Value="RestockQuantity" Label="Cantidad Entrante" Variant="Variant.Outlined" Min="1" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CloseRestockModal" Class="mr-2">Cancelar</MudButton>
+        <MudButton OnClick="HandleRestockSubmit" Variant="Variant.Filled" Color="Color.Primary" Disabled="IsSending">
+            @(IsSending ? "Registrando..." : "Confirmar Entrada")
+        </MudButton>
+    </DialogActions>
+</MudDialog>

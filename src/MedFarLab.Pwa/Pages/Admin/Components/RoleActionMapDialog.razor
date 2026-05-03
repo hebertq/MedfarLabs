@@ -1,0 +1,40 @@
+@using MudBlazor
+@using System.Linq
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.body2" Class="mb-4 text-muted">Selecciona las transacciones que estarán permitidas para el Rol: <strong>@RoleName</strong></MudText>
+
+        @if(MockActions == null || !MockActions.Any())
+        {
+            <MudAlert Severity="Severity.Info">No hay Acciones de sistema registradas.</MudAlert>
+        }
+        else
+        {
+            @* Agrupar las acciones visualmente por su atributo de Modulo para que sea facil para el admin *@
+            <MudExpansionPanels MultiExpansion="true" Elevation="0">
+                @foreach(var moduleGroup in MockActions.GroupBy(x => x.ModuleId))
+                {
+                    <MudExpansionPanel Text="@($"Módulo: {GetModuleName(moduleGroup.Key)}")" Class="mb-2" HideIcon="false">
+                        <MudStack Spacing="1">
+                            @foreach(var action in moduleGroup)
+                            {
+                                <MudCheckBox T="bool" 
+                                             Value="@(SelectedActionIds.Contains(action.Id))" 
+                                             ValueChanged="@((isChecked) => OnActionToggled(action.Id, isChecked))" 
+                                             Label="@($"{action.Name} - {action.Description}")" 
+                                             Color="Color.Primary" />
+                            }
+                        </MudStack>
+                    </MudExpansionPanel>
+                }
+            </MudExpansionPanels>
+        }
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cerrar</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">Guardar Mapeo</MudButton>
+    </DialogActions>
+</MudDialog>
+

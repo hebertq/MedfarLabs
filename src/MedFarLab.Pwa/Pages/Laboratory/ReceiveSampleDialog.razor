@@ -1,0 +1,103 @@
+@using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.body1" Class="mb-4">
+            Ingrese el código de barras o seleccione el paciente para recibir la muestra en el LIS.
+        </MudText>
+        
+        <MudTextField @bind-Value="Barcode" Label="Código de Barras" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.QrCode" FullWidth="true" Class="mb-3" />
+        
+        <MudAutocomplete T="PatientModel" Label="Paciente" @bind-Value="SelectedPatient" SearchFunc="@SearchPatient"
+                         ToStringFunc="@(e=> e==null ? null : $"{e.Name} (ID: {e.PatientId})")"
+                         Placeholder="Buscar por nombre, apellido o ID..." Variant="Variant.Outlined" AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start" Class="mb-3">
+            <ItemTemplate Context="patient">
+                <MudText Typo="Typo.body2" Class="fw-bold">@patient.Name</MudText>
+                <MudText Typo="Typo.caption" Class="text-muted">ID: @patient.PatientId | Nac: @patient.BirthDate</MudText>
+            </ItemTemplate>
+        </MudAutocomplete>
+        
+        <MudSelect T="string" Label="Tipo de Muestra" Variant="Variant.Outlined" @bind-Value="SampleType" FullWidth="true" Class="mb-3">
+            <MudSelectItem Value="@("Sangre")" />
+            <MudSelectItem Value="@("Orina")" />
+            <MudSelectItem Value="@("Tejido")" />
+            <MudSelectItem Value="@("Hisopado")" />
+        </MudSelect>
+        
+        <MudTextField @bind-Value="Notes" Label="Notas / Observaciones" Variant="Variant.Outlined" Lines="3" FullWidth="true" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">Registrar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Inject] private MediatR.IMediator Mediator { get; set; } = default!;
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+
+    public string Barcode { get; set; } = string.Empty;
+    public string SampleType { get; set; } = string.Empty;
+    public string Notes { get; set; } = string.Empty;
+
+    public class PatientModel
+    {
+        public int PatientId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string BirthDate { get; set; } = string.Empty;
+    }
+
+    public class ReceiveSampleResult
+    {
+        public string Barcode { get; set; } = string.Empty;
+        public long PatientId { get; set; }
+        public string PatientName { get; set; } = string.Empty;
+        public string SampleType { get; set; } = string.Empty;
+        public string Notes { get; set; } = string.Empty;
+    }
+
+    public PatientModel? SelectedPatient { get; set; }
+
+    private async Task<IEnumerable<PatientModel>> SearchPatient(string value, CancellationToken token)
+    {
+        // Obtener facturas reales desde el Mediator
+        var response = await Mediator.Send(new MedFarLab.Application.Features.Billing.Queries.GetAllInvoicesQuery(), token);
+        
+        var patientsFromInvoices = response?
+            .Where(inv => inv.PatientId > 0 && !string.IsNullOrEmpty(inv.PatientName))
+            .Select(inv => new PatientModel 
+            { 
+                PatientId = (int)inv.PatientId, 
+                Name = inv.PatientName ?? "", 
+                BirthDate = "N/D" // Las facturas no traen fecha de nacimiento
+            })
+            .GroupBy(p => p.PatientId)
+            .Select(g => g.First())
+            .ToList() ?? new List<PatientModel>();
+
+        if (string.IsNullOrEmpty(value))
+            return patientsFromInvoices.Take(10);
+
+        return patientsFromInvoices.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase) || 
+                                               x.PatientId.ToString().Contains(value));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private void Submit()
+    {
+        var resultData = new ReceiveSampleResult
+        {
+            Barcode = this.Barcode,
+            PatientId = this.SelectedPatient?.PatientId ?? 0,
+            PatientName = this.SelectedPatient?.Name ?? "Desconocido",
+            SampleType = this.SampleType,
+            Notes = this.Notes
+        };
+        MudDialog.Close(DialogResult.Ok(resultData));
+    }
+}
+

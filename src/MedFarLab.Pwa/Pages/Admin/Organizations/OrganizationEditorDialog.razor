@@ -1,0 +1,29 @@
+@using MudBlazor
+@using static MedFarLab.Pwa.Pages.Admin.Organizations.OrganizationManager
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form">
+            <MudTextField @bind-Value="OrgToEdit.Name" Label="Razón Social / Cliente" Required="true" Variant="Variant.Outlined" Class="mb-4" />
+            <MudTextField @bind-Value="OrgToEdit.IdentifierCode" Label="RUC / Identificador" Required="true" Variant="Variant.Outlined" Class="mb-4" />
+            
+            <MudSelect T="string" @bind-Value="OrgToEdit.PlanName" Label="Plan SaaS Actual" Variant="Variant.Outlined" Class="mb-6">
+                <MudSelectItem Value="@("Master")" />
+                <MudSelectItem Value="@("Premium Care")" />
+                <MudSelectItem Value="@("Basic LIS")" />
+                <MudSelectItem Value="@("Starter Med")" />
+            </MudSelect>
+
+            <MudSwitch @bind-Value="OrgToEdit.IsActive" Label="Estado de la Cuenta Operativa" Color="Color.Success" />
+            
+            <MudAlert Severity="Severity.Warning" Class="mt-4">
+                (Modo Demo B2B) Estas ediciones se reflejarán instantáneamente en la tabla matriz.
+            </MudAlert>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Save">Guardar Perfil Corporativo</MudButton>
+    </DialogActions>
+</MudDialog>
+

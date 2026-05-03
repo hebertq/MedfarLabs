@@ -1,0 +1,176 @@
+@page "/patients/new"
+@using MediatR
+@using MedFarLab.Application.Features.Identity.Commands.RegisterPerson
+@using MedFarLab.Application.Features.Clinical.Commands.RegisterPatient
+@using MedFarLab.Application.Features.Identity.Models
+@using MedFarLab.Application.Features.Clinical.Models
+
+<PageTitle>Nuevo Ingreso Clínico - MedFarLab</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
+    <div class="d-flex align-center mb-6">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="GoBack" Color="Color.Inherit" Class="mr-2" />
+        <div>
+            <MudText Typo="Typo.h4" Color="Color.Primary"><b>Registrar Paciente</b></MudText>
+            <MudText Typo="Typo.body2" Color="Color.Surface">Apertura de nuevo expediente clínico centralizado.</MudText>
+        </div>
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save" Disabled="@IsSending" OnClick="HandleRegistrationAsync">
+            @(IsSending ? "Procesando..." : "Guardar Expediente")
+        </MudButton>
+    </div>
+
+    <EditForm Model="@Model" OnValidSubmit="HandleRegistrationAsync">
+        <DataAnnotationsValidator />
+        
+        <MudGrid>
+            <!-- Bloque 1: Datos Personales (Demográficos) -->
+            <MudItem xs="12" md="6">
+                <MudPaper Elevation="4" Class="pa-6 rounded-lg h-100">
+                    <div class="d-flex align-center mb-4">
+                        <MudAvatar Color="Color.Primary" Variant="Variant.Outlined" Class="mr-3">
+                            <MudIcon Icon="@Icons.Material.Filled.Person" />
+                        </MudAvatar>
+                        <MudText Typo="Typo.h6"><b>Datos Personales</b></MudText>
+                    </div>
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="Model.FirstName" For="@(() => Model.FirstName)" Label="Primer Nombre" Variant="Variant.Outlined" Required="true" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="Model.MiddleName" For="@(() => Model.MiddleName)" Label="Segundo Nombre" Variant="Variant.Outlined" />
+                        </MudItem>
+                        
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="Model.LastName" For="@(() => Model.LastName)" Label="Primer Apellido" Variant="Variant.Outlined" Required="true" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="Model.SecondLastName" For="@(() => Model.SecondLastName)" Label="Segundo Apellido" Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="Model.DocumentId" For="@(() => Model.DocumentId)" Label="DNI / Cédula" Variant="Variant.Outlined" Required="true" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudDatePicker @bind-Date="Model.BirthDate" For="@(() => Model.BirthDate)" Label="Fecha de Nacimiento" Variant="Variant.Outlined" Required="true" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="Model.Phone" For="@(() => Model.Phone)" Label="Teléfono Celular" Variant="Variant.Outlined" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="Model.Email" For="@(() => Model.Email)" Label="Correo Electrónico" Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudDivider Class="my-2" />
+                            <MudText Typo="Typo.subtitle2" Color="Color.Primary">País de Nacimiento</MudText>
+                        </MudItem>
+
+                        @if (Countries.Any())
+                        {
+                            <MudItem xs="12" sm="4">
+                                <MudSelect T="int" Value="Model.BirthCountryId" ValueChanged="OnCountryChanged" For="@(() => Model.BirthCountryId)" Label="País" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">Seleccionar...</MudSelectItem>
+                                    @foreach (var country in Countries)
+                                    {
+                                        <MudSelectItem Value="@country.Id">@country.Name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+
+                            <MudItem xs="12" sm="4">
+                                <MudSelect T="int" Value="Model.DepartmentId" ValueChanged="OnDepartmentChanged" For="@(() => Model.DepartmentId)" Label="@Tier1Label" Variant="Variant.Outlined" Disabled="@(Model.BirthCountryId == 0)">
+                                    <MudSelectItem Value="0">Seleccionar...</MudSelectItem>
+                                    @foreach (var dept in AvailableDepartments)
+                                    {
+                                        <MudSelectItem Value="@dept.Id">@dept.Name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+
+                            <MudItem xs="12" sm="4">
+                                <MudSelect T="int" Value="Model.MunicipalityId" ValueChanged="OnMunicipalityChanged" For="@(() => Model.MunicipalityId)" Label="@Tier2Label" Variant="Variant.Outlined" Disabled="@(Model.DepartmentId == 0)">
+                                    <MudSelectItem Value="0">Seleccionar...</MudSelectItem>
+                                    @foreach (var muni in AvailableMunicipalities)
+                                    {
+                                        <MudSelectItem Value="@muni.Id">@muni.Name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+
+                            @if (AvailableDistricts.Any())
+                            {
+                                <MudItem xs="12" sm="4">
+                                    <MudSelect T="int?" @bind-Value="Model.DistrictId" For="@(() => Model.DistrictId)" Label="@Tier3Label" Variant="Variant.Outlined" Disabled="@(Model.MunicipalityId == 0)">
+                                        <MudSelectItem T="int?" Value="@null">Seleccionar...</MudSelectItem>
+                                        @foreach (var dist in AvailableDistricts)
+                                        {
+                                            <MudSelectItem T="int?" Value="@((int?)dist.Id)">@dist.Name</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+                            }
+                        }
+
+                        <MudItem xs="12">
+                            <MudTextField @bind-Value="Model.Address" For="@(() => Model.Address)" Label="Domicilio Físico (Barrio, Calle, Casa)" Variant="Variant.Outlined" Lines="2" />
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+
+            <!-- Bloque 2: Perfil Biológico -->
+            <MudItem xs="12" md="6">
+                <MudPaper Elevation="4" Class="pa-6 rounded-lg h-100">
+                    <div class="d-flex align-center mb-4">
+                        <MudAvatar Color="Color.Error" Variant="Variant.Outlined" Class="mr-3">
+                            <MudIcon Icon="@Icons.Material.Filled.LocalHospital" />
+                        </MudAvatar>
+                        <MudText Typo="Typo.h6"><b>Perfil Clínico Interno</b></MudText>
+                    </div>
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="6">
+                            <MudSelect T="int" @bind-Value="Model.GenderId" For="@(() => Model.GenderId)" Label="Sexo Biológico" Variant="Variant.Outlined">
+                                <MudSelectItem Value="0">Seleccionar</MudSelectItem>
+                                <MudSelectItem Value="1">Masculino</MudSelectItem>
+                                <MudSelectItem Value="2">Femenino</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudSelect T="string" @bind-Value="Model.BloodType" For="@(() => Model.BloodType)" Label="Tipo de Sangre" Variant="Variant.Outlined">
+                                <MudSelectItem Value="@string.Empty">Desconocido</MudSelectItem>
+                                <MudSelectItem Value="@("O+")">O Positivo (O+)</MudSelectItem>
+                                <MudSelectItem Value="@("O-")">O Negativo (O-)</MudSelectItem>
+                                <MudSelectItem Value="@("A+")">A Positivo (A+)</MudSelectItem>
+                                <MudSelectItem Value="@("A-")">A Negativo (A-)</MudSelectItem>
+                                <MudSelectItem Value="@("B+")">B Positivo (B+)</MudSelectItem>
+                                <MudSelectItem Value="@("B-")">B Negativo (B-)</MudSelectItem>
+                                <MudSelectItem Value="@("AB+")">AB Positivo (AB+)</MudSelectItem>
+                                <MudSelectItem Value="@("AB-")">AB Negativo (AB-)</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Class="mb-3">Alergias Letales (Alerta Roja)</MudAlert>
+                            <MudTextField @bind-Value="Model.Allergies" For="@(() => Model.Allergies)" Label="Ej. Penicilina, Nueces" Variant="Variant.Outlined" HelperText="Separar con coma. Bloqueará prescripciones futuras." />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField @bind-Value="Model.ChronicConditions" For="@(() => Model.ChronicConditions)" Label="Condiciones Crónicas Previas" Variant="Variant.Outlined" Lines="2" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="Model.EmergencyContact" For="@(() => Model.EmergencyContact)" Label="Contacto de Emergencias" Variant="Variant.Outlined" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="Model.EmergencyPhone" For="@(() => Model.EmergencyPhone)" Label="Teléfono de Emergencia" Variant="Variant.Outlined" />
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+</MudContainer>

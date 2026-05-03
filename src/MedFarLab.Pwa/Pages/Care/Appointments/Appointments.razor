@@ -1,0 +1,164 @@
+@page "/care/appointments"
+@layout MainLayout
+@inherits AppointmentsBase
+@using MedFarLab.Application.Features.Care.Models
+
+<PageTitle>Agenda Médica - MedFarLab</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6 mb-16">
+    <MudGrid>
+        <MudItem xs="12" md="4" lg="3">
+            <MudPaper Elevation="4" Class="pa-6 rounded-xl mud-theme-primary mud-elevation-4 position-sticky" Style="top: 2rem;">
+                <MudText Typo="Typo.h5" Class="text-white mb-2"><b>Agenda Médica</b></MudText>
+                <MudText Typo="Typo.body2" Class="text-white align-center d-flex mb-6" Style="opacity: 0.8;">
+                    <MudIcon Icon="@Icons.Material.Filled.EventNote" Size="Size.Small" Class="mr-2" />
+                    Tus consultas del día
+                </MudText>
+
+                @if (!AppState.IsDoctor)
+                {
+                    <MudSelect T="long?" Value="SelectedDoctorId" ValueChanged="OnDoctorChanged" Label="Seleccione Médico" Variant="Variant.Filled" Class="bg-white mb-6 rounded-lg" DisableUnderLine="true">
+                        @foreach (var doc in Doctors)
+                        {
+                            <MudSelectItem T="long?" Value="@doc.DoctorUserId">@doc.DoctorName</MudSelectItem>
+                        }
+                    </MudSelect>
+                }
+
+                <div class="calendar-widget bg-white rounded-lg pa-4 mb-6" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <div class="d-flex align-center justify-space-between mb-4">
+                        <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" Color="Color.Primary" Size="Size.Small" OnClick="() => ChangeDay(-1)" />
+                        <MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@Model.Date?.ToString("MMMM yyyy").ToUpper()</b></MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" Color="Color.Primary" Size="Size.Small" OnClick="() => ChangeDay(1)" />
+                    </div>
+                    
+                    <div class="d-flex align-center justify-center">
+                        <div class="text-center">
+                            <MudText Typo="Typo.h2" Color="Color.Primary" Class="fw-bold">@Model.Date?.ToString("dd")</MudText>
+                            <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Model.Date?.ToString("dddd")</MudText>
+                        </div>
+                    </div>
+                </div>
+
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Warning" 
+                           StartIcon="@Icons.Material.Filled.Add" 
+                           OnClick="OpenRegisterDialog" 
+                           Size="Size.Large" 
+                           FullWidth="true"
+                           Class="rounded-pill py-3 fw-bold"
+                           Style="position: relative; overflow: hidden;">
+                    Programar Cita
+                </MudButton>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="8" lg="9">
+            <MudPaper Elevation="2" Class="pa-0 rounded-xl overflow-hidden bg-transparent" Style="border: 1px solid var(--mud-palette-lines-default);">
+                <div class="agenda-timeline" style="background-color: var(--mud-palette-background); position: relative;">
+                    @if (IsLoading)
+                    {
+                        <div class="d-flex flex-column align-center justify-center" style="height: 500px;">
+                            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+                            <MudText Typo="Typo.h6" Color="Color.Primary" Class="mt-4">Sincronizando Agenda...</MudText>
+                        </div>
+                    }
+                    else
+                    {
+                        <MudDropContainer T="AppointmentModel" Items="DailyAppointments" ItemsSelector="@((item,dropzone) => item.StartTime.ToString() == dropzone)" ItemDropped="OnAppointmentDropped">
+                            <ChildContent>
+                                @foreach (var slot in TimeSlots)
+                                {
+                                    <div class="time-slot" style="display: flex; min-height: 85px; border-bottom: 1px dashed var(--mud-palette-lines-default);">
+                                        <!-- Timeline Axis -->
+                                        <div class="time-axis" style="width: 80px; padding: 1rem 0; text-align: center; border-right: 2px solid var(--mud-palette-lines-default); position: relative;">
+                                            <MudText Typo="Typo.caption" Color="Color.Primary" Style="font-weight: 600; font-size: 0.85rem;">
+                                                @DateTime.Today.Add(slot).ToString("hh:mm tt")
+                                            </MudText>
+                                            <div style="position: absolute; right: -6px; top: 1.25rem; width: 10px; height: 10px; border-radius: 50%; background-color: var(--mud-palette-primary);"></div>
+                                        </div>
+
+                                        <!-- Drop Zone for this slot -->
+                                        <MudDropZone T="AppointmentModel" Identifier="@slot.ToString()" Class="slot-content flex-grow-1 pa-3 position-relative">
+                                            @if(!DailyAppointments.Any(a => a.StartTime == slot))
+                                            {
+                                                var isPast = Model.Date < DateTime.Today || (Model.Date == DateTime.Today && slot < DateTime.Now.TimeOfDay.Subtract(TimeSpan.FromMinutes(30)));
+                                                @if (!isPast)
+                                                {
+                                                    <div class="add-event-hover h-100 d-flex align-center justify-center rounded-lg" @onclick="() => OnTimeSlotClick(slot, null)" style="border: 2px dashed transparent; color: var(--mud-palette-text-disabled); cursor: pointer; transition: all 0.3s;">
+                                                        <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-2" />
+                                                        <MudText Typo="Typo.body2">Horario Disponible (Toque para programar)</MudText>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="h-100 d-flex align-center justify-center rounded-lg" style="color: var(--mud-palette-action-disabled); background-color: rgba(0,0,0,0.02)">
+                                                        <MudIcon Icon="@Icons.Material.Filled.LockClock" Class="mr-2" Size="Size.Small" />
+                                                        <MudText Typo="Typo.caption">Horario bloqueado</MudText>
+                                                    </div>
+                                                }
+                                            }
+                                        </MudDropZone>
+                                    </div>
+                                }
+                            </ChildContent>
+                            <ItemRenderer>
+                                <MudPaper Elevation="3" 
+                                          Class="appointment-card pa-4 rounded-lg h-100 d-flex flex-column cursor-grab" 
+                                          Style="@($"border-left: 6px solid var(--mud-palette-{GetStatusColor(context.Status).ToString().ToLower()}); background-color: var(--mud-palette-surface); transition: transform 0.2s;")"
+                                          @onclick:stopPropagation="true">
+                                    
+                                    <div class="d-flex align-center justify-space-between mb-2">
+                                        <div class="d-flex align-center">
+                                            <MudAvatar Color="Color.Primary" Size="Size.Small" Class="mr-3 shadow-sm text-white fw-bold">
+                                                @(context.PatientName?[0].ToString().ToUpper())
+                                            </MudAvatar>
+                                            <MudText Typo="Typo.h6" Class="fw-bold">@context.PatientName</MudText>
+                                        </div>
+                                        <MudChip T="string" Color="@GetStatusColor(context.Status)" Size="Size.Small" Variant="Variant.Outlined">
+                                            @context.Status.ToString()
+                                        </MudChip>
+                                    </div>
+
+                                    <div class="d-flex align-center text-muted mb-2">
+                                        <MudIcon Icon="@Icons.Material.Filled.MedicalServices" Size="Size.Small" Class="mr-2" />
+                                        <MudText Typo="Typo.body2">
+                                            <b>Motivo:</b> @context.ConsultationReason
+                                        </MudText>
+                                    </div>
+
+                                    <div class="d-flex align-center justify-space-between mt-auto pt-2 border-top">
+                                        <div class="d-flex align-center text-muted">
+                                            <MudIcon Icon="@Icons.Material.Filled.AccessTime" Size="Size.Small" Class="mr-1" />
+                                            <MudText Typo="Typo.caption">
+                                                @context.StartTime.ToString(@"hh\:mm") - @context.StartTime.Add(TimeSpan.FromMinutes(30)).ToString(@"hh\:mm")
+                                            </MudText>
+                                        </div>
+                                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Href="@($"/care/consultation/realizar/{context.Id}")">Atender</MudButton>
+                                    </div>
+                                </MudPaper>
+                            </ItemRenderer>
+                        </MudDropContainer>
+                    }
+                </div>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+<style>
+    .appointment-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .add-event-hover:hover {
+        border-color: var(--mud-palette-primary) !important;
+        background-color: var(--mud-palette-action-default-hover) !important;
+        color: var(--mud-palette-primary) !important;
+    }
+    
+    .border-top {
+        border-top: 1px solid var(--mud-palette-divider);
+    }
+</style>

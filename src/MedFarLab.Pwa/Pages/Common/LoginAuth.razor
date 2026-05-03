@@ -1,0 +1,76 @@
+@page "/"
+@layout MedFarLab.Pwa.Layout.AuthLayout
+@using MudBlazor
+
+<PageTitle>Portal de Acceso - MedFarLab</PageTitle>
+
+<div class="login-wrapper fade-in d-flex justify-center align-center" style="height: 100vh; background-color: var(--mud-palette-background-grey);">
+    <MudPaper Class="pa-8 d-flex flex-column align-center" Elevation="4" Style="border-radius: 16px; max-width: 450px; width: 100%;">
+        
+        <MudImage Src="/images/logo.png" Alt="MedFarLab" Width="180" Class="mb-4" />
+        <MudText Typo="Typo.h5" Class="fw-bold text-primary mb-1">Portal Clínico Seguro</MudText>
+        <MudText Typo="Typo.body2" Class="text-muted mb-6">Inicia sesión con tus credenciales de red</MudText>
+
+        @if (CurrentStep == 1)
+        {
+            <div class="w-100 fade-in">
+                <MudText Typo="Typo.caption" Class="text-muted mb-4 d-block text-center">Paso 1 de 2: Identidad Corporativa</MudText>
+
+                <MudSelect @bind-Value="SelectedTenant" Label="Tipo de Institución" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Apartment" Class="mb-4">
+                    <MudSelectItem Value="@("clinica")">Consultorio Médico / Clínica</MudSelectItem>
+                    <MudSelectItem Value="@("laboratorio")">Laboratorio Clínico</MudSelectItem>
+                    <MudSelectItem Value="@("farmacia")">Farmacia</MudSelectItem>
+                </MudSelect>
+
+                <MudTextField @bind-Value="InstitutionName" Label="Nombre de la Institución" Placeholder="Ej. Laboratorios MedFar..." Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Business" Class="mb-6" />
+
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" FullWidth="true" EndIcon="@Icons.Material.Filled.ArrowForward" OnClick="GoNextStep">
+                    Continuar
+                </MudButton>
+            </div>
+        }
+        else if (CurrentStep == 2)
+        {
+            <div class="w-100 fade-in">
+                <div class="d-flex justify-space-between align-center mb-4">
+                    <MudButton Variant="Variant.Text" Color="Color.Default" StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="GoPrevStep" Size="Size.Small">
+                        Volver
+                    </MudButton>
+                    <MudText Typo="Typo.caption" Class="text-muted">Paso 2 de 2: Credenciales</MudText>
+                </div>
+
+                <MudAlert Severity="Severity.Info" Class="mb-4" Dense="true" Icon="@Icons.Material.Filled.Science">
+                    Modo DEMO Activo - Usar: <strong>@Username</strong> / <strong>@Password</strong>
+                </MudAlert>
+                <MudSelect T="string" Label="🎭 Autocompletar Perfil" Variant="Variant.Outlined" ValueChanged="OnDemoUserChanged" Class="mb-4" Color="Color.Secondary">
+                    <MudSelectItem Value="@("masteradmin")">🛠️ Master Admin B2B</MudSelectItem>
+                    <MudSelectItem Value="@("fulladmin")">🌟 Full System Admin</MudSelectItem>
+                    <MudSelectItem Value="@("clinicadmin")">🩺 Administración de Clínica</MudSelectItem>
+                    <MudSelectItem Value="@("labadmin")">🧪 Laboratorio Patológico</MudSelectItem>
+                    <MudSelectItem Value="@("pharmacyadmin")">💊 Farmacia Central</MudSelectItem>
+                </MudSelect>
+                <MudDivider Class="mb-4"/>
+
+                <MudTextField @bind-Value="Username" Label="Usuario / Correo Institucional" Placeholder="dr.apellido@empresa.com" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Person" Class="mb-4" />
+
+                <MudTextField @bind-Value="Password" Label="Contraseña Maestra" InputType="InputType.Text" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Lock" Class="mb-1" />
+                <div class="d-flex justify-end mb-6">
+                    <MudLink Href="#" Color="Color.Primary" Typo="Typo.caption">¿Olvidaste tu contraseña?</MudLink>
+                </div>
+                
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" FullWidth="true" OnClick="HandleLogin" Disabled="IsAuthenticating">
+                    @if (IsAuthenticating)
+                    {
+                        <MudProgressCircular Class="ms-n1 me-2" Size="Size.Small" Indeterminate="true" />
+                        <MudText>Validando Credenciales...</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Ingresar de Forma Segura</MudText>
+                        <MudIcon Icon="@Icons.Material.Filled.Login" Class="ml-2" />
+                    }
+                </MudButton>
+            </div>
+        }
+    </MudPaper>
+</div>

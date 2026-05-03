@@ -1,0 +1,108 @@
+@page "/admin/organizations/deprecated-legacy"
+
+<PageTitle>Organizaciones Clínicas B2B</PageTitle>
+
+<div class="glass-header mb-4 d-flex justify-space-between align-center">
+    <div class="d-flex align-center">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Inherit" OnClick='() => NavManager.NavigateTo("/admin/dashboard")' Class="mr-3"/>
+        <div>
+            <MudText Typo="Typo.h5" Class="text-primary fw-bold">Organizaciones</MudText>
+            <MudText Typo="Typo.body2" Class="text-muted">Catálogo global de clientes SaaS.</MudText>
+        </div>
+    </div>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddModal">Nueva</MudButton>
+</div>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="pa-0">
+    <MudDataGrid Items="@mockOrgs" Filterable="true" SortMode="SortMode.Multiple" Groupable="false" Bordered="true" Dense="true">
+        <Columns>
+            <PropertyColumn Property="x => x.Id" Title="ID" />
+            <PropertyColumn Property="x => x.Title" Title="Nombre Legal (Title)" />
+            <PropertyColumn Property="x => x.Domain" Title="Dominio" />
+            <TemplateColumn Title="Estatus">
+                <CellTemplate>
+                    <MudChip T="string" Color="@(context.Item.IsActive ? Color.Success : Color.Error)" Size="Size.Small">
+                        @(context.Item.IsActive ? "Activa" : "Suspendida")
+                    </MudChip>
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Acciones">
+                <CellTemplate>
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Info" OnClick="@(() => OpenEditModal(context.Item))" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="@(() => DeleteOrganization(context.Item))" />
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="MockOrg" />
+        </PagerContent>
+    </MudDataGrid>
+</MudContainer>
+
+@code {
+    [Inject] private NavigationManager NavManager { get; set; } = default!;
+    [Inject] private IDialogService DialogService { get; set; } = default!;
+    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+
+    private List<MockOrg> mockOrgs = new()
+    {
+        new MockOrg { Id = 1, Title = "Hospital General San Lucas", Domain = "sanlucas.medfarlab.com", IsActive = true },
+        new MockOrg { Id = 2, Title = "Laboratorios BioTest", Domain = "biotest.medfarlab.com", IsActive = true },
+        new MockOrg { Id = 3, Title = "Clínica Dental Sonrisas", Domain = "dental.medfarlab.com", IsActive = false }
+    };
+
+    public class MockOrg
+    {
+        public long Id { get; set; }
+        public string Title { get; set; } = "";
+        public string Domain { get; set; } = "";
+        public bool IsActive { get; set; }
+    }
+
+    private async Task OpenAddModal()
+    {
+        var dialog = await DialogService.ShowAsync<MedFarLab.Pwa.Pages.Admin.Components.OrganizationDialog>("Crear Organización");
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            dynamic data = result.Data;
+            mockOrgs.Add(new MockOrg { Id = mockOrgs.Max(x => x.Id) + 1, Title = data.Title, Domain = data.Domain, IsActive = data.IsActive });
+            Snackbar.Add("Organización creada exitosamente", Severity.Success);
+            StateHasChanged();
+        }
+    }
+
+    private async Task OpenEditModal(MockOrg org)
+    {
+        var parameters = new DialogParameters { ["Title"] = org.Title, ["Domain"] = org.Domain, ["IsActive"] = org.IsActive };
+        var dialog = await DialogService.ShowAsync<MedFarLab.Pwa.Pages.Admin.Components.OrganizationDialog>("Editar Organización", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            dynamic data = result.Data;
+            org.Title = data.Title;
+            org.Domain = data.Domain;
+            org.IsActive = data.IsActive;
+            Snackbar.Add("Se han guardado los cambios", Severity.Info);
+            StateHasChanged();
+        }
+    }
+
+    private async Task DeleteOrganization(MockOrg org)
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Confirmar Eliminación", 
+            $"¿Estás seguro que deseas borrar la organización {org.Title}?", 
+            yesText: "Borrar", cancelText: "Cancelar");
+
+        if (result == true)
+        {
+            mockOrgs.Remove(org);
+            Snackbar.Add("Organización eliminada", Severity.Error);
+            StateHasChanged();
+        }
+    }
+}
+

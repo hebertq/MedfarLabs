@@ -1,0 +1,231 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+    /* Identidad Premium - Corporativo MedFarLab */
+    --color-primary: #1E3A8A; /* Azul Rey Corporativo (Trust Blue) */
+    --color-primary-dark: #172554; /* Navy profundo */
+    --color-primary-light: #3B82F6; /* Azul brillante claro */
+    --color-secondary: #10B981; /* Verde Médico Fresco (Emerald 500) */
+    --color-secondary-dark: #059669; /* Verde Oscuro */
+    --color-accent: #2563EB; /* Azul vibrante */
+    
+    /* Neutros - Dark Mode Refinado */
+    --color-bg-dark: #0F172A; /* Slate 900 (Gris muy oscuro y limpio, cero opresivo) */
+    --color-bg-light: #F8FAFC; /* Slate 50 (Blanco hueso/clínico relajante) */
+    --color-surface-dark: rgba(22, 36, 71, 0.4);
+    --color-surface-light: #FFFFFF;
+    
+    --color-text-dark: #F8FAFC; /* Muy claro, casi blanco absoluto */
+    --color-text-main: #0F172A; /* Slate-900 súper oscuro */
+    --color-text-muted: #475569; /* Slate-600 de alto contraste en fondos claros */
+    
+    /* Spacing & Layout */
+    --container-max-width: 1280px;
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 2.5rem;
+    --spacing-lg: 5rem;
+    --spacing-xl: 8rem;
+    
+    /* UX Variables */
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --border-radius: 20px;
+    --transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --shadow-float: 0 30px 60px -12px rgba(10, 17, 40, 0.25);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glowPulse {
+    0% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.4); }
+    70% { box-shadow: 0 0 0 20px rgba(0, 230, 118, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); }
+}
+
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    color: var(--color-text-main);
+    background-color: var(--color-bg-light);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Tipografía Premium */
+h1, h2, h3, h4 {
+    font-family: var(--font-heading);
+    color: var(--color-primary);
+    line-height: 1.1;
+    margin-bottom: var(--spacing-sm);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+}
+
+h1 { font-size: 3.5rem; }
+h2 { font-size: 2.8rem; }
+h3 { font-size: 1.8rem; }
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Utilities */
+.container {
+    width: 100%;
+    padding: 0 var(--spacing-sm);
+    margin: 0 auto;
+    max-width: var(--container-max-width);
+}
+
+@media (min-width: 768px) {
+    .container { padding: 0 var(--spacing-md); }
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.08); /* Aumentado para generar pared visual */
+    backdrop-filter: blur(24px); /* Difuminado más pesado */
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--border-radius);
+    color: white;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    border-radius: var(--border-radius);
+}
+
+/* Layout Core */
+.section { padding: var(--spacing-lg) 0; }
+@media (min-width: 768px) { .section { padding: var(--spacing-xl) 0; } }
+
+.dark-section {
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-dark);
+}
+
+.dark-section h1, .dark-section h2, .dark-section h3 {
+    color: white;
+}
+
+.dark-gradient-bg {
+    background: var(--color-bg-dark);
+    background: radial-gradient(circle at top right, rgba(41, 121, 255, 0.15) 0%, var(--color-bg-dark) 50%),
+                radial-gradient(circle at bottom left, rgba(0, 230, 118, 0.08) 0%, var(--color-bg-dark) 50%);
+}
+
+.grid { display: grid; gap: var(--spacing-md); }
+@media (min-width: 768px) {
+    .md-grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .md-grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .md-grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* -------------------------------------
+   Gemoetrías Asimétricas (Nuevas)
+-------------------------------------- */
+.diagonal-cut-bottom {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 4vw), 0 100%);
+}
+
+.diagonal-cut-top {
+    clip-path: polygon(0 4vw, 100% 0, 100% 100%, 0 100%);
+}
+
+.diagonal-cut-top-reverse {
+    clip-path: polygon(0 0, 100% 4vw, 100% 100%, 0 100%);
+}
+
+/* -------------------------------------
+   Degradados Suaves de Fondo
+-------------------------------------- */
+.bg-gradient-fade-dark {
+    /* Difuminado suave oscuro: De Azul Trust puro hacia Azul profundo con viñeta */
+    background: radial-gradient(circle at top left, var(--color-primary-light) 0%, transparent 40%),
+                linear-gradient(180deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+}
+
+.bg-gradient-fade-light {
+    /* Difuminado suave claro: De Blanco roto a Light Slate */
+    background: radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
+                linear-gradient(135deg, white 0%, var(--color-bg-light) 100%);
+}
+
+/* Buttons Premium */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 2.5rem;
+    border-radius: 999px; /* Pill shape */
+    font-weight: 700;
+    font-family: var(--font-heading);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: transform var(--transition-bounce), box-shadow 0.3s ease;
+    border: none;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background-color: var(--color-secondary);
+    color: var(--color-primary-dark);
+}
+
+.btn-primary:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 30px -10px rgba(0, 230, 118, 0.5);
+    background-color: #00F47E;
+}
+
+.btn-outline-light {
+    background: transparent;
+    color: white;
+    border: 2px solid rgba(255,255,255,0.3);
+}
+
+.btn-outline-light:hover {
+    background: white;
+    color: var(--color-primary);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 30px -10px rgba(255,255,255, 0.2);
+}
+
+/* Reveal Animation Class */
+.reveal {
+    animation: fadeInUp 0.8s ease forwards;
+    opacity: 0;
+}
+.delay-1 { animation-delay: 0.2s; }
+.delay-2 { animation-delay: 0.4s; }
+.delay-3 { animation-delay: 0.6s; }
+
+/* Flex rules */
+.flex-row { display: flex; flex-direction: row; }
+.flex-col { display: flex; flex-direction: column; }
+.align-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.text-center { text-align: center; }

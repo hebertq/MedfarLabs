@@ -1,0 +1,201 @@
+@page "/dashboard"
+@using MudBlazor
+@using MedFarLab.Pwa.State
+@using System.Net.Http.Json
+@inject MediatR.ISender Mediator
+@inject AppState AppState
+@inject NavigationManager NavManager
+
+<div class="dashboard-container blur-bg">
+    @if (IsLoading)
+    {
+        <div class="d-flex justify-center align-center" style="height: 60vh;">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+        </div>
+    }
+    else if (DashboardData != null)
+    {
+        <div class="glass-header mb-6 fade-in">
+            <div>
+                <MudText Typo="Typo.h4" Class="fw-bold gradient-text">Visión General</MudText>
+                <MudText Typo="Typo.subtitle1" Class="text-muted">Hola @AppState.FullName. Bienvenido de vuelta a tu operación diaria.</MudText>
+            </div>
+            <div class="header-actions">
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CalendarMonth" Class="glass-btn">
+                    Ver Calendario
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Class="shadow-pulse">
+                    Acción Rápida
+                </MudButton>
+            </div>
+        </div>
+
+        <MudGrid Class="mb-6 fade-in-up">
+            @if (AppState.HasModule("Clinical") || AppState.IsDoctor)
+            {
+                <MudItem xs="12" sm="6" md="3">
+                    <div class="glass-card kpi-card border-info-left">
+                        <MudText Typo="Typo.subtitle2" Class="text-muted">Citas Hoy</MudText>
+                        <MudText Typo="Typo.h4" Class="fw-bold mt-1">@DashboardData.TotalAppointmentsToday</MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="3">
+                    <div class="glass-card kpi-card border-warning-left">
+                        <MudText Typo="Typo.subtitle2" Class="text-muted">Esperando Atención</MudText>
+                        <MudText Typo="Typo.h4" Class="fw-bold mt-1 text-warning">@DashboardData.PatientsWaiting</MudText>
+                    </div>
+                </MudItem>
+            }
+
+            @if (AppState.HasModule("Laboratory"))
+            {
+                <MudItem xs="12" sm="6" md="3">
+                    <div class="glass-card kpi-card border-tertiary-left" style="border-left: 4px solid var(--mud-palette-tertiary);">
+                        <MudText Typo="Typo.subtitle2" Class="text-muted">Muestras Pendientes</MudText>
+                        <MudText Typo="Typo.h4" Class="fw-bold mt-1 text-tertiary">35</MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="3">
+                    <div class="glass-card kpi-card border-success-left">
+                        <MudText Typo="Typo.subtitle2" Class="text-muted">Resultados Listos</MudText>
+                        <MudText Typo="Typo.h4" Class="fw-bold mt-1 text-success">112</MudText>
+                    </div>
+                </MudItem>
+            }
+
+            @if (AppState.HasModule("Pharmacy"))
+            {
+                <MudItem xs="12" sm="6" md="3">
+                    <div class="glass-card kpi-card border-secondary-left" style="border-left: 4px solid var(--mud-palette-secondary);">
+                        <MudText Typo="Typo.subtitle2" Class="text-muted">Recetas por Surtir</MudText>
+                        <MudText Typo="Typo.h4" Class="fw-bold mt-1 text-secondary">24</MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="3">
+                    <div class="glass-card kpi-card border-error-left" style="border-left: 4px solid var(--mud-palette-error);">
+                        <MudText Typo="Typo.subtitle2" Class="text-muted">Stock Crítico</MudText>
+                        <MudText Typo="Typo.h4" Class="fw-bold mt-1 text-error">12 Items</MudText>
+                    </div>
+                </MudItem>
+            }
+
+            @if (HasBillingAccess)
+            {
+                <MudItem xs="12" sm="6" md="3">
+                    <div class="glass-card kpi-card border-primary-left">
+                        <MudText Typo="Typo.subtitle2" Class="text-muted">Ingresos del Mes</MudText>
+                        <MudText Typo="Typo.h4" Class="fw-bold mt-1">@($"${DashboardData.TotalRevenueThisMonth:N2}")</MudText>
+                    </div>
+                </MudItem>
+            }
+        </MudGrid>
+
+        <MudGrid Class="fade-in-up delay-1">
+            @if (AppState.HasModule("Clinical") || AppState.IsDoctor)
+            {
+                <MudItem xs="12" md="5">
+                    <div class="glass-card p-4 h-100">
+                        <div class="d-flex justify-space-between align-center mb-4">
+                            <MudText Typo="Typo.h6" Class="fw-bold">Próximos Pacientes</MudText>
+                            <MudButton Variant="Variant.Text" Color="Color.Primary" Size="Size.Small">+ Nuevo Expediente</MudButton>
+                        </div>
+                        <MudTimeline TimelinePosition="TimelinePosition.Start">
+                            @foreach (var p in DashboardData.LatestPatients)
+                            {
+                                <MudTimelineItem Color="Color.Info" Size="Size.Small">
+                                    <ItemContent>
+                                        <div class="timeline-paper">
+                                            <MudText Typo="Typo.subtitle2" Class="fw-bold">@p.Name</MudText>
+                                            <MudText Typo="Typo.caption" Class="text-muted">@p.Time - @p.Status</MudText>
+                                        </div>
+                                    </ItemContent>
+                                </MudTimelineItem>
+                            }
+                        </MudTimeline>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" FullWidth="true" Class="mt-2 text-uppercase fw-bold">Ir a Agenda</MudButton>
+                    </div>
+                </MudItem>
+            }
+
+            @if (AppState.HasModule("Laboratory") && !AppState.HasModule("Clinical"))
+            {
+                <MudItem xs="12" md="5">
+                    <div class="glass-card p-4 h-100">
+                        <MudText Typo="Typo.h6" Class="fw-bold mb-4">Últimas Órdenes LIS</MudText>
+                        <MudList T="string">
+                            <MudListItem Icon="@Icons.Material.Filled.Science">
+                                <span class="fw-bold">Juan Perez</span> <MudChip T="string" Color="Color.Warning" Size="Size.Small">Muestra Pendiente</MudChip>
+                            </MudListItem>
+                            <MudDivider />
+                            <MudListItem Icon="@Icons.Material.Filled.Science">
+                                <span class="fw-bold">Ana Gomez</span> <MudChip T="string" Color="Color.Success" Size="Size.Small">Ingresada</MudChip>
+                            </MudListItem>
+                        </MudList>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true" Class="mt-4">Analizador Automático</MudButton>
+                    </div>
+                </MudItem>
+            }
+
+            <MudItem xs="12" md="7">
+                <div class="glass-card chart-container p-4 h-100">
+                    <MudText Typo="Typo.h6" Class="fw-bold mb-4">Métricas de Actividad</MudText>
+                    <MudChart ChartType="ChartType.Line" ChartSeries="@ChartSeries" @bind-SelectedIndex="ChartIndex" XAxisLabels="@XAxisLabels" Width="100%" Height="300px" ChartOptions="Options" />
+                </div>
+            </MudItem>
+        </MudGrid>
+    }
+</div>
+
+@code {
+    private bool IsLoading = true;
+    private bool HasBillingAccess = false;
+    private MedFarLab.Application.Features.System.Models.TenantDashboardResponseDTO? DashboardData;
+    private int ChartIndex = -1;
+    private ChartOptions Options = new ChartOptions();
+
+    public List<ChartSeries> ChartSeries = new List<ChartSeries>();
+    public string[] XAxisLabels = { "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AppState.OrganizationId <= 0)
+        {
+            NavManager.NavigateTo("/");
+            return;
+        }
+
+        if (AppState.IsMasterAdmin)
+        {
+            NavManager.NavigateTo("/admin/dashboard");
+            return;
+        }
+
+        HasBillingAccess = AppState.PlanModules.Contains("Admin-Billing") || AppState.IsMasterAdmin;
+
+        try
+        {
+            var response = await Mediator.Send(new MedFarLab.Application.Features.System.Queries.GetTenantDashboard.GetTenantDashboardQuery(AppState.OrganizationId));
+
+            if (response != null)
+            {
+                DashboardData = response;
+                
+                ChartSeries.Add(new ChartSeries()
+                {
+                    Name = "Consultas",
+                    Data = DashboardData.RevenueTrend.Select(r => (double)r).ToArray()
+                });
+            }
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine($"Error fetch dashboard: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+
+}

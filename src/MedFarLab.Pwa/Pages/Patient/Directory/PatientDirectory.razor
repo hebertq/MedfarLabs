@@ -1,0 +1,107 @@
+@page "/patients/directory"
+@using MedFarLab.Application.Features.Clinical.Models
+@inject NavigationManager NavManager
+
+<PageTitle>Directorio de Pacientes - MedFarLab</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
+    <div class="d-flex align-center mb-6">
+        <div>
+            <MudText Typo="Typo.h4" Color="Color.Primary"><b>Directorio Clínico</b></MudText>
+            <MudText Typo="Typo.body2" Color="Color.Surface">Gestiona y consulta los historiales de tus pacientes.</MudText>
+        </div>
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.PersonAdd" OnClick="CheckInPatient" Class="rounded-pill px-6">
+            Registrar Paciente
+        </MudButton>
+    </div>
+
+    <MudPaper Elevation="4" Class="pa-4 rounded-lg mb-6">
+        <div class="d-flex align-center">
+            <MudTextField @bind-Value="SearchTerm" Placeholder="Escribe un nombre o DNI para filtrar la tabla..."
+                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.FilterAlt"
+                          IconSize="Size.Medium" Class="mt-0" Immediate="true" Variant="Variant.Outlined" FullWidth="true" />
+            
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.PersonSearch" OnClick="OpenGlobalSearch" Class="ml-4 px-6" Style="height: 55px;">
+                Búsqueda Global
+            </MudButton>
+        </div>
+    </MudPaper>
+
+    <MudTable Items="@FilteredPatients" Loading="@IsLoading" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="4" Class="rounded-lg overflow-hidden custom-table">
+        <HeaderContent>
+            <MudTh>Paciente</MudTh>
+            <MudTh>DNI</MudTh>
+            <MudTh>Última Cita</MudTh>
+            <MudTh>Diagnóstico Principal</MudTh>
+            <MudTh>Estado</MudTh>
+            <MudTh>Acciones</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Paciente">
+                <div class="d-flex align-center">
+                    <MudAvatar Color="Color.Primary" Variant="Variant.Filled" Class="mr-3 shadow-sm">
+                        @context.Initials
+                    </MudAvatar>
+                    <MudText Typo="Typo.subtitle2"><b>@context.FullName</b></MudText>
+                </div>
+            </MudTd>
+            <MudTd DataLabel="DNI">
+                <MudText Typo="Typo.body2" Color="Color.Default">@context.DocumentId</MudText>
+            </MudTd>
+            <MudTd DataLabel="Última Cita">
+                <div class="d-flex align-center">
+                    <MudIcon Icon="@Icons.Material.Filled.CalendarToday" Size="Size.Small" Class="mr-2 text-muted"/>
+                    <MudText Typo="Typo.body2">@context.LastVisit</MudText>
+                </div>
+            </MudTd>
+            <MudTd DataLabel="Diagnóstico Principal">
+                <MudChip T="string" Color="Color.Info" Variant="Variant.Text" Size="Size.Small">@context.MainDiagnosis</MudChip>
+            </MudTd>
+            <MudTd DataLabel="Estado">
+                @{
+                    Color statusColor = context.Status switch
+                    {
+                        "Crítico" => Color.Error,
+                        "En Seguimiento" => Color.Warning,
+                        _ => Color.Success
+                    };
+                }
+                <MudChip T="string" Color="@statusColor" Size="Size.Small" Variant="Variant.Outlined">@context.Status</MudChip>
+            </MudTd>
+            <MudTd DataLabel="Acciones">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" EndIcon="@Icons.Material.Filled.ChevronRight" OnClick="@(() => OpenRecord(context.Id))">
+                    Expediente
+                </MudButton>
+            </MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <div class="d-flex flex-column align-center pa-10 text-muted">
+                 <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="Size.Large" Class="mb-4" />
+                 <MudText Typo="Typo.h6">No encontramos resultados</MudText>
+                 <MudText Typo="Typo.body2">Desconozco ese paciente. Intenta ingresando su DNI en el buscador o registra un ingreso nuevo.</MudText>
+            </div>
+        </NoRecordsContent>
+        <LoadingContent>
+            <div class="d-flex flex-column align-center pa-10">
+                 <MudProgressCircular Color="Color.Primary" Indeterminate="true" Class="mb-4" />
+                 <MudText Typo="Typo.h6">Sincronizando Expedientes...</MudText>
+                 <MudText Typo="Typo.body2" Color="Color.Secondary">Conectando de forma segura.</MudText>
+            </div>
+        </LoadingContent>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudContainer>
+
+<style>
+    .custom-table .mud-table-head .mud-table-cell {
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        color: var(--mud-palette-text-secondary);
+        background-color: var(--mud-palette-background-grey);
+    }
+</style>

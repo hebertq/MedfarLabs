@@ -1,0 +1,77 @@
+<section class="subpage-hero diagonal-cut-bottom">
+    <div class="hero-bg" style="background-image: url('@ImageUrl');">
+        <div class="hero-overlay"></div>
+        <!-- Gradiente extra para diluir la parte baja -->
+        <div class="gradient-fade"></div>
+    </div>
+    <div class="container hero-content reveal">
+        <h1 class="hero-title">@Title</h1>
+        <p class="hero-subtitle">@Subtitle</p>
+    </div>
+</section>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Subtitle { get; set; } = string.Empty;
+
+    [Parameter]
+    public string ImageUrl { get; set; } = string.Empty;
+}
+
+<style>
+    .subpage-hero {
+        position: relative;
+        width: 100%;
+        min-height: 45vh;
+        display: flex;
+        align-items: center;
+        background-color: var(--color-bg-dark); /* Fallback */
+    }
+    
+    .hero-bg {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed; /* Parallax effect */
+        z-index: 0;
+    }
+    
+    .hero-bg .hero-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        /* Dark gradient masking the image for high text readability */
+        background: linear-gradient(90deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.4) 100%);
+    }
+    
+    .hero-bg .gradient-fade {
+        position: absolute;
+        bottom: 0; left: 0; right: 0; height: 30%;
+        background: linear-gradient(0deg, var(--color-primary-dark) 0%, transparent 100%);
+        opacity: 0.8;
+    }
+    
+    .subpage-hero .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 800px;
+        padding: 4rem 0;
+    }
+    
+    .subpage-hero .hero-title {
+        color: white;
+        font-size: 3.2rem;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    
+    .subpage-hero .hero-subtitle {
+        color: rgba(255,255,255,0.85);
+        font-size: 1.25rem;
+        font-weight: 300;
+        line-height: 1.6;
+    }
+</style>

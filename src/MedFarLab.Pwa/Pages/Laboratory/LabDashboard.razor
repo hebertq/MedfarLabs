@@ -1,0 +1,144 @@
+@page "/laboratory/dashboard"
+@using MudBlazor
+
+<PageTitle>Dashboard Operativo - MedFarLab</PageTitle>
+
+<div class="glass-header mb-4 fade-in-up">
+    <div>
+        <MudText Typo="Typo.h5" Class="gradient-text-primary fw-bold">Flujo de Laboratorio (Kanban)</MudText>
+        <MudText Typo="Typo.body2" Class="text-muted">Arrastra las órdenes entre columnas. Desliza hacia los lados en móvil.</MudText>
+    </div>
+    
+    <div style="display: flex; gap: 1rem;">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Science">
+            Nueva Orden
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Search">
+            Buscar Mostrar
+        </MudButton>
+    </div>
+</div>
+
+<MudGrid Class="mb-6 fade-in-up delay-1">
+    <MudItem xs="12" sm="4">
+        <div class="glass-panel pa-4 d-flex align-center justify-space-between rounded-xl" style="border-left: 4px solid var(--mud-palette-warning);">
+            <div>
+                <MudText Typo="Typo.subtitle2" Class="text-muted">Pendientes Hoy</MudText>
+                <MudText Typo="Typo.h4" Color="Color.Warning">@Model.PendingExamsToday</MudText>
+            </div>
+            <MudIcon Icon="@Icons.Material.Filled.HourglassTop" Color="Color.Warning" Size="Size.Large" />
+        </div>
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <div class="glass-panel pa-4 d-flex align-center justify-space-between rounded-xl" style="border-left: 4px solid var(--mud-palette-success);">
+            <div>
+                <MudText Typo="Typo.subtitle2" Class="text-muted">Procesados</MudText>
+                <MudText Typo="Typo.h4" Color="Color.Success">@Model.CompletedExamsToday</MudText>
+            </div>
+            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Size="Size.Large" />
+        </div>
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <div class="glass-panel pa-4 d-flex align-center justify-space-between rounded-xl" style="border-left: 4px solid var(--mud-palette-error);">
+            <div>
+                <MudText Typo="Typo.subtitle2" Class="text-muted">Resultados Críticos</MudText>
+                <MudText Typo="Typo.h4" Color="Color.Error">@Model.CriticalResults</MudText>
+            </div>
+            <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Error" Size="Size.Large" />
+        </div>
+    </MudItem>
+</MudGrid>
+
+<!-- Kanban Drop Container con Scroll Horizontal -->
+<MudDropContainer T="MedFarLab.Application.Features.Laboratory.Models.LabPendingQueueVM" 
+                  Items="@Model.PendingQueue" 
+                  ItemsSelector="@((item,dropzone) => item.Status == dropzone)" 
+                  ItemDropped="ItemUpdated" 
+                  Class="d-flex flex-nowrap gap-6 pb-6" 
+                  Style="overflow-x: auto; overflow-y: hidden; min-height: 500px;">
+    
+    <ChildContent>
+        <!-- Columna 1: Pendiente -->
+        <div class="glass-panel pa-4 d-flex flex-column rounded-xl flex-grow-0 flex-shrink-0" style="width: 320px; background-color: rgba(255,255,255,0.4);">
+            <div class="d-flex align-center justify-space-between mb-4">
+                <MudText Typo="Typo.subtitle1" Class="font-weight-bold">
+                    <MudIcon Icon="@Icons.Material.Filled.Inbox" Size="Size.Small" Color="Color.Warning" Class="mr-2 mb-1" />
+                    Pendiente
+                </MudText>
+                <MudChip T="string" Size="Size.Small" Color="Color.Warning">@Model.PendingQueue.Count(x => x.Status == "Pendiente")</MudChip>
+            </div>
+            <MudDropZone T="MedFarLab.Application.Features.Laboratory.Models.LabPendingQueueVM" Identifier="Pendiente" Class="flex-grow-1" Style="min-height: 200px; padding-bottom: 2rem;" />
+        </div>
+
+        <!-- Columna 2: En Proceso -->
+        <div class="glass-panel pa-4 d-flex flex-column rounded-xl flex-grow-0 flex-shrink-0" style="width: 320px; background-color: rgba(255,255,255,0.4);">
+            <div class="d-flex align-center justify-space-between mb-4">
+                <MudText Typo="Typo.subtitle1" Class="font-weight-bold">
+                    <MudIcon Icon="@Icons.Material.Filled.Autorenew" Size="Size.Small" Color="Color.Info" Class="mr-2 mb-1" />
+                    En Proceso
+                </MudText>
+                <MudChip T="string" Size="Size.Small" Color="Color.Info">@Model.PendingQueue.Count(x => x.Status == "En Proceso")</MudChip>
+            </div>
+            <MudDropZone T="MedFarLab.Application.Features.Laboratory.Models.LabPendingQueueVM" Identifier="En Proceso" Class="flex-grow-1" Style="min-height: 200px; padding-bottom: 2rem;" />
+        </div>
+
+        <!-- Columna 3: Completado -->
+        <div class="glass-panel pa-4 d-flex flex-column rounded-xl flex-grow-0 flex-shrink-0" style="width: 320px; background-color: rgba(255,255,255,0.4);">
+            <div class="d-flex align-center justify-space-between mb-4">
+                <MudText Typo="Typo.subtitle1" Class="font-weight-bold">
+                    <MudIcon Icon="@Icons.Material.Filled.CheckCircleOutline" Size="Size.Small" Color="Color.Success" Class="mr-2 mb-1" />
+                    Completado
+                </MudText>
+                <MudChip T="string" Size="Size.Small" Color="Color.Success">@Model.PendingQueue.Count(x => x.Status == "Completado")</MudChip>
+            </div>
+            <MudDropZone T="MedFarLab.Application.Features.Laboratory.Models.LabPendingQueueVM" Identifier="Completado" Class="flex-grow-1" Style="min-height: 200px; padding-bottom: 2rem;" />
+        </div>
+    </ChildContent>
+    <ItemRenderer>
+        <MudPaper Elevation="2" Class="pa-4 rounded-lg mb-4 cursor-grab" Style="border-left: 4px solid var(--mud-palette-primary);">
+            <div class="d-flex justify-space-between align-start mb-2">
+                <MudText Typo="Typo.caption" Class="text-muted">#LAB-@context.OrderId.ToString("D5")</MudText>
+                <MudChip T="string" Color="@(context.Priority == "Alta" || context.Priority == "Crítico" ? Color.Error : Color.Default)" Size="Size.Small" Variant="Variant.Filled">
+                    @context.Priority
+                </MudChip>
+            </div>
+            <MudText Typo="Typo.subtitle1" Class="fw-bold">@context.PatientName</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">
+                <MudIcon Icon="@Icons.Material.Filled.Biotech" Size="Size.Small" Class="mr-1 mt-n1" />
+                @context.TestName
+            </MudText>
+            <div class="d-flex justify-space-between align-center">
+                <MudText Typo="Typo.caption" Class="text-muted">@context.RequestedDate.ToString("HH:mm")</MudText>
+                @if(context.Status == "En Proceso")
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.Science" Color="Color.Info" Size="Size.Small" />
+                }
+                else if (context.Status == "Completado")
+                {
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" Size="Size.Small" OnClick="@(() => OpenUploadModal(context.OrderId))">Ver / Subir</MudButton>
+                }
+            </div>
+        </MudPaper>
+    </ItemRenderer>
+</MudDropContainer>
+
+<MudDialog @bind-Visible="ShowUploadModal" Options="new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true }">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Resultados PDF</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Class="mb-3">Se procesará la orden automáticamente. Adjunte el PDF validado por el analista.</MudText>
+        <MudFileUpload T="IBrowserFile" Accept=".pdf" Class="mb-4">
+            <ButtonTemplate>
+                <MudButton HtmlTag="label" Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">Seleccionar PDF</MudButton>
+            </ButtonTemplate>
+        </MudFileUpload>
+        <MudTextField @bind-Value="UploadNotes" Label="Agrega una nota médica u observacion" Variant="Variant.Outlined" Lines="2" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CloseUploadModal" Class="mr-2">Cancelar</MudButton>
+        <MudButton OnClick="HandleUploadResults" Variant="Variant.Filled" Color="Color.Success" Disabled="IsSending">
+            @(IsSending ? "Guardando..." : "Confirmar Resultados")
+        </MudButton>
+    </DialogActions>
+</MudDialog>

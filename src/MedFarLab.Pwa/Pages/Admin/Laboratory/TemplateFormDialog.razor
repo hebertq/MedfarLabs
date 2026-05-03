@@ -1,0 +1,71 @@
+@using MudBlazor
+@using MedfarLabs.Core.Application.Features.Laboratory.Dtos.Response
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" IsValid="@success">
+            <MudTextField T="string" @bind-Value="Model.Name" Label="Nombre de la Plantilla" Required="true" RequiredError="El nombre es obligatorio" Variant="Variant.Outlined" Class="mb-4" />
+            <MudSelect T="long" @bind-Value="Model.ServiceId" Label="Servicio Asociado" Required="true" RequiredError="Debe seleccionar un servicio" Variant="Variant.Outlined" Class="mb-4">
+                <MudSelectItem Value="@((long)1)">Hemograma (Simulado)</MudSelectItem>
+                <MudSelectItem Value="@((long)2)">Perfil Lipídico (Simulado)</MudSelectItem>
+            </MudSelect>
+            <MudNumericField T="int" @bind-Value="Model.Version" Label="Versión" Required="true" Variant="Variant.Outlined" Class="mb-4" />
+            <MudSwitch T="bool" @bind-Value="Model.IsPublished" Label="Publicado" Color="Color.Success" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit" Disabled="@(!success || IsSaving)">Guardar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public LabExamTemplateResponseDTO? TemplateModel { get; set; }
+
+    protected LabExamTemplateResponseDTO Model { get; set; } = new();
+    
+    private MudForm form = default!;
+    private bool success;
+    private bool IsSaving;
+
+    protected override void OnInitialized()
+    {
+        if (TemplateModel != null)
+        {
+            Model = new LabExamTemplateResponseDTO
+            {
+                Id = TemplateModel.Id,
+                Name = TemplateModel.Name,
+                ServiceId = TemplateModel.ServiceId,
+                Version = TemplateModel.Version,
+                IsPublished = TemplateModel.IsPublished
+            };
+        }
+        else
+        {
+            Model.Version = 1;
+            Model.IsPublished = true;
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            IsSaving = true;
+            // Aquí deberíamos llamar a un Command de MediatR para guardar la plantilla,
+            // pero para este MVP cerraremos el diálogo devolviendo el modelo.
+            // Una vez que el Command de Crear/Actualizar se implemente en Core, lo inyectaremos aquí.
+            IsSaving = false;
+            MudDialog.Close(DialogResult.Ok(Model));
+        }
+    }
+}

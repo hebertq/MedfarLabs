@@ -1,0 +1,64 @@
+@page "/admin/plans"
+@layout MainLayout
+@using MedfarLabs.Core.Application.Features.Billing.Dtos.Request
+
+
+
+<PageTitle>SaaS Plans - MedFarLab Admin</PageTitle>
+
+<PageActionHeader ShowBackButton="true" BackUrl="/admin/dashboard">
+    <StatusContent>
+        <div>
+            <MudText Typo="Typo.h5" Class="text-primary fw-bold">Gestión de Planes SaaS</MudText>
+            <MudText Typo="Typo.body2" Class="text-muted">Creación y configuración de planes B2B.</MudText>
+        </div>
+    </StatusContent>
+</PageActionHeader>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6 mb-16">
+    <MudGrid>
+        @foreach (var plan in Plans)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Elevation="4" Class="rounded-xl h-100 d-flex flex-column" Style="border-top: 5px solid var(--mud-palette-primary)">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h5" Class="fw-bold">@plan.Name</MudText>
+                            <MudText Typo="Typo.h3" Color="Color.Primary" Class="mt-4 fw-bold">
+                                $@plan.MonthlyPrice <span style="font-size: 1rem; color: gray;">/ mes</span>
+                            </MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent Class="flex-grow-1">
+                        <MudText Typo="Typo.body1" Class="mb-6">@plan.Description</MudText>
+                        
+                        <MudText Typo="Typo.subtitle2" Class="fw-bold mb-2">Características Incluidas:</MudText>
+                        <MudList T="string" Dense="true">
+                            @foreach(var feat in plan.Features)
+                            {
+                                <MudListItem T="string" Icon="@Icons.Material.Filled.CheckCircle" IconColor="Color.Success">
+                                    @feat
+                                </MudListItem>
+                            }
+                        </MudList>
+                    </MudCardContent>
+
+                    <MudCardActions Class="justify-center pa-4">
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true" Class="rounded-pill" OnClick="@(() => EditExistingPlan(plan))">Editar Plan</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+
+        <!-- Add New Plan Card -->
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="0" Class="rounded-xl h-100 d-flex align-center justify-center add-plan-card" 
+                     Style="border: 2px dashed var(--mud-palette-primary); min-height: 400px; cursor: pointer; background-color: rgba(0,0,0,0.02)">
+                <div class="text-center" @onclick="CreateNewPlan">
+                    <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="Size.Large" Color="Color.Primary" />
+                    <MudText Typo="Typo.h6" Color="Color.Primary" Class="mt-2 text-uppercase fw-bold">Crear Nuevo Plan</MudText>
+                </div>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>

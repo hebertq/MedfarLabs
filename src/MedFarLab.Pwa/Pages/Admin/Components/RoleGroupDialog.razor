@@ -1,0 +1,15 @@
+@using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success">
+            <MudTextField T="string" @bind-Value="Name" Label="Nombre Formateado" Required="true" RequiredError="Nombre requerido"/>
+            <MudTextField T="string" @bind-Value="Alias" Label="Alias Sistema (ej. GRP_XYZ)" Required="true"/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" OnClick="Submit" Disabled="@(!success)">Procesar</MudButton>
+    </DialogActions>
+</MudDialog>
+

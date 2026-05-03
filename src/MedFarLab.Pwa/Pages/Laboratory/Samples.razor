@@ -1,0 +1,80 @@
+@page "/laboratory/samples"
+@using MudBlazor
+
+<PageTitle>Registro de Muestras Clínicas - MedFarLab</PageTitle>
+
+<div class="glass-header mb-6 fade-in-up">
+    <div>
+        <MudText Typo="Typo.h5" Class="gradient-text-primary fw-bold">Registro de Muestras Clínicas</MudText>
+        <MudText Typo="Typo.body2" Class="text-muted">Gestión integral de preanalítica, códigos de barras y trazabilidad de muestras biológicas.</MudText>
+    </div>
+    
+    <div style="display: flex; gap: 1rem;">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.QrCodeScanner">
+            Leer Etiqueta
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenReceiveSampleDialog">
+            Recibir Muestra
+        </MudButton>
+    </div>
+</div>
+
+<div class="fade-in-up delay-1">
+    <MudTable Items="@MockSamples" Hover="true" Breakpoint="Breakpoint.Sm" 
+              Class="glass-panel" 
+              Elevation="0" 
+              HeaderClass="fw-bold text-muted">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Inventario de Preanalítica Diario</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="SearchString" Placeholder="Buscar por Código o Nombre" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Variant="Variant.Outlined" Margin="Margin.Dense" />
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Código de Barras</MudTh>
+            <MudTh>Paciente</MudTh>
+            <MudTh>Tipo de Muestra</MudTh>
+            <MudTh>Prueba Solicitada</MudTh>
+            <MudTh>Estado Preanalítico</MudTh>
+            <MudTh>Acciones</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Código de Barras">
+                <MudText Typo="Typo.body2" Class="fw-bold" Color="Color.Secondary">@context.Barcode</MudText>
+            </MudTd>
+            <MudTd DataLabel="Paciente">
+                <div class="d-flex align-center">
+                    <MudAvatar Color="Color.Primary" Size="Size.Small" Class="mr-3">@context.PatientName.Substring(0, 1)</MudAvatar>
+                    <MudText Typo="Typo.body2">@context.PatientName</MudText>
+                </div>
+            </MudTd>
+            <MudTd DataLabel="Tipo de Muestra">
+                <MudChip T="string" Size="Size.Small" Variant="Variant.Text" Color="Color.Info" Icon="@Icons.Material.Filled.Bloodtype">@context.SampleType</MudChip>
+            </MudTd>
+            <MudTd DataLabel="Prueba Solicitada">@context.TestName</MudTd>
+            <MudTd DataLabel="Estado Preanalítico">
+                @if (context.Status == "Recolectada")
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success">@context.Status</MudChip>
+                }
+                else if (context.Status == "Rechazada")
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Error">@context.Status</MudChip>
+                }
+                else
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Warning">@context.Status</MudChip>
+                }
+            </MudTd>
+            <MudTd DataLabel="Acciones">
+                <MudIconButton Icon="@Icons.Material.Filled.Receipt" Color="Color.Primary" Size="Size.Small" Title="Generar Etiqueta" />
+                @if(context.Status == "Pendiente") {
+                    <MudIconButton Icon="@Icons.Material.Filled.FactCheck" Color="Color.Success" Size="Size.Small" Title="Recibir Muestra" OnClick="@(() => ReceiveSample(context))" />
+                    <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline" Color="Color.Error" Size="Size.Small" Title="Rechazar" OnClick="@(() => RejectSample(context))" />
+                }
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager InfoFormat="{first_item}-{last_item} de {all_items}" RowsPerPageString="Filas por página:" />
+        </PagerContent>
+    </MudTable>
+</div>

@@ -1,0 +1,109 @@
+@page "/laboratory/templates"
+@layout MainLayout
+@using MedfarLabs.Core.Application.Features.Laboratory.Dtos.Response
+
+<PageTitle>Catálogo de Exámenes - Laboratorio</PageTitle>
+
+<PageActionHeader ShowBackButton="true" BackUrl="/laboratory/dashboard">
+    <StatusContent>
+        <div>
+            <MudText Typo="Typo.h5" Class="text-primary fw-bold">Plantillas de Resultados</MudText>
+            <MudText Typo="Typo.body2" Class="text-muted">Catálogo global de exámenes y sus analitos para configurar tus reportes.</MudText>
+        </div>
+    </StatusContent>
+</PageActionHeader>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6 mb-16">
+    <MudGrid>
+        <MudItem xs="12" md="4">
+            <MudPaper Elevation="4" Class="pa-4 rounded-xl h-100">
+                <MudText Typo="Typo.h6" Class="fw-bold mb-4">Exámenes Disponibles</MudText>
+                @if (IsLoading)
+                {
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Class="d-block mx-auto mt-6" />
+                }
+                else if (Templates == null || !Templates.Any())
+                {
+                    <MudText Typo="Typo.body2" Color="Color.Error">No se encontraron plantillas en el catálogo global.</MudText>
+                }
+                else
+                {
+                    <MudList T="long" SelectedValue="SelectedTemplateId" SelectedValueChanged="OnTemplateSelected" Color="Color.Primary" Dense="true" Clickable="true">
+                        @foreach (var template in Templates)
+                        {
+                            <MudListItem T="long" Value="template.Id">
+                                <div class="d-flex flex-column">
+                                    <MudText Typo="Typo.body1" Class="fw-bold">@template.Name</MudText>
+                                    <MudText Typo="Typo.caption" Class="text-muted">Versión: @template.Version</MudText>
+                                </div>
+                            </MudListItem>
+                        }
+                    </MudList>
+                }
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="8">
+            <MudPaper Elevation="4" Class="pa-4 rounded-xl h-100 d-flex flex-column">
+                @if (SelectedTemplate == null)
+                {
+                    <div class="d-flex flex-column align-center justify-center flex-grow-1 text-muted">
+                        <MudIcon Icon="@Icons.Material.Filled.Science" Size="Size.Large" Class="mb-4" />
+                        <MudText Typo="Typo.h6">Selecciona un examen para ver sus analitos</MudText>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex justify-space-between align-center mb-6">
+                        <div>
+                            <MudText Typo="Typo.h5" Class="fw-bold">@SelectedTemplate.Name</MudText>
+                            <MudText Typo="Typo.body2" Class="text-muted">Viendo estructura global recomendada.</MudText>
+                        </div>
+                        <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ContentCopy" OnClick="CloneTemplate" Disabled="IsCloning" Class="rounded-pill px-6">
+                            @(IsCloning ? "Clonando..." : "Clonar a mi Laboratorio")
+                        </MudButton>
+                    </div>
+
+                    @if (IsLoadingItems)
+                    {
+                        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mb-4" />
+                    }
+                    else if (TemplateItems != null && TemplateItems.Any())
+                    {
+                        <MudTable Items="@TemplateItems" Dense="true" Hover="true" Elevation="0" Class="border-solid border-1 border-mud-palette-lines rounded-lg flex-grow-1">
+                            <HeaderContent>
+                                <MudTh>Analito</MudTh>
+                                <MudTh>Unidad</MudTh>
+                                <MudTh>Rango Ref.</MudTh>
+                                <MudTh>Tipo Valor</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Analito">@context.AnalyteName</MudTd>
+                                <MudTd DataLabel="Unidad">@(string.IsNullOrEmpty(context.Unit) ? "-" : context.Unit)</MudTd>
+                                <MudTd DataLabel="Rango Ref.">
+                                    @if(context.RefMin.HasValue && context.RefMax.HasValue)
+                                    {
+                                        <span>@context.RefMin - @context.RefMax</span>
+                                    }
+                                    else if (!string.IsNullOrEmpty(context.RefOptions))
+                                    {
+                                        <MudChip T="string" Size="Size.Small" Color="Color.Info" Variant="Variant.Text">Cualitativo</MudChip>
+                                    }
+                                    else
+                                    {
+                                        <span>-</span>
+                                    }
+                                </MudTd>
+                                <MudTd DataLabel="Tipo Valor">@context.ValueType</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    }
+                    else
+                    {
+                        <MudAlert Severity="Severity.Info">Este examen no tiene analitos configurados aún.</MudAlert>
+                    }
+                }
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>

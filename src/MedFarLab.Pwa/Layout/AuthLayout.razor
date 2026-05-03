@@ -1,0 +1,13 @@
+﻿@inherits LayoutComponentBase
+@using MudBlazor
+
+<MudThemeProvider Theme="MedFarLab.Pwa.Shared.CorporateTheme.ModernTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+
+<div class="auth-layout-container">
+    <main class="auth-content">
+        @Body
+    </main>
+</div>

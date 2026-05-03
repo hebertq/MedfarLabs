@@ -1,0 +1,143 @@
+@page "/admin/dashboard"
+<PageTitle>Central B2B SaaS - MedFarLab</PageTitle>
+
+@if (!AppState.IsMasterAdmin)
+{
+    <MudContainer MaxWidth="MaxWidth.Large" Class="mt-16 d-flex flex-column align-center justify-center">
+        <MudIcon Icon="@Icons.Material.Filled.Security" Color="Color.Error" Style="font-size: 6rem;" />
+        <MudText Typo="Typo.h4" Color="Color.Error" Class="mt-4 fw-bold">Acceso Denegado</MudText>
+        <MudText Typo="Typo.body1" Class="mt-2 text-muted">No posee credenciales de Master Admin para visualizar este panel.</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-6 rounded-pill" OnClick='() => NavManager.NavigateTo("/")'>Volver al Inicio</MudButton>
+    </MudContainer>
+}
+else
+{
+    <div class="glass-header mb-4">
+        <div>
+            <MudText Typo="Typo.h5" Class="text-secondary fw-bold">Central MedfarLabs (Master Admin)</MudText>
+            <MudText Typo="Typo.body2" Class="text-muted">Control global SaaS, Onboarding de Clínicas, Infraestructura de Planes y Seguridad B2B.</MudText>
+        </div>
+    </div>
+
+    @if (IsLoading)
+    {
+        <div class="d-flex justify-center mt-8">
+            <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large" />
+        </div>
+    }
+    else if (DashboardData != null)
+    {
+        <MudContainer MaxWidth="MaxWidth.Large" Class="pa-0">
+            <MudGrid>
+                <!-- Alertas de Acción Inmediata B2B -->
+                <MudItem xs="12" sm="4">
+                    <MudPaper Class="pa-6 d-flex flex-column" Elevation="2" Style="border-radius: 12px; border-left: 5px solid var(--mud-palette-error);">
+                        <div class="d-flex justify-space-between align-center mb-2">
+                            <MudAvatar Color="Color.Error" Variant="Variant.Outlined" Size="Size.Small"><MudIcon Icon="@Icons.Material.Filled.Receipt" Size="Size.Small"/></MudAvatar>
+                            <MudChip T="string" Color="Color.Error" Size="Size.Small" Variant="Variant.Text">ACCIÓN REQUERIDA</MudChip>
+                        </div>
+                        <MudText Typo="Typo.h3" Class="fw-bold mb-1 text-error">@DashboardData.PendingInvoicesCount</MudText>
+                        <MudText Typo="Typo.subtitle2" Class="text-muted text-uppercase fw-bold">Facturas Pendientes</MudText>
+                    </MudPaper>
+                </MudItem>
+                
+                <MudItem xs="12" sm="4">
+                    <MudPaper Class="pa-6 d-flex flex-column" Elevation="2" Style="border-radius: 12px; border-left: 5px solid var(--mud-palette-success);">
+                        <div class="d-flex justify-space-between align-center mb-2">
+                            <MudAvatar Color="Color.Success" Variant="Variant.Outlined" Size="Size.Small"><MudIcon Icon="@Icons.Material.Filled.Loyalty" Size="Size.Small"/></MudAvatar>
+                            <MudChip T="string" Color="Color.Success" Size="Size.Small" Variant="Variant.Text">POR APROBAR</MudChip>
+                        </div>
+                        <MudText Typo="Typo.h3" Class="fw-bold mb-1 text-success">@DashboardData.PendingSubscriptionsCount</MudText>
+                        <MudText Typo="Typo.subtitle2" Class="text-muted text-uppercase fw-bold">Subs. Pendientes</MudText>
+                    </MudPaper>
+                </MudItem>
+                
+                <MudItem xs="12" sm="4">
+                    <MudPaper Class="pa-6 d-flex flex-column" Elevation="2" Style="border-radius: 12px; border-left: 5px solid var(--mud-palette-warning);">
+                        <div class="d-flex justify-space-between align-center mb-2">
+                            <MudAvatar Color="Color.Warning" Variant="Variant.Outlined" Size="Size.Small"><MudIcon Icon="@Icons.Material.Filled.RocketLaunch" Size="Size.Small"/></MudAvatar>
+                            <MudChip T="string" Color="Color.Warning" Size="Size.Small" Variant="Variant.Text">EN COLA</MudChip>
+                        </div>
+                        <MudText Typo="Typo.h3" Class="fw-bold mb-1 text-warning">@DashboardData.PendingOnboardings</MudText>
+                        <MudText Typo="Typo.subtitle2" Class="text-muted text-uppercase fw-bold">Onboardings en Cola</MudText>
+                    </MudPaper>
+                </MudItem>
+
+                <!-- Sumario Operacional -->
+                <MudItem xs="12" md="6" Class="mt-6">
+                    <MudPaper Class="pa-6" Elevation="2" Style="border-radius: 12px; border-top: 4px solid var(--mud-palette-info);">
+                        <div class="d-flex align-center mb-4">
+                            <MudIcon Icon="@Icons.Material.Filled.Business" Color="Color.Info" Class="mr-3" />
+                            <MudText Typo="Typo.h6" Class="fw-bold">Visión Corporativa</MudText>
+                        </div>
+                        <div class="d-flex justify-space-around align-center mt-4">
+                            <div class="text-center">
+                                <MudText Typo="Typo.h3" Class="fw-bold text-info">@DashboardData.ActiveOrganizationsCount</MudText>
+                                <MudText Typo="Typo.body2" Class="text-muted text-uppercase fw-bold mt-1">Clínicas Activas</MudText>
+                            </div>
+                            <MudDivider Vertical="true" FlexItem="true" />
+                            <div class="text-center">
+                                <MudText Typo="Typo.h3" Class="fw-bold text-info">@($"${DashboardData.MonthlyRecurringRevenue:N0}")</MudText>
+                                <MudText Typo="Typo.body2" Class="text-muted text-uppercase fw-bold mt-1">MRR (Mensual)</MudText>
+                            </div>
+                        </div>
+                        <MudButton Variant="Variant.Filled" Color="Color.Info" FullWidth="true" Class="mt-6 rounded-pill" OnClick='() => NavManager.NavigateTo("/admin/organizations")'>
+                            Ver Directorio de Organizaciones
+                        </MudButton>
+                    </MudPaper>
+                </MudItem>
+
+                <!-- Acciones Rápidas -->
+                <MudItem xs="12" md="6" Class="mt-6">
+                    <MudText Typo="Typo.h6" Class="fw-bold mb-3">Accesos Directos</MudText>
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudPaper Class="pa-4 d-flex align-center justify-space-between pointer-hover" Elevation="1" Style="border-radius:12px;" @onclick='() => NavManager.NavigateTo("/admin/plans")'>
+                                <div class="d-flex align-center">
+                                    <MudAvatar Color="Color.Info" Variant="Variant.Filled" Class="mr-3">
+                                        <MudIcon Icon="@Icons.Material.Filled.Settings" />
+                                    </MudAvatar>
+                                    <div>
+                                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Gestor de Planes SaaS</MudText>
+                                        <MudText Typo="Typo.body2" Class="text-muted">Crear y modificar precios, características y roles.</MudText>
+                                    </div>
+                                </div>
+                                <MudIcon Icon="@Icons.Material.Filled.ChevronRight" />
+                            </MudPaper>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="pa-4 d-flex align-center justify-space-between pointer-hover mt-n2" Elevation="1" Style="border-radius:12px;" @onclick='() => NavManager.NavigateTo("/admin/users")'>
+                                <div class="d-flex align-center">
+                                    <MudAvatar Color="Color.Primary" Variant="Variant.Filled" Class="mr-3">
+                                        <MudIcon Icon="@Icons.Material.Filled.People" />
+                                    </MudAvatar>
+                                    <div>
+                                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Gestión de Personal B2B</MudText>
+                                        <MudText Typo="Typo.body2" Class="text-muted">Auditar cuentas de empleados en toda la red.</MudText>
+                                    </div>
+                                </div>
+                                <MudIcon Icon="@Icons.Material.Filled.ChevronRight" />
+                            </MudPaper>
+                        </MudItem>
+                        
+                        <MudItem xs="12">
+                            <MudPaper Class="pa-4 d-flex align-center justify-space-between pointer-hover mt-n2" Elevation="1" Style="border-radius:12px;" @onclick='() => NavManager.NavigateTo("/onboarding")'>
+                                <div class="d-flex align-center">
+                                    <MudAvatar Color="Color.Success" Variant="Variant.Filled" Class="mr-3">
+                                        <MudIcon Icon="@Icons.Material.Filled.RocketLaunch" />
+                                    </MudAvatar>
+                                    <div>
+                                        <MudText Typo="Typo.subtitle1" Class="fw-bold">Simular Nuevo Onboarding</MudText>
+                                        <MudText Typo="Typo.body2" Class="text-muted">Desplegar a un nuevo Inquilino en el motor.</MudText>
+                                    </div>
+                                </div>
+                                <MudIcon Icon="@Icons.Material.Filled.ChevronRight" />
+                            </MudPaper>
+                        </MudItem>
+                    </MudGrid>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+    }
+}

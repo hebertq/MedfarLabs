@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MedFarLab.Pwa</title>
+    <base href="/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+    <link href="MedFarLab.Pwa.styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="MedFarLab.Pwa.styles.css" rel="stylesheet" />
+    <link href="manifest.webmanifest" rel="manifest" />
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+</head>
+
+<body>
+    <div id="app">
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; width:100vw; background:linear-gradient(135deg, #f5f7fa 0%, #eef2f9 100%); position:fixed; top:0; left:0; z-index:9999;">
+            <img src="/images/logo.png" alt="MedFarLab Booting..." style="height: auto; width: 65%; max-width: 320px; animation: pulse-boot 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;" />
+            <div style="margin-top:2.5rem; width:220px; height:4px; background:rgba(0,80,210,0.1); border-radius:10px; overflow:hidden;">
+                <div style="width:30%; height:100%; background:linear-gradient(90deg, transparent, #0050D2, #00cc7a, transparent); animation: load-bar 1.5s infinite linear;"></div>
+            </div>
+            <style>
+                @keyframes pulse-boot {
+                    0%, 100% {
+                        opacity: 1;
+                        transform: scale(1);
+                    }
+
+                    50% {
+                        opacity: .7;
+                        transform: scale(0.97);
+                    }
+                }
+
+                @keyframes load-bar {
+                    0% {
+                        transform: translateX(-100%);
+                    }
+
+                    100% {
+                        transform: translateX(200%);
+                    }
+                }
+            </style>
+        </div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script> @* <-- Verifica que esté aquí *@
+    <script>
+        window.downloadPdf = (fileName, byteBase64) => {
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = 'data:application/pdf;base64,' + byteBase64;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+<script src="js/export.js"></script>
+</body>
+
+</html>
+

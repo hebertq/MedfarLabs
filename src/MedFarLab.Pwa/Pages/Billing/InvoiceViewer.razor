@@ -1,0 +1,112 @@
+@page "/billing/view/{InvoiceId:long}"
+@using MudBlazor
+
+<PageTitle>Detalle de Factura #@InvoiceId - MedFarLab</PageTitle>
+
+<!-- Action Bar (Not Printed) -->
+<div class="hide-on-print d-flex justify-space-between align-center mb-4">
+    <MudButton Href="/billing/history" StartIcon="@Icons.Material.Filled.ArrowBackIos" Variant="Variant.Text" Color="Color.Primary">
+        Regresar al Historial
+    </MudButton>
+
+    <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Print" OnClick="PrintInvoice" Size="Size.Large" Disabled="IsPrinting">
+        @(IsPrinting ? "Generando..." : "Imprimir")
+    </MudButton>
+</div>
+
+<!-- Printable Paper View -->
+<div class="@PrintCssClass fade-in">
+    <MudPaper Class="pa-8 d-flex flex-column gap-4" Elevation="3" Style="border-radius: 12px; background: white;">
+        
+        <!-- Header -->
+        <div class="d-flex justify-space-between align-start" style="border-bottom: 2px solid var(--mud-palette-primary); padding-bottom: 1rem;">
+            <div>
+                <img src="/images/logo.png" alt="MedFarLab" style="height: 60px; object-fit: contain;" class="mb-2" />
+                <MudText Typo="Typo.h6" Class="fw-bold text-primary">Clínica MedFarLab S.A.</MudText>
+                <MudText Typo="Typo.body2">Ciudad Central, Zona Medica 4</MudText>
+            </div>
+            <div class="text-end">
+                <MudText Typo="Typo.h4" Class="fw-bold" Color="Color.Primary">FACTURA</MudText>
+                <MudText Typo="Typo.subtitle1" Class="text-muted">Nº @ViewModel.InvoiceNumber</MudText>
+                <MudText Typo="Typo.body2">Fecha: @ViewModel.IssuedDate.ToString("dd/MM/yyyy HH:mm")</MudText>
+            </div>
+        </div>
+
+        <!-- Bill To & Balance -->
+        <div class="my-2 d-flex justify-space-between align-center">
+            <div>
+                <MudText Typo="Typo.subtitle2" Class="fw-bold" Color="Color.Primary">Cobrado a:</MudText>
+                <MudText Typo="Typo.h6">@ViewModel.PatientName</MudText>
+            </div>
+            @if (PatientBalance > 0)
+            {
+                <div class="text-end hide-on-print pa-3" style="background-color: var(--mud-palette-error-hover); border-radius: 8px;">
+                    <MudText Typo="Typo.subtitle2" Class="text-error fw-bold">Saldo Pendiente Paciente</MudText>
+                    <MudText Typo="Typo.h5" Class="text-error fw-bold">$@PatientBalance.ToString("0.00")</MudText>
+                </div>
+            }
+        </div>
+
+        <!-- Professional DataGrid -->
+        <MudDataGrid Items="@ViewModel.Items" Elevation="0" Dense="true" Hideable="false" Filterable="false" SortMode="SortMode.None" Style="border: 1px solid var(--mud-palette-lines-default);" Class="my-4">
+            <Columns>
+                <PropertyColumn Property="x => x.Description" Title="Descripción del Servicio / Producto" />
+                <PropertyColumn Property="x => x.Quantity" Title="Cantidad" />
+                <PropertyColumn Property="x => x.UnitPrice" Title="Precio Unitario">
+                    <CellTemplate>
+                        <MudText Typo="Typo.body2" Class="text-muted">$@context.Item.UnitPrice.ToString("0.00")</MudText>
+                    </CellTemplate>
+                </PropertyColumn>
+                <PropertyColumn Property="x => x.Subtotal" Title="Importe">
+                    <CellTemplate>
+                        <MudText Typo="Typo.body2" Class="fw-bold">$@context.Item.Subtotal.ToString("0.00")</MudText>
+                    </CellTemplate>
+                </PropertyColumn>
+            </Columns>
+        </MudDataGrid>
+
+        <!-- Totals & Payments -->
+        <div class="d-flex justify-end mt-4">
+            <div style="width: 300px;">
+                <div class="d-flex justify-space-between mb-2">
+                    <MudText Typo="Typo.body1">Subtotal:</MudText>
+                    <MudText Typo="Typo.body1">$@ViewModel.Subtotal.ToString("0.00")</MudText>
+                </div>
+                <div class="d-flex justify-space-between mb-2">
+                    <MudText Typo="Typo.body1">Impuestos (15%):</MudText>
+                    <MudText Typo="Typo.body1">$@ViewModel.Tax.ToString("0.00")</MudText>
+                </div>
+                <MudDivider Class="my-2" />
+                <div class="d-flex justify-space-between mt-2">
+                    <MudText Typo="Typo.h6" Class="fw-bold">TOTAL:</MudText>
+                    <MudText Typo="Typo.h5" Color="Color.Primary" Class="fw-bold">$@ViewModel.TotalAmount.ToString("0.00")</MudText>
+                </div>
+
+                @if (Payments != null && Payments.Any())
+                {
+                    <MudDivider Class="my-2 hide-on-print" />
+                    <MudText Typo="Typo.subtitle2" Class="fw-bold hide-on-print mb-2">Pagos Registrados:</MudText>
+                    @foreach (var p in Payments)
+                    {
+                        var json = System.Text.Json.JsonSerializer.Serialize(p);
+                        var doc = System.Text.Json.JsonDocument.Parse(json);
+                        var amt = doc.RootElement.GetProperty("AmountPaid").GetDecimal();
+                        var method = doc.RootElement.GetProperty("PaymentMethodName").GetString();
+                        var date = doc.RootElement.GetProperty("PaymentDate").GetDateTime();
+                        
+                        <div class="d-flex justify-space-between mb-1 hide-on-print">
+                            <MudText Typo="Typo.body2" Class="text-success">@date.ToString("dd/MM") - @method</MudText>
+                            <MudText Typo="Typo.body2" Class="fw-bold text-success">-$@amt.ToString("0.00")</MudText>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        
+        <div class="mt-8 text-center" style="opacity: 0.6;">
+            <MudText Typo="Typo.body2">Gracias por confiar en Clínica MedFarLab.</MudText>
+            <MudText Typo="Typo.caption">Documento generado por sistema sin validez fiscal salvo timbre oficial.</MudText>
+        </div>
+
+    </MudPaper>
+</div>

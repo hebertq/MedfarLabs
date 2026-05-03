@@ -1,0 +1,100 @@
+@page "/admin/users/new"
+@layout MainLayout
+@using MedfarLabs.Core.Application.Features.Identity.Dtos.Request
+
+<PageTitle>Alta de Usuarios - MedFarLab</PageTitle>
+
+<PageActionHeader ShowBackButton="true" BackUrl="/admin/users">
+    <StatusContent>
+        <div>
+            <MudText Typo="Typo.h5" Class="text-primary fw-bold">Registrar Nuevo Personal</MudText>
+            <MudText Typo="Typo.body2" Class="text-muted">Creación de perfiles corporativos y personal médico.</MudText>
+        </div>
+    </StatusContent>
+</PageActionHeader>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8 mb-16">
+    <MudPaper Elevation="4" Class="pa-8 rounded-xl" Style="border-top: 5px solid var(--mud-palette-primary)">
+        
+        <MudForm @ref="form" @bind-IsValid="isFormValid">
+            <MudGrid>
+                <!-- Datos Personales -->
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h6" Class="mb-2">Información Personal</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="Model.FirstName" Label="Nombre(s)" Required="true" Variant="Variant.Outlined"/>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="Model.LastName" Label="Apellidos" Required="true" Variant="Variant.Outlined"/>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudDatePicker @bind-Date="selectedDate" Label="Fecha de Nacimiento" Required="true" Variant="Variant.Outlined" DisableToolbar="true" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudSelect T="int" @bind-Value="Model.GenderId" Label="Género" Required="true" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                        <MudSelectItem T="int" Value="1">Masculino</MudSelectItem>
+                        <MudSelectItem T="int" Value="2">Femenino</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+
+                <!-- Datos de Acceso -->
+                <MudItem xs="12" Class="mt-4">
+                    <MudText Typo="Typo.h6" Class="mb-2">Credenciales de Acceso</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="Model.Email" Label="Correo Electrónico" Required="true" Variant="Variant.Outlined" InputType="InputType.Email"/>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="Model.Username" Label="Nombre de Usuario" Required="true" Variant="Variant.Outlined"/>
+                </MudItem>
+
+                <!-- Selección de Rol -->
+                <MudItem xs="12" Class="mt-4">
+                    <MudText Typo="Typo.h6" Class="mb-2">Perfil y Permisos</MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudSelect T="string" @bind-Value="Model.RoleName" Label="Asignar Rol Principal" Required="true" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                        <MudSelectItem T="string" Value="@("Admin-Recepcion")">Recepcionista</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("Admin-Laboratory")">Técnico de Laboratorio</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("Admin-Clinical")">Médico Tratante</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+
+                <!-- Lógica Reactiva: Mostrar si es Médico -->
+                @if (Model.RoleName == "Admin-Clinical")
+                {
+                    <MudItem xs="12" Class="mt-4">
+                        <MudAlert Severity="Severity.Info" Class="mb-4">Información Médica Requerida para firmar recetas y consultas.</MudAlert>
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.ProfessionalLicense" Label="Ruta / Cédula Profesional" Required="true" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudSelect T="int?" @bind-Value="Model.SpecialtyId" Label="Especialidad Inicial" Required="true" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                            <MudSelectItem T="int?" Value="163">Medicina General</MudSelectItem>
+                            <MudSelectItem T="int?" Value="164">Cardiología</MudSelectItem>
+                            <MudSelectItem T="int?" Value="165">Patología Clínica / Laboratorio</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                }
+
+            </MudGrid>
+
+            <div class="d-flex justify-end mt-8 border-top pt-4">
+                <MudButton Variant="Variant.Text" Color="Color.Default" Class="mr-2">Cancelar</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveUserAsync" Disabled="@(!isFormValid || isSaving)">
+                    @if (isSaving)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                        <span class="ms-2">Generando Alta...</span>
+                    }
+                    else
+                    {
+                        <span>Registrar Contratación</span>
+                    }
+                </MudButton>
+            </div>
+        </MudForm>
+    </MudPaper>
+</MudContainer>

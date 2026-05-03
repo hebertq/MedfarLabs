@@ -1,0 +1,26 @@
+@using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success">
+            <MudSelect T="int" @bind-Value="ModuleId" Label="Módulo Padre (AppModule)" Required="true" RequiredError="Debes seleccionar el módulo al que pertenece">
+                <MudSelectItem Value="1">Security</MudSelectItem>
+                <MudSelectItem Value="2">Identity</MudSelectItem>
+                <MudSelectItem Value="3">Billing</MudSelectItem>
+                <MudSelectItem Value="4">Clinical</MudSelectItem>
+                <MudSelectItem Value="5">Care</MudSelectItem>
+                <MudSelectItem Value="6">Common</MudSelectItem>
+                <MudSelectItem Value="7">Inventory</MudSelectItem>
+                <MudSelectItem Value="8">Laboratory</MudSelectItem>
+            </MudSelect>
+
+            <MudTextField T="string" @bind-Value="Name" Label="Constante/Nombre de la Acción" Required="true" RequiredError="Nombre requerido (ej. AppAction.Care.XXX)"/>
+            <MudTextField T="string" @bind-Value="Description" Label="Descripción Humana Breve" Lines="2"/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" OnClick="Submit" Disabled="@(!success)">Guardar Acción</MudButton>
+    </DialogActions>
+</MudDialog>
+

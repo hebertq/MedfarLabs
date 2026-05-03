@@ -1,0 +1,179 @@
+@page "/billing/new"
+@page "/billing/invoice/{InvoiceId:long}"
+@using MudBlazor
+@using MedFarLab.Pwa.Shared
+@using MedfarLabs.Core.Domain.Enums.Billing
+@using MedfarLabs.Core.Domain.Extensions
+
+<PageTitle>Generador de Facturas - MedFarLab</PageTitle>
+
+<EditForm Model="ViewModel" OnValidSubmit="HandleSubmitInvoice">
+    <DataAnnotationsValidator />
+
+    <PageActionHeader ShowBackButton="true">
+        <ActionContent>
+            @if (!InvoiceId.HasValue)
+            {
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" Disabled="IsSending">
+                    @(IsSending ? "Procesando..." : "Registrar Factura")
+                </MudButton>
+            }
+            else if (CurrentInvoiceStatus == InvoiceStatusEnum.Unpaid.ToString())
+            {
+                <div class="d-flex gap-2">
+                    <MudButton OnClick="HandleSubmitInvoice" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" Disabled="IsSending">
+                        @(IsSending ? "Procesando..." : "Actualizar Factura")
+                    </MudButton>
+                    <MudButton OnClick="HandlePayInvoice" Variant="Variant.Filled" Color="Color.Success" Size="Size.Medium" Disabled="IsSending">
+                        Pagar Factura
+                    </MudButton>
+                </div>
+            }
+        </ActionContent>
+        <DropdownActions>
+            @if (InvoiceId.HasValue)
+            {
+                if (CurrentInvoiceStatus == InvoiceStatusEnum.Unpaid.ToString())
+                {
+                    <MudMenuItem OnClick="HandleCancelInvoice" Disabled="IsSending">
+                        <div class="d-flex align-center"><MudIcon Icon="@Icons.Material.Filled.Cancel" Color="Color.Error" Class="mr-2"/> <MudText Color="Color.Error">Anular Factura</MudText></div>
+                    </MudMenuItem>
+                }
+                <MudMenuItem OnClick="PrintA4ServerAsync">
+                    <div class="d-flex align-center"><MudIcon Icon="@Icons.Material.Filled.PictureAsPdf" Color="Color.Default" Class="mr-2"/> <MudText>Imprimir A4</MudText></div>
+                </MudMenuItem>
+                <MudMenuItem OnClick="PrintTicketServerAsync">
+                    <div class="d-flex align-center"><MudIcon Icon="@Icons.Material.Filled.Receipt" Color="Color.Default" Class="mr-2"/> <MudText>Ticket POS</MudText></div>
+                </MudMenuItem>
+            }
+        </DropdownActions>
+        <StatusContent>
+            @if (InvoiceId.HasValue)
+            {
+                <MudChip T="string" Size="Size.Medium" Color="@(CurrentInvoiceStatus == InvoiceStatusEnum.Paid.ToString() ? Color.Success : (CurrentInvoiceStatus == InvoiceStatusEnum.Unpaid.ToString() ? Color.Warning : Color.Error))">
+                    @(Enum.TryParse<InvoiceStatusEnum>(CurrentInvoiceStatus, out var statusEnum) ? statusEnum.GetDisplayName() : CurrentInvoiceStatus)
+                </MudChip>
+            }
+            else
+            {
+                <MudChip T="string" Size="Size.Medium" Color="Color.Default" Variant="Variant.Outlined">Borrador</MudChip>
+            }
+        </StatusContent>
+    </PageActionHeader>
+
+    <div class="glass-header mb-4 d-flex justify-space-between align-center">
+        <div class="d-flex align-center">
+            <div>
+                <MudText Typo="Typo.h5" Class="text-primary fw-bold">Gestión Financiera</MudText>
+                <MudText Typo="Typo.body2" Class="text-muted">@(InvoiceId.HasValue ? $"Procesar Factura Pendiente #{InvoiceId}" : "Emitir Nueva Factura")</MudText>
+            </div>
+        </div>
+        <div class="d-flex align-center">
+            <MudSwitch @bind-Value="AllowManualPriceEdit" Color="Color.Secondary" Label="Permitir Alterar Precios" />
+            <MudTooltip Text="Configuración Administrativa: Si se deshabilita, los precios vendrán fijos desde el Catálogo de Servicios." Placement="Placement.Left">
+                <MudIcon Icon="@Icons.Material.Filled.Info" Size="Size.Small" Color="Color.Primary" Class="ml-2" />
+            </MudTooltip>
+        </div>
+    </div>
+
+    <div class="@PrintCssClass">
+        <MudPaper Class="pa-6" Elevation="1" Style="border-radius: 12px;">
+            <MudGrid>
+                <!-- Información del Paciente -->
+                <MudItem xs="12" sm="6">
+                    <div class="d-flex gap-2 align-start">
+                        <MudTextField Value="@PatientName" Label="Paciente Seleccionado" 
+                                      Variant="Variant.Outlined" FullWidth="@true" ReadOnly="true" Required="true" />
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenPatientSearch" Style="height: 55px;">
+                            <MudIcon Icon="@Icons.Material.Filled.PersonSearch" />
+                        </MudButton>
+                    </div>
+                </MudItem>
+                @if (InvoiceId.HasValue)
+                {
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Value="@ViewModel.InvoiceNumber" ReadOnly="true" Label="Número de Factura" Variant="Variant.Outlined" />
+                    </MudItem>
+                }
+
+                <MudItem xs="12">
+                    <MudDivider Class="my-4" />
+                </MudItem>
+
+                <MudItem xs="12" Class="d-flex justify-space-between align-center">
+                    <MudText Typo="Typo.h6" Color="Color.Primary">Detalle de Servicios</MudText>
+                    @if (CurrentInvoiceStatus != InvoiceStatusEnum.Paid.ToString() && CurrentInvoiceStatus != InvoiceStatusEnum.Void.ToString())
+                    {
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="AddItem" StartIcon="@Icons.Material.Filled.Add">Añadir Servicio</MudButton>
+                    }
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudTable Items="@ViewModel.Items" Dense="true" Hover="true" Striped="true" Elevation="2" CustomHeader="true" Style="border-radius: 8px; overflow: hidden;">
+                        <HeaderContent>
+                            <MudTHeadRow Class="bg-dark">
+                                <MudTh><MudText Typo="Typo.subtitle2" Class="text-white fw-bold">Servicio / Producto</MudText></MudTh>
+                                <MudTh Style="width:100px;"><MudText Typo="Typo.subtitle2" Class="text-white fw-bold">Cantidad</MudText></MudTh>
+                                <MudTh Style="width:150px;"><MudText Typo="Typo.subtitle2" Class="text-white fw-bold">Precio Un.</MudText></MudTh>
+                                <MudTh Style="width:120px;"><MudText Typo="Typo.subtitle2" Class="text-white fw-bold">Subtotal</MudText></MudTh>
+                                <MudTh Style="width:100px;"></MudTh>
+                            </MudTHeadRow>
+                        </HeaderContent>
+                        <RowTemplate Context="itemCtx">
+                            <MudTd DataLabel="Servicio / Producto">
+                                <MudText Typo="Typo.body2" Class="fw-bold">@(itemCtx.SelectedService?.Name ?? "No Seleccionado")</MudText>
+                                @if (itemCtx.SelectedService != null)
+                                {
+                                    <MudText Typo="Typo.caption" Class="text-success fw-bold">COD: @itemCtx.SelectedService.Code</MudText>
+                                }
+                            </MudTd>
+                            <MudTd DataLabel="Cantidad">
+                                @itemCtx.Quantity
+                            </MudTd>
+                            <MudTd DataLabel="Precio Un.">
+                                $@itemCtx.UnitPrice.ToString("0.00")
+                            </MudTd>
+                            <MudTd DataLabel="Subtotal">
+                                <MudText Color="Color.Primary" Class="fw-bold">$@itemCtx.Subtotal.ToString("0.00")</MudText>
+                            </MudTd>
+                            <MudTd>
+                                @if (CurrentInvoiceStatus != InvoiceStatusEnum.Paid.ToString() && CurrentInvoiceStatus != InvoiceStatusEnum.Void.ToString())
+                                {
+                                    <div class="d-flex justify-end gap-1 hide-on-print">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary" OnClick="() => EditItem(itemCtx)" />
+                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="() => RemoveItem(itemCtx)" />
+                                    </div>
+                                }
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudItem>
+
+                <!-- Totales y Acciones -->
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="ViewModel.AuditNotes" Label="Notas de Auditoría" Variant="Variant.Outlined" Lines="4" Placeholder="Notas internas para contabilidad..." />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudPaper Elevation="0" Class="pa-4" Style="background-color: rgba(var(--mud-palette-primary-rgb), 0.05); border-radius: 8px; border: 1px solid var(--mud-palette-primary);">
+                        <div class="d-flex justify-space-between mb-2">
+                            <MudText Typo="Typo.body1">Subtotal:</MudText>
+                            <MudText Typo="Typo.body1" Class="fw-bold">$@ViewModel.Subtotal.ToString("0.00")</MudText>
+                        </div>
+                        <div class="d-flex justify-space-between mb-2">
+                            <MudText Typo="Typo.body1">Impuestos (15%):</MudText>
+                            <MudText Typo="Typo.body1" Class="fw-bold">$@ViewModel.Tax.ToString("0.00")</MudText>
+                        </div>
+                        <MudDivider Class="my-2" />
+                        <div class="d-flex justify-space-between mb-4">
+                            <MudText Typo="Typo.h6">Total a Pagar:</MudText>
+                            <MudText Typo="Typo.h5" Color="Color.Primary" Class="fw-bold">$@ViewModel.Total.ToString("0.00")</MudText>
+                        </div>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    </div>
+</EditForm>
+
+
+

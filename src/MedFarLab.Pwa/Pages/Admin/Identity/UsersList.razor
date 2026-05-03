@@ -1,0 +1,122 @@
+@page "/admin/users"
+
+<PageTitle>Usuarios Globales</PageTitle>
+
+<PageActionHeader ExportData="mockUsers" ExportFileName="UsuariosGlobales">
+    <ActionContent>
+        <div class="d-flex align-center mr-4">
+            <div>
+                <MudText Typo="Typo.h5" Class="text-info fw-bold">Usuarios Globales</MudText>
+                <MudText Typo="Typo.body2" Class="text-muted">Administración y monitoreo de credenciales del sistema.</MudText>
+            </div>
+        </div>
+        <MudButton Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.PersonAdd" OnClick="OpenAddModal">Invitar Usuario</MudButton>
+    </ActionContent>
+</PageActionHeader>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="pa-0">
+    <MudDataGrid Items="@mockUsers" Filterable="true" SortMode="SortMode.Multiple" Groupable="false" Bordered="true" Dense="true">
+        <Columns>
+            <PropertyColumn Property="x => x.Id" Title="ID" />
+            <PropertyColumn Property="x => x.Email" Title="Correo Electrónico" />
+            <TemplateColumn Title="Nombres (Person)">
+                <CellTemplate>
+                    <div class="d-flex align-center">
+                        <MudAvatar Size="Size.Small" Color="Color.Secondary" Class="mr-2">@(context.Item.Name.Substring(0,1))</MudAvatar>
+                        <span>@context.Item.Name</span>
+                    </div>
+                </CellTemplate>
+            </TemplateColumn>
+            <PropertyColumn Property="x => x.PhoneNumber" Title="Teléfono" />
+            <TemplateColumn Title="Estatus">
+                <CellTemplate>
+                    <MudChip T="string" Color="@Color.Success" Size="Size.Small" Variant="Variant.Outlined">Activo</MudChip>
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Org. Vinculada">
+                <CellTemplate>
+                    <MudLink Typo="Typo.body2">@context.Item.OrgId</MudLink>
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Acciones">
+                <CellTemplate>
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Info" OnClick="@(() => OpenEditModal(context.Item))"/>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="@(() => DeleteUser(context.Item))"/>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="MockUser" />
+        </PagerContent>
+    </MudDataGrid>
+</MudContainer>
+
+@code {
+    [Inject] private NavigationManager NavManager { get; set; } = default!;
+    [Inject] private IDialogService DialogService { get; set; } = default!;
+    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+
+    private List<MockUser> mockUsers = new()
+    {
+        new MockUser { Id = 1, Email = "admin@medfarlab.com", Name = "Super Admin Internal", PhoneNumber = "555-0000", OrgId = 1 },
+        new MockUser { Id = 2, Email = "dr.lucas@sanlucas.com", Name = "Dr. Lucas P.", PhoneNumber = "555-1234", OrgId = 1 },
+        new MockUser { Id = 3, Email = "qfb.ana@biotest.com", Name = "Ana Martinez (QFB)", PhoneNumber = "555-9876", OrgId = 2 }
+    };
+
+    public class MockUser
+    {
+        public long Id { get; set; }
+        public string Email { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string PhoneNumber { get; set; } = "";
+        public long OrgId { get; set; }
+    }
+
+    private async Task OpenAddModal()
+    {
+        var dialog = await DialogService.ShowAsync<MedFarLab.Pwa.Pages.Admin.Components.UserDialog>("Crear Usuario Interno");
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            dynamic data = result.Data;
+            mockUsers.Add(new MockUser { Id = mockUsers.Max(x => x.Id) + 1, Email = data.Email, Name = data.Name, PhoneNumber = data.PhoneNumber, OrgId = data.OrgId });
+            Snackbar.Add("Usuario agregado correctamente", Severity.Success);
+            StateHasChanged();
+        }
+    }
+
+    private async Task OpenEditModal(MockUser user)
+    {
+        var parameters = new DialogParameters { ["Email"] = user.Email, ["Name"] = user.Name, ["PhoneNumber"] = user.PhoneNumber, ["OrgId"] = user.OrgId };
+        var dialog = await DialogService.ShowAsync<MedFarLab.Pwa.Pages.Admin.Components.UserDialog>("Editar Usuario", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            dynamic data = result.Data;
+            user.Email = data.Email;
+            user.Name = data.Name;
+            user.PhoneNumber = data.PhoneNumber;
+            user.OrgId = data.OrgId;
+            Snackbar.Add("Usuario actualizado", Severity.Info);
+            StateHasChanged();
+        }
+    }
+
+    private async Task DeleteUser(MockUser user)
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Eliminar Acceso", 
+            $"¿Dar de baja a {user.Name} del sistema definitivamente?", 
+            yesText: "Sí, borrar", cancelText: "Cancelar");
+
+        if (result == true)
+        {
+            mockUsers.Remove(user);
+            Snackbar.Add("Acceso removido del registro.", Severity.Error);
+            StateHasChanged();
+        }
+    }
+}
+

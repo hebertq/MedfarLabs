@@ -1,0 +1,51 @@
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6"><MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Class="mr-2 mb-n1"/> Facturas Pendientes de Emisión</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (IsLoading)
+        {
+            <div class="d-flex justify-center my-6">
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            </div>
+        }
+        else if (!PendingInvoices.Any())
+        {
+            <MudAlert Severity="Severity.Success" Class="my-4">No tienes facturas pendientes generadas de consultas recientes.</MudAlert>
+        }
+        else
+        {
+            <MudTable Items="@PendingInvoices" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Class="rounded-lg">
+                <HeaderContent>
+                    <MudTh>ID Pendiente</MudTh>
+                    <MudTh>Paciente</MudTh>
+                    <MudTh>Consulta/Concepto</MudTh>
+                    <MudTh>Monto Prox.</MudTh>
+                    <MudTh>Acción</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="ID Pendiente">
+                        <MudChip T="string" Color="Color.Warning" Size="Size.Small">PND-@context.Id</MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Paciente">
+                        <MudText Typo="Typo.subtitle2"><b>@context.PatientName</b></MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Consulta/Concepto">
+                        <MudText Typo="Typo.body2" Class="text-muted">@context.Concept</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Monto Prox.">
+                        <MudText Typo="Typo.subtitle2" Color="Color.Success"><b>$@context.Subtotal.ToString("0.00")</b></MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Acción">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="() => SelectInvoice(context)">
+                            Procesar Pago
+                        </MudButton>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cerrar</MudButton>
+    </DialogActions>
+</MudDialog>

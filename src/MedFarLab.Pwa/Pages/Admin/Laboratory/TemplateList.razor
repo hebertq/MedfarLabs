@@ -1,0 +1,58 @@
+@page "/admin/laboratory/templates"
+@using MudBlazor
+@using MedFarLab.Pwa.Shared
+
+<PageActionHeader Title="Plantillas de Laboratorio Globales"
+                  Subtitle="Gestión de exámenes base para el sistema SaaS"
+                  Icon="@Icons.Material.Filled.Science">
+    <ActionButtons>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenNewTemplateModal">
+            Nueva Plantilla
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadData">
+            Refrescar
+        </MudButton>
+    </ActionButtons>
+</PageActionHeader>
+
+<div class="fade-in-up mt-4">
+    @if (IsLoading)
+    {
+        <div class="d-flex justify-center my-8">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        </div>
+    }
+    else
+    {
+        <MudDataGrid Items="@Templates" Dense="true" Hover="true" Bordered="true" Striped="true" 
+                     Filterable="true" SortMode="SortMode.Multiple" Class="glass-card">
+            <Columns>
+                <PropertyColumn Property="x => x.Id" Title="ID" />
+                <PropertyColumn Property="x => x.Name" Title="Nombre" />
+                <PropertyColumn Property="x => x.ServiceId" Title="ID Servicio" />
+                <PropertyColumn Property="x => x.Version" Title="Versión" />
+                <PropertyColumn Property="x => x.IsPublished" Title="Publicado">
+                    <CellTemplate>
+                        @if (context.Item.IsPublished)
+                        {
+                            <MudChip T="string" Color="Color.Success" Size="Size.Small">Sí</MudChip>
+                        }
+                        else
+                        {
+                            <MudChip T="string" Color="Color.Warning" Size="Size.Small">No</MudChip>
+                        }
+                    </CellTemplate>
+                </PropertyColumn>
+                <TemplateColumn Title="Acciones">
+                    <CellTemplate>
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Small" OnClick="@(() => OpenEditTemplateModal(context.Item))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.SettingsApplications" Color="Color.Secondary" Size="Size.Small" OnClick="@(() => OpenConfigureItemsModal(context.Item))" Title="Configurar Ítems" />
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+            <PagerContent>
+                <MudDataGridPager T="MedfarLabs.Core.Application.Features.Laboratory.Dtos.Response.LabExamTemplateResponseDTO" />
+            </PagerContent>
+        </MudDataGrid>
+    }
+</div>

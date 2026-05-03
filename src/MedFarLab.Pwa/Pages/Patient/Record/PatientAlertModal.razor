@@ -1,0 +1,34 @@
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="success" @bind-Errors="errors">
+            <MudSelect T="int" Label="Tipo de Alerta" @bind-Value="Model.AlertTypeId" Required="true" RequiredError="Debe seleccionar un tipo.">
+                <MudSelectItem Value="1">Alergia Letal</MudSelectItem>
+                <MudSelectItem Value="2">Condición Preexistente Grave</MudSelectItem>
+                <MudSelectItem Value="3">Contraindicación</MudSelectItem>
+                <MudSelectItem Value="4">Aviso Administrativo</MudSelectItem>
+            </MudSelect>
+
+            <MudSelect T="int" Label="Severidad" @bind-Value="Model.SeverityId" Required="true" RequiredError="Debe seleccionar la severidad." Class="mt-4">
+                <MudSelectItem Value="1">Baja/Media</MudSelectItem>
+                <MudSelectItem Value="2">Alta</MudSelectItem>
+                <MudSelectItem Value="3">Crítica</MudSelectItem>
+            </MudSelect>
+
+            <MudTextField T="string" Label="Mensaje / Descripción" @bind-Value="Model.Message" Required="true" RequiredError="El mensaje es obligatorio." Lines="3" Class="mt-4" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit" Disabled="@(!success || isSubmitting)">
+            @if (isSubmitting)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                <MudText Class="ms-2">Guardando...</MudText>
+            }
+            else
+            {
+                <text>Guardar Alerta</text>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
