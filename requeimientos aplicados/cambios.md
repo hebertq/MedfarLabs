@@ -121,6 +121,7 @@ Razor CSHTML
         </MudButton>
     </EmptyActionContent>
 </MedFarTable>
+```
 
 ### 🧠 ¿Qué logramos con este archivo?
 
@@ -128,4 +129,3 @@ Razor CSHTML
 2.  **Automatización:** Antigravity puede leer este archivo y entender que `MedFarTable` ya trae incluido el `MedFarSkeleton` y el `MedFarEmptyState`, por lo que puede limpiar el código redundante en las páginas existentes.
 3.  **Escalabilidad:** Si en el futuro decidimos que todas las tablas deben tener un botón de exportar a Excel, solo lo agregamos a `MedFarTable.razor` en este estándar y se replica en todo el sistema.
 
-**¿Deseas que procedamos con la refactorización de una página específica usando este
