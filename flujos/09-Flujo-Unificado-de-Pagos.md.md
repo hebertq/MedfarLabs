@@ -9,25 +9,26 @@ El sistema debe ser capaz de agrupar cargos de distintas fuentes antes de factur
 * **Fuente B (Laboratory):** Perfiles, exámenes individuales, recargos por toma a domicilio.
 * **Fuente C (Inventory):** Venta directa de medicamentos o insumos.
 
-## 3. Pasos del Flujo (Happy Path)
+## 3. Pasos del Flujo y Control de Idempotencia
 
 ### Paso 1: Consolidación de la Cuenta
 El cajero busca al paciente y el sistema muestra todos los ítems con estado `Pendiente de Pago`. 
 * *Regla:* Se pueden marcar/desmarcar ítems para pagos parciales.
 
 ### Paso 2: Aplicación de Beneficios (Seguros/Convenios)
-* El sistema aplica el descuento según el plan del paciente (SaaS Multitenant)[cite: 3].
-* Se calcula el **Copago** (lo que paga el paciente) y la **Cuenta por Cobrar** (lo que se factura a la aseguradora)[cite: 3].
+* El sistema aplica el descuento según el plan del paciente (SaaS Multitenant).
+* Se calcula el **Copago** (lo que paga el paciente) y la **Cuenta por Cobrar** (lo que se factura a la aseguradora).
 
 ### Paso 3: Selección de Método de Pago
 * Soporte para múltiples formas: Efectivo, Tarjeta, Transferencia o Crédito.
 * Registro de referencia de transacción para auditoría.
 
 ### Paso 4: Generación del Documento Fiscal e Impacto en Operaciones
-Al confirmar el `ProcessPaymentCommand`:
-1. **Billing:** Se genera la `Invoice` y se marca como `Paid`[cite: 3].
-2. **Laboratory:** Si hay una orden vinculada, su estado cambia de `PendingPayment` a `AwaitingSample` de forma automática[cite: 3].
-3. **Care:** Se libera la consulta para que el médico pueda iniciar la atención si el pago era requisito.
+Al confirmar el pago:
+1. **Idempotencia:** El frontend envía un `RequestId` al ejecutar `ProcessPaymentCommand`. El `IdempotencyRepository` asegura que no se cobre la tarjeta o se asiente el pago dos veces si hay un reintento por pérdida de red.
+2. **Billing:** Se genera la `Invoice` y se marca como `Paid`.
+3. **Laboratory:** Si hay una orden vinculada, su estado cambia de `PendingPayment` a `AwaitingSample` de forma automática vía eventos de integración.
+4. **Care:** Se libera la consulta para que el médico pueda iniciar la atención si el pago era requisito.
 
 ## 4. Componentes Técnicos (Capa Aplicación)
 * **Command:** `CollectPendingChargesQuery` (Agrupa cargos de todas las tablas).
