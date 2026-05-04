@@ -1,28 +1,44 @@
-# Estándares de Diseño - Perfil UX/UI
+# UX/UI Standards
 
-MedFarLab se orienta a ser una plataforma "Premium" que deslumbre al usuario en todo momento (`Wow factor`). Estos son los estándares visuales a seguir para el Frontend (`PWA` y `WebUI`).
+This document outlines the UX/UI standards for the MedFarLab project. It covers design principles, accessibility guidelines, and component usage.
+Please confirm you want Copilot to make this change in the hebertq/MedFarLab repository on branch main.
 
-## 1. Diseño Dinámico y Estética Premium
-- **Cero Elementos "Planos por Defecto":** Los botones primarios nunca deben tener un color azul genérico estándar. Utilizar gradientes sutiles (ej: LinearGradient con `var(--primary-color)` a `var(--primary-light)`), esquinas ligeramente redondeadas (`border-radius: 8px` a `12px`), y sombras de caja de profundidad múltiple (`box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1)`).
-- **Glassmorphism Inteligente:** Para modales, *Sidebars* y *Navbars*, emplear filtros de desenfoque (`backdrop-filter: blur(10px)`) combinados con fondos semi-transparentes (`background: rgba(255, 255, 255, 0.8)`) para un look moderno de "vidrio esmerilado", respetando los contrastes de legibilidad.
-- **Tipografía Moderna:** Usar tipografías claras y corporativas como `Inter`, `Roboto` u `Outfit`. Respetar jerarquías (H1 grande, H2 con peso semi-bold, texto de párrafo de 14px a 16px).
+## 1. Glasmorphism
+- **Definition**: Glasmorphism is a design trend that features translucent elements with a frosted glass effect.
+- **Usage Guidelines**:
+  - Use background blur to create a depth effect behind the glass elements.
+  - Maintain a subtle color palette to enhance visibility and improve aesthetics.
+  - Ensure text on glass elements is legible against varying backgrounds.
 
-## 2. Micro-Interacciones (Comportamiento y "Feels Alive")
-- Todo elemento accionable (Botón, Fila de tabla cliqueable, Tarjeta) debe tener un estado `:hover` con transición suave (`transition: all 0.2s ease-in-out;`).
-  - Ejemplo: Un botón al pasar el cursor (Hover) puede hacer un ligero `transform: translateY(-2px)` y aumentar ligeramente el *box-shadow*.
-  - En estado `:active` (Click) reducir la escala: `transform: scale(0.98)`.
+## 2. Skeleton First
+- **Definition**: Skeleton first design is a method where loading states are designed to show the structure of content before it’s fully loaded.
+- **Usage Guidelines**:
+  - Create skeleton screens that mimic the layout of the actual content with placeholders.
+  - Use neutral colors for placeholders to avoid distracting users.
+  - Optimize the loading transition to be swift and seamless.
 
-## 3. Esqueletos y Estados de Espera
-- **PROHIBIDO mostrar la pantalla en blanco** durante las cargas asíncronas de Blazor.
-- Si una tabla o lista de datos está cargando, utilizar **Skeleton Loaders** (estructuras grises animadas que simulan el contenido antes de que llegue) en lugar de *spinners* giratorios gigantes.
+## 3. Empty States
+- **Definition**: Empty states are screens that show up when there is no data to display.
+- **Usage Guidelines**:
+  - Include informative messages explaining the empty state.
+  - Provide action buttons to encourage user engagement (e.g., ‘Add Data’).
+  - Use visual elements or illustrations to convey the message effectively.
 
-## 4. Respuestas Visuales de Éxito / Error
-- Usar el componente *Toaster* (Modales no intrusivos que aparecen en la esquina superior) en vez de "Alerts" horribles nativas del navegador.
-- Si una tabla de datos está vacía, mostrar un **Empty State Empático**: Un ícono ilustrativo bonito, un título amigable ("No hemos encontrado facturas este mes") y un botón ("Crear nueva factura") para guiar al usuario a la acción.
+## 4. Component Guidelines
+- **General Guidelines**:
+  - Ensure components are reusable across different parts of the application.
+  - All components should be responsive and accessible.
+  - Maintain consistent spacing, padding, and alignment.
+  - Use clear and meaningful labels for buttons and calls to action.
 
-## 5. Uniformidad en Navegación Interna (Page Headers y Diálogos)
-Para evitar experiencias desarticuladas en pantallas de detalle:
-- Toda página secundaria o de detalle debe estar coronada por un **Header de Acciones Estándar** (Action Bar) consistente.
-- Los botones de control primarios (`Regresar`, `Guardar`, `Actualizar`, `Imprimir`, `Anular`) deben residir obligatoriamente en esta barra superior, siempre con el mismo orden y color semántico.
-- **Limpieza visual:** Acciones raras o secundarias nunca deben saturar esta barra; deben condensarse dentro de un "Menú de 3 puntos" (Menú Kebab) ubicado al extremo derecho.
-- Las ventanas modales/diálogos también deben aplicar este Header como cabecera del modal para asegurar que un usuario sepa intuitivamente dónde encontrar los botones de guardar y cerrar.
+- **Buttons**:
+  - Follow color contrast standards for visibility.
+  - Utilize hover and active states to indicate interactivity.
+
+- **Input Fields**:
+  - Provide clear labels and placeholders.
+  - Set validation messages that are user-friendly and constructive.
+
+- **Cards**:
+  - Use shadows and borders appropriately to distinguish cards from the background.
+  - Ensure card contents are well-structured and easily scannable.
