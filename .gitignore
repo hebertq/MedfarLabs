@@ -370,3 +370,10 @@ global.json
 
 # Now we have macos developers
 .DS_Store
+
+# Docker (Local Deployment Files)
+Dockerfile
+docker-compose*.yml
+publish_api/
+publish_reporting/
+publish_pwa/
