@@ -1,0 +1,15 @@
+# Flujo 22: Compras y Reabastecimiento (Procurement)
+
+## 1. Descripción
+Ciclo de adquisición de insumos y reactivos para garantizar la continuidad operativa sin quiebres de stock.
+
+## 2. Pasos del Flujo y Cuentas por Pagar
+1. **Sugerencia de Reabastecimiento:** El sistema, basado en el "Punto de Reorden" (Flujo 04), genera alertas de compra automáticas.
+2. **Orden de Compra (OC):** El administrador genera la OC dirigida al proveedor. Se registra el costo pactado.
+3. **Recepción de Almacén:** Al llegar los insumos, se ejecuta `ReceiveProcurementCommand`. Se ingresan cantidades, lotes y fechas de vencimiento.
+4. **Actualización de Costos:** El sistema recalcula el **Costo Promedio Ponderado** del inventario.
+5. **Vinculación Financiera:** La OC se transforma en una "Cuenta por Pagar" en el módulo `Billing`, afectando el flujo de caja del Tenant.
+
+## 3. Casos de Uso Relacionados
+* UC-38: Gestión de Proveedores.
+* UC-39: Conciliación de Factura vs Orden de Compra.
