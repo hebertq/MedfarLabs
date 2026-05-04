@@ -1,0 +1,21 @@
+# Flujo 20: Dispensación y Venta en Farmacia (Fulfillment)
+
+## 1. Descripción
+Proceso de recepción de recetas, validación de stock por lote y entrega de medicamentos al paciente, integrando la trazabilidad sanitaria y el cobro final.
+
+## 2. Actores
+* Farmacéutico / Regente
+* Paciente
+* Sistema (Módulos: Inventory, Billing, Care)
+
+## 3. Pasos del Flujo (Validación Cruzada & FEFO)
+1. **Recepción de Orden:** El farmacéutico escanea el QR de la receta (Flujo 07) o identifica al paciente. El sistema jala los ítems prescritos desde el módulo `Care`.
+2. **Validación de Stock:** El sistema consulta el inventario de la sucursal. Si no hay existencia, el sistema sugiere sustitutos genéricos autorizados (basado en el catálogo de equivalencias).
+3. **Picking y Lotes (FEFO):** Se seleccionan físicamente los ítems. El sistema obliga a registrar/escanear el **Número de Lote** y **Fecha de Vencimiento**. Se prioriza la salida de los productos más próximos a vencer.
+4. **Tasación y Seguro:** Aplicación de copagos si el paciente tiene seguro activo (Flujo 08).
+5. **Cierre de Venta:** Ejecución de `DispenseMedicationCommand`. El sistema descuenta el stock, publica el evento `InventoryStockDiminishedEvent` y genera la factura en `Billing`.
+
+## 4. Casos de Uso Relacionados
+* UC-33: Dispensación de Receta Electrónica.
+* UC-34: Manejo de Sustitutos Farmacéuticos.
+* UC-35: Control de Lotes y Vencimientos.
