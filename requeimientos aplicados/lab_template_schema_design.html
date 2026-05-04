@@ -1,0 +1,255 @@
+
+<style>
+* { box-sizing: border-box; }
+.tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+.tab { font-size: 12px; padding: 5px 14px; border-radius: 20px; cursor: pointer; border: 0.5px solid var(--color-border-secondary); color: var(--color-text-secondary); background: transparent; }
+.tab.active { background: #534AB7; color: #EEEDFE; border-color: #534AB7; }
+.pane { display: none; } .pane.active { display: block; }
+.table-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; margin-bottom: 14px; }
+.table-header { padding: 10px 14px; font-size: 13px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; justify-content: space-between; }
+.table-header .schema { font-size: 11px; font-weight: 400; color: var(--color-text-secondary); }
+.table-header.existing { background: var(--color-background-secondary); }
+.table-header.new { background: #EEEDFE; color: #3C3489; }
+.table-header.new .schema { color: #534AB7; }
+.col-row { display: grid; grid-template-columns: 180px 130px 1fr; gap: 8px; padding: 6px 14px; font-size: 12px; border-top: 0.5px solid var(--color-border-tertiary); align-items: start; }
+.col-name { color: var(--color-text-primary); font-family: var(--font-mono); }
+.col-type { color: var(--color-text-secondary); }
+.col-desc { color: var(--color-text-tertiary); line-height: 1.4; }
+.pk { color: #854F0B; font-size: 10px; font-weight: 500; background: #FAEEDA; padding: 1px 5px; border-radius: 4px; margin-left: 4px; }
+.fk { color: #085041; font-size: 10px; font-weight: 500; background: #E1F5EE; padding: 1px 5px; border-radius: 4px; margin-left: 4px; }
+.new-badge { font-size: 10px; color: #3C3489; background: #EEEDFE; padding: 1px 5px; border-radius: 4px; margin-left: 4px; }
+.flow-step { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
+.step-num { width: 24px; height: 24px; border-radius: 50%; background: #534AB7; color: #EEEDFE; font-size: 11px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.step-body { flex: 1; }
+.step-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 3px; }
+.step-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+.ref-chip { display: inline-block; font-size: 11px; font-family: var(--font-mono); background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); padding: 1px 6px; border-radius: 4px; margin: 2px 2px 0 0; }
+.legend { display: flex; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--color-text-secondary); }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+.value-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px; }
+.value-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; }
+.value-type { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 4px; }
+.value-example { font-size: 12px; color: var(--color-text-primary); font-family: var(--font-mono); }
+</style>
+
+<div style="padding: 4px 0 16px;">
+  <div class="tabs">
+    <button class="tab active" onclick="show('tablas',this)">Tablas nuevas</button>
+    <button class="tab" onclick="show('valores',this)">Tipos de valores</button>
+    <button class="tab" onclick="show('flujo',this)">Flujo de uso</button>
+    <button class="tab" onclick="show('relaciones',this)">Relación con existentes</button>
+  </div>
+
+  <!-- TABLAS -->
+  <div id="pane-tablas" class="pane active">
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#EEEDFE;border:0.5px solid #534AB7"></div> Tabla nueva</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary)"></div> Tabla existente (referenciada)</div>
+    </div>
+
+    <!-- mst_lab_exam_template -->
+    <div class="table-card">
+      <div class="table-header new">
+        <span>laboratory.mst_lab_exam_template <span class="new-badge">nueva</span></span>
+        <span class="schema">Plantilla global del SaaS</span>
+      </div>
+      <div class="col-row"><span class="col-name">id<span class="pk">PK</span></span><span class="col-type">BIGSERIAL</span><span class="col-desc">Identificador único</span></div>
+      <div class="col-row"><span class="col-name">service_id<span class="fk">FK</span></span><span class="col-type">BIGINT</span><span class="col-desc">Examen en inventory.mst_service (category_id = LAB)</span></div>
+      <div class="col-row"><span class="col-name">name</span><span class="col-type">VARCHAR(200)</span><span class="col-desc">Nombre descriptivo de la plantilla (ej. "Hemograma Completo v2")</span></div>
+      <div class="col-row"><span class="col-name">version</span><span class="col-type">INT DEFAULT 1</span><span class="col-desc">Versión de la plantilla. Permite evolucionar sin romper configuraciones activas</span></div>
+      <div class="col-row"><span class="col-name">is_published</span><span class="col-type">BOOLEAN</span><span class="col-desc">Solo las plantillas publicadas son visibles para clonar por los labs</span></div>
+      <div class="col-row" style="background:var(--color-background-secondary)"><span class="col-name">+ auditoría estándar</span><span class="col-type"></span><span class="col-desc">created_at, updated_at, created_by_user_id, is_active, row_version</span></div>
+    </div>
+
+    <!-- det_lab_exam_template_item -->
+    <div class="table-card">
+      <div class="table-header new">
+        <span>laboratory.det_lab_exam_template_item <span class="new-badge">nueva</span></span>
+        <span class="schema">Ítems / analitos de la plantilla global</span>
+      </div>
+      <div class="col-row"><span class="col-name">id<span class="pk">PK</span></span><span class="col-type">BIGSERIAL</span><span class="col-desc"></span></div>
+      <div class="col-row"><span class="col-name">template_id<span class="fk">FK</span></span><span class="col-type">BIGINT</span><span class="col-desc">→ mst_lab_exam_template</span></div>
+      <div class="col-row"><span class="col-name">analyte_name</span><span class="col-type">VARCHAR(150)</span><span class="col-desc">Nombre del analito (ej. "Hemoglobina", "Glucosa en ayunas")</span></div>
+      <div class="col-row"><span class="col-name">unit</span><span class="col-type">VARCHAR(30)</span><span class="col-desc">Unidad de medida (g/dL, mg/dL, U/L, etc.)</span></div>
+      <div class="col-row"><span class="col-name">value_type</span><span class="col-type">VARCHAR(20)</span><span class="col-desc">'numeric' | 'qualitative' | 'text'</span></div>
+      <div class="col-row"><span class="col-name">ref_min</span><span class="col-type">DECIMAL(12,4)</span><span class="col-desc">Valor mínimo de referencia global (solo numeric)</span></div>
+      <div class="col-row"><span class="col-name">ref_max</span><span class="col-type">DECIMAL(12,4)</span><span class="col-desc">Valor máximo de referencia global (solo numeric)</span></div>
+      <div class="col-row"><span class="col-name">ref_options</span><span class="col-type">JSONB</span><span class="col-desc">Opciones cualitativas: ["Positivo","Negativo","Indeterminado"]</span></div>
+      <div class="col-row"><span class="col-name">sort_order</span><span class="col-type">INT DEFAULT 0</span><span class="col-desc">Orden de presentación en el informe</span></div>
+      <div class="col-row"><span class="col-name">is_required</span><span class="col-type">BOOLEAN</span><span class="col-desc">Si es requerido para cerrar el resultado</span></div>
+      <div class="col-row" style="background:var(--color-background-secondary)"><span class="col-name">+ auditoría</span><span class="col-type"></span><span class="col-desc">is_active, row_version</span></div>
+    </div>
+
+    <!-- det_lab_exam_template_item_range -->
+    <div class="table-card">
+      <div class="table-header new">
+        <span>laboratory.det_lab_exam_template_item_range <span class="new-badge">nueva</span></span>
+        <span class="schema">Rangos por edad y sexo (solo ítems numéricos)</span>
+      </div>
+      <div class="col-row"><span class="col-name">id<span class="pk">PK</span></span><span class="col-type">BIGSERIAL</span><span class="col-desc"></span></div>
+      <div class="col-row"><span class="col-name">item_id<span class="fk">FK</span></span><span class="col-type">BIGINT</span><span class="col-desc">→ det_lab_exam_template_item</span></div>
+      <div class="col-row"><span class="col-name">gender</span><span class="col-type">CHAR(1)</span><span class="col-desc">'M' | 'F' | NULL (aplica a ambos)</span></div>
+      <div class="col-row"><span class="col-name">age_min_years</span><span class="col-type">INT</span><span class="col-desc">Edad mínima inclusive (NULL = sin límite inferior)</span></div>
+      <div class="col-row"><span class="col-name">age_max_years</span><span class="col-type">INT</span><span class="col-desc">Edad máxima inclusive (NULL = sin límite superior)</span></div>
+      <div class="col-row"><span class="col-name">ref_min</span><span class="col-type">DECIMAL(12,4)</span><span class="col-desc">Mínimo para este rango demográfico</span></div>
+      <div class="col-row"><span class="col-name">ref_max</span><span class="col-type">DECIMAL(12,4)</span><span class="col-desc">Máximo para este rango demográfico</span></div>
+    </div>
+
+    <!-- cfg_org_lab_exam_config -->
+    <div class="table-card">
+      <div class="table-header new">
+        <span>laboratory.cfg_org_lab_exam_config <span class="new-badge">nueva</span></span>
+        <span class="schema">Configuración por organización (clon personalizable)</span>
+      </div>
+      <div class="col-row"><span class="col-name">id<span class="pk">PK</span></span><span class="col-type">BIGSERIAL</span><span class="col-desc"></span></div>
+      <div class="col-row"><span class="col-name">organization_id<span class="fk">FK</span></span><span class="col-type">BIGINT</span><span class="col-desc">→ identity.mst_organization (el lab dueño de esta config)</span></div>
+      <div class="col-row"><span class="col-name">template_id<span class="fk">FK</span></span><span class="col-type">BIGINT</span><span class="col-desc">→ mst_lab_exam_template (plantilla origen del clon)</span></div>
+      <div class="col-row"><span class="col-name">service_id<span class="fk">FK</span></span><span class="col-type">BIGINT</span><span class="col-desc">→ inventory.mst_service (permite mapear a su propio servicio)</span></div>
+      <div class="col-row"><span class="col-name">custom_name</span><span class="col-type">VARCHAR(200)</span><span class="col-desc">Nombre personalizado (si es null, usa el de la plantilla)</span></div>
+      <div class="col-row"><span class="col-name">cloned_at</span><span class="col-type">TIMESTAMP</span><span class="col-desc">Fecha en que se clonó desde la plantilla global</span></div>
+      <div class="col-row" style="background:var(--color-background-secondary)"><span class="col-name">UNIQUE</span><span class="col-type"></span><span class="col-desc">(organization_id, template_id) — un lab solo clona una vez por plantilla</span></div>
+      <div class="col-row" style="background:var(--color-background-secondary)"><span class="col-name">+ auditoría estándar</span><span class="col-type"></span><span class="col-desc">created_at, is_active, row_version</span></div>
+    </div>
+
+    <!-- cfg_org_lab_exam_item_config -->
+    <div class="table-card">
+      <div class="table-header new">
+        <span>laboratory.cfg_org_lab_exam_item_config <span class="new-badge">nueva</span></span>
+        <span class="schema">Personalización de ítems por organización</span>
+      </div>
+      <div class="col-row"><span class="col-name">id<span class="pk">PK</span></span><span class="col-type">BIGSERIAL</span><span class="col-desc"></span></div>
+      <div class="col-row"><span class="col-name">org_config_id<span class="fk">FK</span></span><span class="col-type">BIGINT</span><span class="col-desc">→ cfg_org_lab_exam_config</span></div>
+      <div class="col-row"><span class="col-name">template_item_id<span class="fk">FK</span></span><span class="col-type">BIGINT</span><span class="col-desc">→ det_lab_exam_template_item (ítem de la plantilla global)</span></div>
+      <div class="col-row"><span class="col-name">custom_name</span><span class="col-type">VARCHAR(150)</span><span class="col-desc">Nombre personalizado del analito (null = usa el de la plantilla)</span></div>
+      <div class="col-row"><span class="col-name">custom_unit</span><span class="col-type">VARCHAR(30)</span><span class="col-desc">Unidad personalizada (null = usa la de la plantilla)</span></div>
+      <div class="col-row"><span class="col-name">custom_ref_min</span><span class="col-type">DECIMAL(12,4)</span><span class="col-desc">Rango mínimo personalizado (null = usa el de la plantilla)</span></div>
+      <div class="col-row"><span class="col-name">custom_ref_max</span><span class="col-type">DECIMAL(12,4)</span><span class="col-desc">Rango máximo personalizado (null = usa el de la plantilla)</span></div>
+      <div class="col-row"><span class="col-name">custom_ref_options</span><span class="col-type">JSONB</span><span class="col-desc">Opciones cualitativas personalizadas</span></div>
+      <div class="col-row"><span class="col-name">is_hidden</span><span class="col-type">BOOLEAN DEFAULT FALSE</span><span class="col-desc">TRUE = el lab quitó este ítem de su versión del examen</span></div>
+      <div class="col-row"><span class="col-name">sort_order</span><span class="col-type">INT</span><span class="col-desc">Orden propio del lab (null = respeta el de la plantilla)</span></div>
+      <div class="col-row"><span class="col-name">is_active</span><span class="col-type">BOOLEAN DEFAULT TRUE</span><span class="col-desc"></span></div>
+    </div>
+  </div>
+
+  <!-- TIPOS DE VALORES -->
+  <div id="pane-valores" class="pane">
+    <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:12px;">El campo <code style="font-size:12px">value_type</code> en <code style="font-size:12px">det_lab_exam_template_item</code> define la naturaleza del analito:</div>
+    <div class="value-grid">
+      <div class="value-card">
+        <div class="value-type">numeric</div>
+        <div class="value-example">ref_min: 4.5<br>ref_max: 11.0<br>unit: "×10³/μL"</div>
+        <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:6px;">Permite rangos por edad/sexo en la tabla de rangos. El resultado se marca fuera de rango automáticamente.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-type">qualitative</div>
+        <div class="value-example">ref_options:<br>["Positivo",<br>"Negativo",<br>"Indeterminado"]</div>
+        <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:6px;">Lista cerrada de opciones. El técnico selecciona una. No aplican rangos numéricos.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-type">text</div>
+        <div class="value-example">unit: null<br>ref_min: null<br>ref_max: null</div>
+        <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:6px;">Campo libre. Usado para observaciones, morfología o descripción de hallazgos.</div>
+      </div>
+    </div>
+    <div style="margin-top:16px;font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;">Lógica de resolución de valores al registrar resultado:</div>
+    <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.8;background:var(--color-background-secondary);padding:12px 14px;border-radius:var(--border-radius-md);">
+      1. Buscar si existe <code style="font-size:11px">cfg_org_lab_exam_item_config</code> para la organización y el ítem.<br>
+      2. Si existe y tiene <code style="font-size:11px">custom_ref_min/max</code> → usar esos valores.<br>
+      3. Si no existe config propia → buscar en <code style="font-size:11px">det_lab_exam_template_item_range</code> filtrando por edad y sexo del paciente.<br>
+      4. Si no hay rango demográfico → usar <code style="font-size:11px">ref_min/ref_max</code> del ítem base de la plantilla.<br>
+      5. Si el analito es <code style="font-size:11px">qualitative</code> → no aplicar lógica numérica, solo validar que el valor esté en <code style="font-size:11px">ref_options</code>.
+    </div>
+  </div>
+
+  <!-- FLUJO DE USO -->
+  <div id="pane-flujo" class="pane">
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:16px;">Dos actores: el SaaS admin publica plantillas globales. El lab clona y personaliza.</div>
+    <div class="flow-step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">SaaS admin crea plantilla global</div>
+        <div class="step-desc">Crea un registro en <code style="font-size:11px">mst_lab_exam_template</code> asociado a un servicio de laboratorio. Agrega todos los ítems (analitos) con sus valores de referencia base y rangos demográficos. Cuando está lista, la publica (<code style="font-size:11px">is_published = TRUE</code>).</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Laboratorio clona la plantilla</div>
+        <div class="step-desc">El lab ve las plantillas publicadas y ejecuta "Clonar". El sistema crea un registro en <code style="font-size:11px">cfg_org_lab_exam_config</code> vinculando su <code style="font-size:11px">organization_id</code> con la plantilla. También crea un <code style="font-size:11px">cfg_org_lab_exam_item_config</code> por cada ítem, todos con valores null (hereda de la plantilla).</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Lab personaliza su configuración</div>
+        <div class="step-desc">El lab puede: cambiar el nombre de un analito, ajustar sus rangos de referencia, ocultar ítems que no procesa (<code style="font-size:11px">is_hidden = TRUE</code>), cambiar el orden, o agregar ítems propios (sin vínculo a la plantilla global — <code style="font-size:11px">template_item_id = NULL</code>).</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Se recibe la orden de examen</div>
+        <div class="step-desc">Puede venir desde una orden médica (<code style="font-size:11px">mst_lab_order</code> con <code style="font-size:11px">consultation_id</code>) o directamente del lab (<code style="font-size:11px">consultation_id = NULL</code>). Ambos flujos ya existen.</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <div class="step-title">Técnico registra resultados por ítem</div>
+        <div class="step-desc">El sistema carga los ítems desde la config del lab (o la plantilla si no clonó). El técnico ingresa el valor de cada analito. El sistema evalúa si está dentro del rango y marca <code style="font-size:11px">is_out_of_range</code>.</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <div class="step-title">Se reemplaza el JSONB monolítico actual</div>
+        <div class="step-desc">La tabla <code style="font-size:11px">laboratory.det_lab_result</code> actual usa <code style="font-size:11px">technical_data_json JSONB</code>. Se agrega la tabla <code style="font-size:11px">det_lab_result_item</code> para resultados estructurados por analito. El JSONB queda para adjuntos externos (PDF del equipo, notas libres).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RELACIONES -->
+  <div id="pane-relaciones" class="pane">
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:14px;">Qué tablas existentes se extienden o referencian sin romper nada.</div>
+
+    <div class="table-card">
+      <div class="table-header existing"><span>laboratory.mst_lab_template</span><span class="schema">existente — reemplazar</span></div>
+      <div class="col-row"><span class="col-name" style="color:var(--color-text-danger)">Deprecar</span><span class="col-type"></span><span class="col-desc">Esta tabla usa un JSONB monolítico. Migrar su contenido a las nuevas tablas y desactivar. No borrar aún para compatibilidad.</span></div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header existing"><span>laboratory.det_lab_result</span><span class="schema">existente — extender</span></div>
+      <div class="col-row"><span class="col-name">technical_data_json</span><span class="col-type">JSONB (queda)</span><span class="col-desc">Solo para adjuntos externos, notas del equipo, o compatibilidad temporal</span></div>
+      <div class="col-row"><span class="col-name">org_config_id <span class="new-badge">nuevo</span></span><span class="col-type">BIGINT FK</span><span class="col-desc">→ cfg_org_lab_exam_config. Vincula el resultado a la configuración usada para validar rangos</span></div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header new"><span>laboratory.det_lab_result_item <span class="new-badge">nueva</span></span><span class="schema">resultados estructurados por analito</span></div>
+      <div class="col-row"><span class="col-name">lab_result_id<span class="fk">FK</span></span><span class="col-type">BIGINT</span><span class="col-desc">→ det_lab_result</span></div>
+      <div class="col-row"><span class="col-name">item_config_id<span class="fk">FK</span></span><span class="col-type">BIGINT</span><span class="col-desc">→ cfg_org_lab_exam_item_config (o NULL si ítem no tiene config)</span></div>
+      <div class="col-row"><span class="col-name">analyte_name</span><span class="col-type">VARCHAR(150)</span><span class="col-desc">Nombre en el momento del resultado (snapshot — no cambia si la config cambia)</span></div>
+      <div class="col-row"><span class="col-name">value_numeric</span><span class="col-type">DECIMAL(12,4)</span><span class="col-desc">Valor numérico registrado (null si qualitative o text)</span></div>
+      <div class="col-row"><span class="col-name">value_text</span><span class="col-type">TEXT</span><span class="col-desc">Valor cualitativo o texto libre</span></div>
+      <div class="col-row"><span class="col-name">unit</span><span class="col-type">VARCHAR(30)</span><span class="col-desc">Unidad en el momento del resultado (snapshot)</span></div>
+      <div class="col-row"><span class="col-name">ref_min_used</span><span class="col-type">DECIMAL(12,4)</span><span class="col-desc">Rango mínimo aplicado (snapshot del momento)</span></div>
+      <div class="col-row"><span class="col-name">ref_max_used</span><span class="col-type">DECIMAL(12,4)</span><span class="col-desc">Rango máximo aplicado (snapshot del momento)</span></div>
+      <div class="col-row"><span class="col-name">is_out_of_range</span><span class="col-type">BOOLEAN</span><span class="col-desc">TRUE si el valor cae fuera del rango aplicado</span></div>
+      <div class="col-row"><span class="col-name">sort_order</span><span class="col-type">INT</span><span class="col-desc">Orden de presentación en el informe</span></div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header existing"><span>inventory.mst_service</span><span class="schema">existente — referenciado</span></div>
+      <div class="col-row"><span class="col-name">Sin cambios</span><span class="col-type"></span><span class="col-desc">Las plantillas referencian servicios con category_id = LAB. Cada examen ya existe aquí como un servicio facturable.</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('pane-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
