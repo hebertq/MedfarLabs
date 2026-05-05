@@ -56,7 +56,7 @@ public partial class MenuManager : ComponentBase
 
     protected void OpenNewDialog()
     {
-        MenuModel = new NavigationMenuResponseDTO { OrganizationTypeId = SelectedOrgTypeId, OrderIndex = MenusList.Count + 1 };
+        MenuModel = new NavigationMenuResponseDTO { OrganizationTypeId = (MedfarLabs.Core.Domain.Enums.TipoOrganizacion)SelectedOrgTypeId, OrderIndex = MenusList.Count + 1 };
         ShowDialog = true;
     }
 

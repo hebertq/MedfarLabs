@@ -22,7 +22,7 @@ namespace MedFarLab.Api.Controllers
         [HttpGet("type/{organizationTypeId}")]
         public async Task<IActionResult> GetMenusByOrgType(int organizationTypeId)
         {
-            var query = new GetMenusByOrganizationTypeQuery(organizationTypeId);
+            var query = new GetMenusByOrganizationTypeQuery((MedfarLabs.Core.Domain.Enums.TipoOrganizacion)organizationTypeId);
             var result = await _mediator.Send(query);
             return Ok(result);
         }

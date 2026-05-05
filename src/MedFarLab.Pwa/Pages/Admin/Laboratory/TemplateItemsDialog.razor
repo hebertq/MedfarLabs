@@ -27,9 +27,9 @@
                     <PropertyColumn Property="x => x.Unit" Title="Unidad" />
                     <PropertyColumn Property="x => x.RefMin" Title="Mínimo" />
                     <PropertyColumn Property="x => x.RefMax" Title="Máximo" />
-                    <PropertyColumn Property="x => x.ValueType" Title="Tipo">
+                    <PropertyColumn Property="x => x.ValueTypeId" Title="Tipo">
                         <CellTemplate>
-                            @if (context.Item.ValueType == "Qualitative")
+                            @if (context.Item.ValueTypeId.ToString() == "Qualitative")
                             {
                                 <MudChip T="string" Color="Color.Warning" Size="Size.Small">Cualitativo</MudChip>
                             }

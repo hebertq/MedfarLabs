@@ -17,7 +17,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.2" PrivateAssets="all" />
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.2" />
-    <PackageReference Include="MedfarLabs.Core" Version="1.2.170" />
+    <PackageReference Include="MedfarLabs.Core" Version="1.2.172" />
     <PackageReference Include="MudBlazor" Version="7.15.0" />
   </ItemGroup>
 
@@ -30,6 +30,7 @@
   </ItemGroup>
 
 </Project>
+
 
 
 

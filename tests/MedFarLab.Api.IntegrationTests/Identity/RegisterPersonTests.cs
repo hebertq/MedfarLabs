@@ -14,7 +14,8 @@ namespace MedFarLab.Api.IntegrationTests.Identity
     {
         public long UserId { get; set; } = 1;
         public long OrganizationId { get; set; } = 1;
-        public long BranchId { get; set; } = 1;
+        public long BranchId { get; set; }
+        public int OrganizationTypeId { get; set; } = 1;
 
         public Task<bool> HasPermissionAsync(int actionId)
         {
@@ -70,3 +71,4 @@ namespace MedFarLab.Api.IntegrationTests.Identity
         }
     }
 }
+

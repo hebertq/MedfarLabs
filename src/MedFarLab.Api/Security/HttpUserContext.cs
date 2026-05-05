@@ -33,6 +33,11 @@ namespace MedFarLab.Api.Security
             get => GetItem("BranchId"); 
             set {} 
         }
+        public int OrganizationTypeId 
+        { 
+            get => (int)GetItem("OrganizationTypeId"); 
+            set {} 
+        }
 
         private long GetItem(string key) 
         {
