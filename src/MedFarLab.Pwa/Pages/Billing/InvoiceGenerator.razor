@@ -109,15 +109,18 @@
                 </MudItem>
 
                 <MudItem xs="12">
-                    <MudTable Items="@ViewModel.Items" Dense="true" Hover="true" Striped="true" Elevation="2" CustomHeader="true" Style="border-radius: 8px; overflow: hidden;">
+                    <MedFarLab.Pwa.Shared.Components.MedFarTable TItem="MedFarLab.Pwa.Pages.Billing.InvoiceItemVM" 
+                                             Items="@ViewModel.Items" 
+                                             ShowSearch="false" 
+                                             ColumnCount="5"
+                                             EmptyTitle="Sin Servicios"
+                                             EmptyMessage="Añada servicios a la factura para continuar.">
                         <HeaderContent>
-                            <MudTHeadRow Class="bg-dark">
-                                <MudTh><MudText Typo="Typo.subtitle2" Class="text-white fw-bold">Servicio / Producto</MudText></MudTh>
-                                <MudTh Style="width:100px;"><MudText Typo="Typo.subtitle2" Class="text-white fw-bold">Cantidad</MudText></MudTh>
-                                <MudTh Style="width:150px;"><MudText Typo="Typo.subtitle2" Class="text-white fw-bold">Precio Un.</MudText></MudTh>
-                                <MudTh Style="width:120px;"><MudText Typo="Typo.subtitle2" Class="text-white fw-bold">Subtotal</MudText></MudTh>
-                                <MudTh Style="width:100px;"></MudTh>
-                            </MudTHeadRow>
+                            <MudTh>Servicio / Producto</MudTh>
+                            <MudTh>Cantidad</MudTh>
+                            <MudTh>Precio Un.</MudTh>
+                            <MudTh>Subtotal</MudTh>
+                            <MudTh></MudTh>
                         </HeaderContent>
                         <RowTemplate Context="itemCtx">
                             <MudTd DataLabel="Servicio / Producto">
@@ -146,7 +149,7 @@
                                 }
                             </MudTd>
                         </RowTemplate>
-                    </MudTable>
+                    </MedFarLab.Pwa.Shared.Components.MedFarTable>
                 </MudItem>
 
                 <!-- Totales y Acciones -->

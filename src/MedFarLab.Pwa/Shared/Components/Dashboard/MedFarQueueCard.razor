@@ -1,0 +1,39 @@
+@using MudBlazor
+@typeparam TItem
+
+<MudCard Class="mf-queue-card surface-glass shadow-float h-100">
+    <MudCardHeader>
+        <CardHeaderAvatar>
+            <MudIcon Icon="@Icon" Color="Color.Primary"/>
+        </CardHeaderAvatar>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@Title</MudText>
+            @if (!string.IsNullOrEmpty(Subtitle))
+            {
+                <MudText Typo="Typo.caption" Color="Color.Secondary">@Subtitle</MudText>
+            }
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent Class="pa-0">
+        @if (IsLoading)
+        {
+            <div class="pa-4">
+                <MedFarSkeleton Type="MedFarSkeletonType.List" Rows="4" ShowAvatar="true"/>
+            </div>
+        }
+        else if (Items == null || !Items.Any())
+        {
+            <MedFarEmptyState Title="@EmptyTitle" Message="@EmptyMessage"
+                              Icon="@Icons.Material.Outlined.CheckCircle"/>
+        }
+        else
+        {
+            <MudList T="TItem" Dense="true" Class="pa-0">
+                @foreach (var item in Items)
+                {
+                    @ItemTemplate(item)
+                }
+            </MudList>
+        }
+    </MudCardContent>
+</MudCard>

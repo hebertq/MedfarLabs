@@ -17,16 +17,24 @@ namespace MedFarLab.Application.Features.System.Queries.GetMenus
         {
             try
             {
-                var response = await _apiClient.GetAsync<IEnumerable<NavigationMenuResponseDTO>>($"api/Menu/type/{request.OrganizationTypeId}");
+                var payload = global::System.Text.Json.JsonSerializer.Serialize(new { OrganizationTypeId = request.OrganizationTypeId });
+                var encodedPayload = global::System.Net.WebUtility.UrlEncode(payload);
+                var response = await _apiClient.GetAsync<IEnumerable<NavigationMenuResponseDTO>>($"api/System/12005?payload={encodedPayload}");
                 if (response != null)
                 {
                     return response;
                 }
-                return BaseResponse<IEnumerable<NavigationMenuResponseDTO>>.Failure("No se pudo obtener el menú");
+                var failResponse = new BaseResponse<IEnumerable<NavigationMenuResponseDTO>>();
+                failResponse.IsSuccess = false;
+                failResponse.Message = "No se pudo obtener el menú";
+                return failResponse;
             }
             catch (Exception ex)
             {
-                return BaseResponse<IEnumerable<NavigationMenuResponseDTO>>.Failure(ex.Message);
+                var failResponse = new BaseResponse<IEnumerable<NavigationMenuResponseDTO>>();
+                failResponse.IsSuccess = false;
+                failResponse.Message = ex.Message;
+                return failResponse;
             }
         }
     }

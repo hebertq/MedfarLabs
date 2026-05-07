@@ -1,0 +1,118 @@
+@page "/home/medico"
+@using MudBlazor
+@using MedFarLab.Pwa.Shared.Components.Dashboard
+
+<div class="mf-dashboard">
+
+    <!-- Encabezado personalizado -->
+    <div class="mf-dashboard-greeting mb-6">
+        <MudText Typo="Typo.h5">Buenos días, <b>@NombreMedico</b> 👨‍⚕️</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">
+            @DateTime.Now.ToString("dddd, dd 'de' MMMM", new System.Globalization.CultureInfo("es-NI"))
+        </MudText>
+    </div>
+
+    <!-- KPI Cards -->
+    <MudGrid Spacing="3" Class="mb-6">
+        <MudItem xs="12" sm="6" lg="3">
+            <MedFarStatCard Label="Citas hoy"
+                            Value="@(Stats?.TotalAppointmentsToday.ToString() ?? "0")"
+                            Icon="@Icons.Material.Filled.CalendarToday"
+                            IconColor="#6366F1" IconBg="rgba(99,102,241,0.12)"
+                            IsLoading="@Cargando"
+                            OnClick="@IrACitas"/>
+        </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
+            <MedFarStatCard Label="En espera"
+                            Value="@(Stats?.PatientsWaiting.ToString() ?? "0")"
+                            Icon="@Icons.Material.Filled.HourglassTop"
+                            IconColor="#F97316" IconBg="rgba(249,115,22,0.12)"
+                            IsLoading="@Cargando"
+                            Subtitle="Pacientes aguardando"
+                            OnClick="@IrAListaEspera"/>
+        </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
+            <MedFarStatCard Label="Resultados listos"
+                            Value="@(Stats?.LabResultsReady.ToString() ?? "0")"
+                            Icon="@Icons.Material.Filled.Biotech"
+                            IconColor="#10B981" IconBg="rgba(16,185,129,0.12)"
+                            IsLoading="@Cargando"
+                            OnClick="@IrAResultados"/>
+        </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
+            <MedFarStatCard Label="Consultas del mes"
+                            Value="@ConsultasMes.ToString()"
+                            Icon="@Icons.Material.Filled.LocalHospital"
+                            IconColor="#3B82F6" IconBg="rgba(59,130,246,0.12)"
+                            IsLoading="@Cargando"
+                            ShowTrend="true" TrendUp="true"
+                            TrendText="+12% vs mes anterior"/>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Cola de pacientes + Acciones rápidas -->
+    <MudGrid Spacing="3">
+        <MudItem xs="12" lg="8">
+            <MedFarQueueCard TItem="MedfarLabs.Core.Application.Features.Care.Dtos.Response.PatientQueueDTO"
+                             Title="Agenda de hoy"
+                             Subtitle="@($"{Stats?.PatientQueue?.Count ?? 0} pacientes")"
+                             Icon="@Icons.Material.Filled.ViewList"
+                             Items="@Stats?.PatientQueue"
+                             IsLoading="@Cargando"
+                             EmptyTitle="Agenda libre"
+                             EmptyMessage="No tienes citas programadas para hoy.">
+                <ItemTemplate>
+                    <MudListItem T="MedfarLabs.Core.Application.Features.Care.Dtos.Response.PatientQueueDTO" Class="mf-queue-item border-bottom">
+                        <div class="d-flex align-center justify-space-between w-100">
+                            <div class="d-flex align-center gap-3">
+                                <MudAvatar Color="@GetStatusColor(context.StatusId)"
+                                           Size="Size.Small">
+                                    @context.PatientName[0]
+                                </MudAvatar>
+                                <div>
+                                    <MudText Typo="Typo.body2" Class="font-weight-bold">
+                                        @context.PatientName
+                                    </MudText>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                        @context.StartTime.ToString("hh:mm tt") — @context.ConsultationReason
+                                    </MudText>
+                                </div>
+                            </div>
+                            <div class="d-flex align-center gap-2">
+                                <MudChip T="string" Size="Size.Small"
+                                         Color="@GetStatusColor(context.StatusId)">
+                                    @context.StatusName
+                                </MudChip>
+                                <MudIconButton Icon="@Icons.Material.Filled.PlayArrow"
+                                               Size="Size.Small" Color="Color.Primary"
+                                               OnClick="@(() => IniciarConsulta(context.PatientId, context.AppointmentId))"/>
+                            </div>
+                        </div>
+                    </MudListItem>
+                </ItemTemplate>
+            </MedFarQueueCard>
+        </MudItem>
+        <MudItem xs="12" lg="4">
+            <!-- Acciones rápidas -->
+            <MudCard Class="surface-glass shadow-float mb-3">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Acciones rápidas</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent Class="pa-2">
+                    <MudList T="string" Dense="true">
+                        <MudListItem Icon="@Icons.Material.Filled.PersonSearch"
+                                     OnClick="@BuscarPaciente">Buscar paciente</MudListItem>
+                        <MudListItem Icon="@Icons.Material.Filled.CalendarMonth"
+                                     OnClick="@NuevaCita">Nueva cita</MudListItem>
+                        <MudListItem Icon="@Icons.Material.Filled.Medication"
+                                     OnClick="@NuevaReceta">Emitir receta</MudListItem>
+                        <MudListItem Icon="@Icons.Material.Filled.Biotech"
+                                     OnClick="@NuevaOrdenLab">Orden de laboratorio</MudListItem>
+                    </MudList>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</div>

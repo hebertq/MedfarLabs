@@ -1,0 +1,10 @@
+.mf-page-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 20px; margin-bottom: 16px;
+    position: sticky; top: 0; z-index: 10;
+}
+.mf-page-header-left   { display: flex; align-items: center; gap: 8px; }
+.mf-page-header-title  { display: flex; align-items: center; }
+.mf-title-text         { font-weight: 700; line-height: 1.2; }
+.mf-page-header-actions { display: flex; align-items: center; gap: 8px; }
+.mf-back-btn           { margin-right: 4px; }

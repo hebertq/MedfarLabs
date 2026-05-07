@@ -1,0 +1,13 @@
+@using MudBlazor
+@using MedFarLab.Pwa.Services
+@inject MedFarThemeService ThemeService
+
+<MudTooltip Text="@(ThemeService.IsDarkMode ? "Modo claro" : "Modo oscuro")">
+    <MudIconButton Icon="@(ThemeService.IsDarkMode
+                            ? Icons.Material.Filled.LightMode
+                            : Icons.Material.Filled.DarkMode)"
+                   OnClick="@ThemeService.Toggle"
+                   Size="Size.Medium"/>
+</MudTooltip>
+
+@code { }

@@ -1,0 +1,39 @@
+@using MudBlazor
+
+<MudCard Class="@($"mf-stat-card surface-glass shadow-float {CssClass}")"
+         @onclick="@OnClick" Style="@(OnClick.HasDelegate ? "cursor:pointer" : "")">
+    <MudCardContent Class="pa-4">
+        <div class="d-flex align-center justify-space-between">
+            <div>
+                <MudText Typo="Typo.caption" Color="Color.Secondary"
+                         Class="text-uppercase font-weight-bold" Style="letter-spacing:0.08em">
+                    @Label
+                </MudText>
+                @if (IsLoading)
+                {
+                    <MudSkeleton Width="80px" Height="40px" Animation="Animation.Wave" Class="mt-1"/>
+                }
+                else
+                {
+                    <MudText Typo="Typo.h4" Class="mf-stat-number mt-1">@Value</MudText>
+                }
+                @if (!string.IsNullOrEmpty(Subtitle))
+                {
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@Subtitle</MudText>
+                }
+            </div>
+            <div class="mf-stat-icon" style="background: @IconBg">
+                <MudIcon Icon="@Icon" Size="Size.Large" Style="@($"color: {IconColor}")"/>
+            </div>
+        </div>
+
+        @if (ShowTrend)
+        {
+            <div class="@($"mf-stat-trend mt-3 {(TrendUp ? "trend-up" : "trend-down")}")">
+                <MudIcon Icon="@(TrendUp ? Icons.Material.Filled.TrendingUp : Icons.Material.Filled.TrendingDown)"
+                         Size="Size.Small"/>
+                <MudText Typo="Typo.caption">@TrendText</MudText>
+            </div>
+        }
+    </MudCardContent>
+</MudCard>

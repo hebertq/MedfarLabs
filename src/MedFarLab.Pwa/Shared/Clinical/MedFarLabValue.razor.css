@@ -1,0 +1,9 @@
+.mf-lab-value   { display: inline-flex; align-items: baseline; gap: 4px; font-family: var(--mf-font-mono); }
+.mf-lab-number  { font-size: 1rem; font-weight: 600; }
+.mf-lab-unit    { font-size: 0.75rem; color: var(--mud-palette-text-secondary); }
+.mf-lab-arrow   { font-size: 0.875rem; font-weight: 800; }
+.mf-lab-high    { color: var(--mf-danger) !important; }
+.mf-lab-high .mf-lab-arrow { color: var(--mf-danger); }
+.mf-lab-low     { color: var(--mf-info) !important; }
+.mf-lab-low .mf-lab-arrow  { color: var(--mf-info); }
+.mf-lab-normal  { color: var(--mf-success); }

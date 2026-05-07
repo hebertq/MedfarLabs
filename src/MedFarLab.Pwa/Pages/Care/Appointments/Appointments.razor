@@ -58,9 +58,8 @@
                 <div class="agenda-timeline" style="background-color: var(--mud-palette-background); position: relative;">
                     @if (IsLoading)
                     {
-                        <div class="d-flex flex-column align-center justify-center" style="height: 500px;">
-                            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
-                            <MudText Typo="Typo.h6" Color="Color.Primary" Class="mt-4">Sincronizando Agenda...</MudText>
+                        <div class="pa-6">
+                            <MedFarLab.Pwa.Shared.Components.MedFarSkeleton Type="MedFarLab.Pwa.Shared.Components.MedFarSkeletonType.Card" />
                         </div>
                     }
                     else

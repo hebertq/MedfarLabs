@@ -11,7 +11,7 @@ namespace MedFarLab.Pwa.Pages.Laboratory
     public partial class Samples : ComponentBase
     {
         [Inject] private ISender Mediator { get; set; } = default!;
-        [Inject] private ISnackbar Snackbar { get; set; } = default!;
+        [Inject] private MedFarLab.Pwa.Services.MedFarSnackbarService Snackbar { get; set; } = default!;
         [Inject] private IDialogService DialogService { get; set; } = default!;
 
         public string SearchString { get; set; } = string.Empty;
@@ -27,6 +27,15 @@ namespace MedFarLab.Pwa.Pages.Laboratory
         }
 
         public List<SampleRecord> MockSamples { get; set; } = new();
+        protected bool IsLoading { get; set; } = true;
+
+        private bool FilterFunc(SampleRecord sample, string term)
+        {
+            if (string.IsNullOrWhiteSpace(term)) return true;
+            return sample.Barcode.Contains(term, System.StringComparison.OrdinalIgnoreCase) ||
+                   sample.PatientName.Contains(term, System.StringComparison.OrdinalIgnoreCase) ||
+                   sample.TestName.Contains(term, System.StringComparison.OrdinalIgnoreCase);
+        }
 
         protected override async Task OnInitializedAsync()
         {
@@ -35,6 +44,7 @@ namespace MedFarLab.Pwa.Pages.Laboratory
 
         private async Task LoadSamples()
         {
+            IsLoading = true;
             try
             {
                 var response = await Mediator.Send(new MedFarLab.Application.Features.Laboratory.Queries.GetLabSamples.GetLabSamplesQuery());
@@ -51,9 +61,13 @@ namespace MedFarLab.Pwa.Pages.Laboratory
                     }).ToList();
                 }
             }
-            catch
+            catch (System.Exception ex)
             {
-                Snackbar.Add("Error al cargar muestras desde el servidor.", Severity.Error);
+                Snackbar.ShowError("Error al cargar muestras desde el servidor.", ex.Message);
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 
@@ -65,18 +79,18 @@ namespace MedFarLab.Pwa.Pages.Laboratory
                 
                 if (response != null && response.IsSuccess)
                 {
-                    Snackbar.Add(response.Message, Severity.Success);
+                    Snackbar.ShowSuccess(response.Message);
                     sample.Status = "Recolectada";
                     StateHasChanged();
                 }
                 else
                 {
-                    Snackbar.Add(response?.Message ?? "Error procesando solicitud", Severity.Error);
+                    Snackbar.ShowError(response?.Message ?? "Error procesando solicitud");
                 }
             }
-            catch
+            catch (System.Exception ex)
             {
-                Snackbar.Add("Fallo en la comunicación con el API.", Severity.Error);
+                Snackbar.ShowError("Fallo en la comunicación con el API.", ex.Message);
             }
         }
 
@@ -88,18 +102,18 @@ namespace MedFarLab.Pwa.Pages.Laboratory
                 
                 if (response != null && response.IsSuccess)
                 {
-                    Snackbar.Add(response.Message, Severity.Warning);
+                    Snackbar.ShowWarning(response.Message);
                     sample.Status = "Rechazada";
                     StateHasChanged();
                 }
                 else
                 {
-                    Snackbar.Add(response?.Message ?? "Error procesando solicitud", Severity.Error);
+                    Snackbar.ShowError(response?.Message ?? "Error procesando solicitud");
                 }
             }
-            catch
+            catch (System.Exception ex)
             {
-                Snackbar.Add("Fallo en la comunicación con el API.", Severity.Error);
+                Snackbar.ShowError("Fallo en la comunicación con el API.", ex.Message);
             }
         }
 
@@ -120,12 +134,12 @@ namespace MedFarLab.Pwa.Pages.Laboratory
 
                 if (response != null && response.IsSuccess)
                 {
-                    Snackbar.Add($"Muestra para {data.PatientName} registrada exitosamente", Severity.Success);
+                    Snackbar.ShowSuccess($"Muestra para {data.PatientName} registrada exitosamente");
                     await LoadSamples(); // Refrescar la grilla desde la BD
                 }
                 else
                 {
-                    Snackbar.Add("Error al registrar la muestra en la base de datos", Severity.Error);
+                    Snackbar.ShowError("Error al registrar la muestra en la base de datos");
                 }
             }
         }

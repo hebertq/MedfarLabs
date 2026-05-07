@@ -32,15 +32,15 @@ namespace MedFarLab.Pwa.Pages.Inventory
             IsLoading = false;
         }
 
-        protected bool FilterFunc(ServiceItemVM item)
+        protected bool FilterFunc(ServiceItemVM item, string searchString)
         {
-            if (string.IsNullOrWhiteSpace(SearchString))
+            if (string.IsNullOrWhiteSpace(searchString))
                 return true;
-            if (item.Name.Contains(SearchString, StringComparison.OrdinalIgnoreCase))
+            if (item.Name != null && item.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
                 return true;
-            if (item.Code.Contains(SearchString, StringComparison.OrdinalIgnoreCase))
+            if (item.Code != null && item.Code.Contains(searchString, StringComparison.OrdinalIgnoreCase))
                 return true;
-            if (item.Category.Contains(SearchString, StringComparison.OrdinalIgnoreCase))
+            if (item.Category != null && item.Category.Contains(searchString, StringComparison.OrdinalIgnoreCase))
                 return true;
             return false;
         }

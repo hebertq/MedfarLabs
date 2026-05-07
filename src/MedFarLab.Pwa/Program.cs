@@ -38,6 +38,9 @@ builder.Services.AddSingleton<MedfarLabs.Core.Infrastructure.Common.Interfaces.I
 builder.Services.AddScoped<MedFarLab.Pwa.Services.NotificationService>();
 
 builder.Services.AddMudServices();
+builder.Services.AddScoped<MedFarLab.Pwa.Services.MedFarThemeService>();
+builder.Services.AddScoped<MedFarLab.Pwa.Services.MedFarSnackbarService>();
+builder.Services.AddSingleton(MedFarLab.Pwa.Services.MedFarTheme.Build());
 builder.Services.AddScoped<MedFarLab.Pwa.Services.IExportService, MedFarLab.Pwa.Services.ExportService>();
 builder.Services.AddApplicationServices();
 builder.Services.AddReportingServices();
@@ -46,5 +49,10 @@ builder.Services.AddReportingServices();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider, MedFarLab.Pwa.Providers.MockAuthenticationStateProvider>();
 builder.Services.AddCascadingAuthenticationState();
+
+// Registro de IUserContext para los Behaviors de MediatR (CQRS Offline)
+builder.Services.AddScoped<MedfarLabs.Core.Domain.Interfaces.Security.IUserContext, MedFarLab.Pwa.Security.PwaUserContext>();
+// Registro dinámico de IUnitOfWork para satisfacer las dependencias del DataShaper (CQRS Offline)
+builder.Services.AddScoped<MedfarLabs.Core.Domain.Interfaces.Repositories.IUnitOfWork>(sp => MedFarLab.Pwa.Security.PwaUnitOfWorkProxy.Create());
 
 await builder.Build().RunAsync();

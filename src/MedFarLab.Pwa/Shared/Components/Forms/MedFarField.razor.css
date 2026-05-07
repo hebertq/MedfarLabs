@@ -1,0 +1,2 @@
+.mf-field               { display: flex; flex-direction: column; }
+.mf-field-server-error  { display: flex; align-items: center; gap: 4px; color: var(--mf-danger); font-size: 0.75rem; margin-top: 4px; padding-left: 4px; }

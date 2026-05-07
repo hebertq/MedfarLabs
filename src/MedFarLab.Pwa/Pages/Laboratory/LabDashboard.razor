@@ -3,21 +3,20 @@
 
 <PageTitle>Dashboard Operativo - MedFarLab</PageTitle>
 
-<div class="glass-header mb-4 fade-in-up">
-    <div>
-        <MudText Typo="Typo.h5" Class="gradient-text-primary fw-bold">Flujo de Laboratorio (Kanban)</MudText>
-        <MudText Typo="Typo.body2" Class="text-muted">Arrastra las órdenes entre columnas. Desliza hacia los lados en móvil.</MudText>
-    </div>
-    
-    <div style="display: flex; gap: 1rem;">
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Science">
+@using MedFarLab.Pwa.Shared.Components
+
+<MedFarPageHeader Title="Flujo de Laboratorio (Kanban)"
+                  Icon="@Icons.Material.Filled.Dashboard"
+                  Subtitle="Arrastra las órdenes entre columnas. Desliza hacia los lados en móvil.">
+    <PrimaryActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Science" Class="btn-emerald-gradient">
             Nueva Orden
         </MudButton>
-        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Search">
-            Buscar Mostrar
-        </MudButton>
-    </div>
-</div>
+    </PrimaryActions>
+    <SecondaryActions>
+        <MudMenuItem Icon="@Icons.Material.Filled.Search">Buscar Orden</MudMenuItem>
+    </SecondaryActions>
+</MedFarPageHeader>
 
 <MudGrid Class="mb-6 fade-in-up delay-1">
     <MudItem xs="12" sm="4">

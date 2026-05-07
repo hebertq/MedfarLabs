@@ -8,9 +8,18 @@ namespace MedFarLab.Pwa.Pages.Billing
     {
         protected List<InvoiceHistoryDto> Invoices { get; set; } = new();
         protected List<InvoiceHistoryDto> PendingInvoices { get; set; } = new();
+        protected bool IsLoading { get; set; } = true;
 
         [Inject] private MedFarLab.Pwa.Services.IExportService ExportService { get; set; } = default!;
         [Inject] private MediatR.IMediator Mediator { get; set; } = default!;
+
+        protected bool FilterFunc(InvoiceHistoryDto item, string searchString)
+        {
+            if (string.IsNullOrWhiteSpace(searchString)) return true;
+            if (item.PatientName != null && item.PatientName.Contains(searchString, StringComparison.OrdinalIgnoreCase)) return true;
+            if (item.InvoiceNumber != null && item.InvoiceNumber.Contains(searchString, StringComparison.OrdinalIgnoreCase)) return true;
+            return false;
+        }
 
         protected override async System.Threading.Tasks.Task OnInitializedAsync()
         {
@@ -43,6 +52,7 @@ namespace MedFarLab.Pwa.Pages.Billing
                     }
                 }
             }
+            IsLoading = false;
         }
 
         protected async System.Threading.Tasks.Task ExportToExcelAsync()

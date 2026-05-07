@@ -1,0 +1,12 @@
+.mf-form               { display: flex; flex-direction: column; gap: 0; }
+.mf-form-compact       { gap: 0; }
+.mf-form-actions       { display: flex; align-items: center; gap: 8px; padding: 16px 0 0 0; border-top: 1px solid var(--mf-border); margin-top: 16px; }
+.mf-form-actions-sticky {
+    position: sticky; bottom: 0;
+    background: var(--mf-glass-bg);
+    backdrop-filter: blur(var(--mf-glass-blur));
+    padding: 12px 16px;
+    margin: 0 -16px;
+    border-top: 1px solid var(--mf-border);
+    z-index: 10;
+}

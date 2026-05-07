@@ -1,0 +1,80 @@
+@page "/patients/record/{PatientId}"
+@using MedFarLab.Pwa.Shared.Components
+@using MedFarLab.Pwa.Shared.Clinical
+@inherits ComponentBase
+
+<PageTitle>Expediente - MedFarLab</PageTitle>
+
+@if (IsLoading)
+{
+    <MedFarSkeleton Type="MedFarSkeletonType.PatientHeader" />
+}
+else if (Patient != null)
+{
+    <MedFarPageHeader Title="@Patient.FullName"
+                      Icon="@Icons.Material.Filled.AssignmentInd"
+                      Subtitle="@($"DNI: {Patient.DocumentId} | Edad: {Patient.DateOfBirth.ToString()} (aprox)")"
+                      ShowBack="true"
+                      OnBackClick="VolverAlDirectorio">
+        <PrimaryActions>
+            <MudButton Variant="Variant.Filled"
+                       StartIcon="@Icons.Material.Filled.LocalHospital"
+                       Class="btn-emerald-gradient"
+                       OnClick="NuevaConsulta">
+                Nueva Consulta
+            </MudButton>
+        </PrimaryActions>
+        <SecondaryActions>
+            <MudMenuItem Icon="@Icons.Material.Filled.Edit" OnClick="EditarPaciente">Editar datos</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Print" OnClick="ImprimirExpediente">Imprimir expediente</MudMenuItem>
+        </SecondaryActions>
+    </MedFarPageHeader>
+
+    <StickyPatientAlerts Allergies="@PatientAllergies" CriticalAlerts="@CriticalRiskAlerts" />
+
+    <MudGrid Class="mt-4">
+        <!-- Resumen Clínico -->
+        <MudItem xs="12" md="4">
+            <MudCard Class="surface-glass shadow-float mb-4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Resumen Clínico</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText><b>Tipo de Sangre:</b> O+</MudText>
+                    <MudText><b>Peso:</b> 75 kg</MudText>
+                    <MudText><b>Estatura:</b> 1.80 m</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- Historial de Consultas (Uso de MedFarTable con Densidad) -->
+        <MudItem xs="12" md="8">
+            <MedFarTable TItem="ConsultaHistorialDTO"
+                         Items="@Consultas"
+                         IsLoading="false"
+                         Dense="true"
+                         ShowSearch="false"
+                         ColumnCount="3"
+                         EmptyTitle="Sin consultas"
+                         EmptyMessage="Este paciente aún no tiene consultas registradas."
+                         EmptyIcon="@Icons.Material.Filled.EventBusy">
+                <HeaderContent>
+                    <MudTh>Fecha</MudTh>
+                    <MudTh>Motivo</MudTh>
+                    <MudTh>Médico</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.Fecha.ToString("dd/MM/yyyy")</MudTd>
+                    <MudTd>@context.Motivo</MudTd>
+                    <MudTd>@context.Medico</MudTd>
+                </RowTemplate>
+            </MedFarTable>
+        </MudItem>
+    </MudGrid>
+}
+else
+{
+    <MedFarEmptyState Title="Paciente no encontrado" Message="El expediente que intentas visualizar no existe." />
+}

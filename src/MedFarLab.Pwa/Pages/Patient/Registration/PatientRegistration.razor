@@ -4,21 +4,25 @@
 @using MedFarLab.Application.Features.Clinical.Commands.RegisterPatient
 @using MedFarLab.Application.Features.Identity.Models
 @using MedFarLab.Application.Features.Clinical.Models
+@using MedFarLab.Pwa.Shared.Components
 
 <PageTitle>Nuevo Ingreso Clínico - MedFarLab</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
-    <div class="d-flex align-center mb-6">
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="GoBack" Color="Color.Inherit" Class="mr-2" />
-        <div>
-            <MudText Typo="Typo.h4" Color="Color.Primary"><b>Registrar Paciente</b></MudText>
-            <MudText Typo="Typo.body2" Color="Color.Surface">Apertura de nuevo expediente clínico centralizado.</MudText>
-        </div>
-        <MudSpacer />
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save" Disabled="@IsSending" OnClick="HandleRegistrationAsync">
-            @(IsSending ? "Procesando..." : "Guardar Expediente")
-        </MudButton>
-    </div>
+    <MedFarPageHeader Title="Registrar Paciente"
+                      Icon="@Icons.Material.Filled.PersonAdd"
+                      Subtitle="Apertura de nuevo expediente clínico centralizado."
+                      ShowBack="true"
+                      OnBackClick="GoBack">
+        <PrimaryActions>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+                       StartIcon="@Icons.Material.Filled.Save" 
+                       Class="btn-emerald-gradient"
+                       Disabled="@IsSending" OnClick="HandleRegistrationAsync">
+                @(IsSending ? "Procesando..." : "Guardar Expediente")
+            </MudButton>
+        </PrimaryActions>
+    </MedFarPageHeader>
 
     <EditForm Model="@Model" OnValidSubmit="HandleRegistrationAsync">
         <DataAnnotationsValidator />

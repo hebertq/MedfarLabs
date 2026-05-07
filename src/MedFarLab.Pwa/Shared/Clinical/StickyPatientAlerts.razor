@@ -1,0 +1,41 @@
+@using MudBlazor
+@if (Allergies?.Any() == true || CriticalAlerts?.Any() == true)
+{
+    <div class="sticky-clinical-alerts">
+        @if (Allergies?.Any() == true)
+        {
+            <div class="sticky-alert-group sticky-allergies">
+                <MudIcon Icon="@Icons.Material.Filled.Warning" Size="Size.Small"/>
+                <span class="sticky-alert-label">ALERGIA:</span>
+                @foreach (var a in Allergies.Take(3))
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Error"
+                             Class="sticky-chip">@a</MudChip>
+                }
+                @if (Allergies.Count > 3)
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Error"
+                             Variant="Variant.Outlined"
+                             Class="sticky-chip">+@(Allergies.Count - 3)</MudChip>
+                }
+            </div>
+        }
+        @if (CriticalAlerts?.Any() == true)
+        {
+            <div class="sticky-alert-group sticky-risks">
+                <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Size="Size.Small"/>
+                <span class="sticky-alert-label">RIESGO:</span>
+                @foreach (var r in CriticalAlerts.Take(2))
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Warning"
+                             Class="sticky-chip">@r</MudChip>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public List<string>? Allergies { get; set; }
+    [Parameter] public List<string>? CriticalAlerts { get; set; }
+}

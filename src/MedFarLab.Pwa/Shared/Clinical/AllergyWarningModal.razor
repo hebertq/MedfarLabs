@@ -1,0 +1,42 @@
+@using MudBlazor
+@inject IDialogService DialogService
+
+@* Este componente se usa como servicio â€” no tiene markup propio *@
+@code {
+    public async Task<bool> CheckAndConfirmAsync(
+        string medicamentName,
+        List<string> patientAllergies,
+        bool isHardBlock = false)
+    {
+        // Â¿El medicamento coincide con alguna alergia?
+        var match = patientAllergies
+            .FirstOrDefault(a => medicamentName.Contains(a, StringComparison.OrdinalIgnoreCase));
+
+        if (match == null) return true; // Sin conflicto
+
+        if (isHardBlock)
+        {
+            // HARD BLOCK: No se puede proceder
+            await DialogService.ShowMessageBox(
+                "â›” ContraindicaciÃ³n absoluta",
+                $"El paciente tiene alergia documentada a '{match}'. No es posible prescribir '{medicamentName}'.",
+                yesText: "Entendido",
+                options: new DialogOptions { MaxWidth = MaxWidth.Small });
+            return false;
+        }
+
+        // SOFT BLOCK: Requiere confirmaciÃ³n doble
+        var result = await DialogService.ShowMessageBox(
+            "âš ï¸ Advertencia de alergia",
+            $"El paciente tiene alergia a '{match}'. Â¿EstÃ¡ seguro de que desea prescribir '{medicamentName}'? Esta acciÃ³n quedarÃ¡ registrada en la auditorÃ­a.",
+            yesText: "Confirmar y continuar",
+            cancelText: "Cancelar",
+            options: new DialogOptions
+            {
+                MaxWidth = MaxWidth.Small,
+                BackgroundClass = "allergy-warning-overlay"
+            });
+
+        return result == true;
+    }
+}

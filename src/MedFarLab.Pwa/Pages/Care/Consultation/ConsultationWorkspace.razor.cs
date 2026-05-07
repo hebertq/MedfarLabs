@@ -88,6 +88,18 @@ namespace MedFarLab.Pwa.Pages.Care.Consultation
         public List<ChartSeries> VitalsSeries = new List<ChartSeries>();
         public string[] VitalsLabels = { "Dia 1", "Dia 5", "Dia 12", "Dia 18", "Dia 25", "Hoy" };
 
+        protected void GoBack()
+        {
+            if (!string.IsNullOrEmpty(ReturnUrl))
+            {
+                NavManager.NavigateTo(ReturnUrl);
+            }
+            else
+            {
+                NavManager.NavigateTo("/care/appointments");
+            }
+        }
+
         protected override async Task OnInitializedAsync()
         {
             try

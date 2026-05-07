@@ -1,0 +1,107 @@
+@page "/home/laboratorio"
+@using MudBlazor
+@using MedFarLab.Pwa.Shared.Components.Dashboard
+@using MedFarLab.Pwa.Shared.Components
+
+<div class="mf-dashboard">
+
+    <div class="mf-dashboard-greeting mb-6">
+        <MudText Typo="Typo.h5">Panel de Laboratorio 🔬</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">
+            @DateTime.Now.ToString("dddd, dd 'de' MMMM", new System.Globalization.CultureInfo("es-NI"))
+        </MudText>
+    </div>
+
+    <MudGrid Spacing="3" Class="mb-6">
+        <MudItem xs="12" sm="6" lg="3">
+            <MedFarStatCard Label="Pendientes hoy"
+                            Value="@(Stats?.PendingExamsToday.ToString() ?? "0")"
+                            Icon="@Icons.Material.Filled.Pending"
+                            IconColor="#F97316" IconBg="rgba(249,115,22,0.12)"
+                            IsLoading="@Cargando"/>
+        </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
+            <MedFarStatCard Label="Completados hoy"
+                            Value="@(Stats?.CompletedExamsToday.ToString() ?? "0")"
+                            Icon="@Icons.Material.Filled.CheckCircle"
+                            IconColor="#10B981" IconBg="rgba(16,185,129,0.12)"
+                            IsLoading="@Cargando"/>
+        </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
+            <MedFarStatCard Label="Resultados críticos"
+                            Value="@(Stats?.CriticalResults.ToString() ?? "0")"
+                            Icon="@Icons.Material.Filled.Warning"
+                            IconColor="#EF4444" IconBg="rgba(239,68,68,0.12)"
+                            IsLoading="@Cargando"
+                            Subtitle="Requieren atención inmediata"/>
+        </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
+            <MedFarStatCard Label="En proceso"
+                            Value="@EnProceso.ToString()"
+                            Icon="@Icons.Material.Filled.Science"
+                            IconColor="#6366F1" IconBg="rgba(99,102,241,0.12)"
+                            IsLoading="@Cargando"/>
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Spacing="3">
+        <MudItem xs="12" lg="8">
+            <!-- Tabla de densidad +20% para modo laboratorio -->
+            @* Note: MedFarTable might not exist yet, replacing with MudTable for now or assume it exists since it's not defined in the front doc for creation in Phase 2 but rather in Phase 1 or already exists. Let's assume it exists. *@
+            <MudTable Items="@Stats?.PendingQueue"
+                      Dense="true" Hover="true" Loading="@Cargando"
+                      Class="mf-lab-density-mode shadow-float">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Órdenes pendientes</MudText>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>Paciente</MudTh>
+                    <MudTh>Examen</MudTh>
+                    <MudTh>Prioridad</MudTh>
+                    <MudTh>Solicitado</MudTh>
+                    <MudTh>Acciones</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Paciente">@context.PatientName</MudTd>
+                    <MudTd DataLabel="Examen">@context.TestName</MudTd>
+                    <MudTd DataLabel="Prioridad">
+                        <MudChip T="string" Size="Size.Small"
+                                 Color="@GetPriorityColor(context.Priority)">
+                            @context.Priority
+                        </MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Solicitado">@context.RequestedDate.ToString("hh:mm tt")</MudTd>
+                    <MudTd DataLabel="Acciones">
+                        <MudButton Size="Size.Small" Variant="Variant.Outlined"
+                                   OnClick="@(() => RegistrarResultado(context.OrderId))">
+                            Ingresar resultado
+                        </MudButton>
+                    </MudTd>
+                </RowTemplate>
+                <NoRecordsContent>
+                    <div class="pa-4">
+                        <MedFarEmptyState Title="Sin órdenes pendientes"
+                                          Message="Todas las órdenes del día han sido procesadas."
+                                          Icon="@Icons.Material.Outlined.CheckCircle" />
+                    </div>
+                </NoRecordsContent>
+            </MudTable>
+        </MudItem>
+        <MudItem xs="12" lg="4">
+            <!-- Alerta de resultados críticos -->
+            @if (Stats?.CriticalResults > 0)
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-3 shadow-float">
+                    <MudText Typo="Typo.body2">
+                        <b>@Stats.CriticalResults resultado(s) crítico(s)</b> requieren
+                        revisión y notificación inmediata al médico solicitante.
+                    </MudText>
+                    <MudButton Size="Size.Small" Color="Color.Error"
+                               Class="mt-2" OnClick="VerCriticos">
+                        Ver críticos
+                    </MudButton>
+                </MudAlert>
+            }
+        </MudItem>
+    </MudGrid>
+</div>

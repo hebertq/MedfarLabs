@@ -1,0 +1,51 @@
+@using MudBlazor
+
+<div class="mf-page-header surface-glass shadow-float">
+    <div class="mf-page-header-left">
+        @if (ShowBack)
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack"
+                           OnClick="@OnBackClick"
+                           Class="mf-back-btn" Size="Size.Medium"/>
+        }
+        <div class="mf-page-header-title">
+            @if (!string.IsNullOrEmpty(Icon))
+            {
+                <MudIcon Icon="@Icon" Color="Color.Primary" Class="mr-2"/>
+            }
+            <div>
+                <MudText Typo="Typo.h6" Class="mf-title-text">@Title</MudText>
+                @if (!string.IsNullOrEmpty(Subtitle))
+                {
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@Subtitle</MudText>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="mf-page-header-actions">
+        @* Acciones principales *@
+        @PrimaryActions
+
+        @* MenÃº kebab para acciones secundarias *@
+        @if (SecondaryActions != null)
+        {
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert"
+                     AnchorOrigin="Origin.BottomRight"
+                     TransformOrigin="Origin.TopRight"
+                     Dense="true">
+                @SecondaryActions
+            </MudMenu>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public string? Icon { get; set; }
+    [Parameter] public bool ShowBack { get; set; } = false;
+    [Parameter] public EventCallback OnBackClick { get; set; }
+    [Parameter] public RenderFragment? PrimaryActions { get; set; }
+    [Parameter] public RenderFragment? SecondaryActions { get; set; }
+}

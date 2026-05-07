@@ -11,7 +11,8 @@ namespace MedFarLab.Pwa.Pages.Admin.Menus;
 public partial class MenuManager : ComponentBase
 {
     [Inject] protected IMediator Mediator { get; set; } = default!;
-    [Inject] protected ISnackbar Snackbar { get; set; } = default!;
+    [Inject] protected MedFarLab.Pwa.Services.MedFarSnackbarService SnackbarService { get; set; } = default!;
+    [Inject] protected NavigationManager NavManager { get; set; } = default!;
 
     protected bool IsLoading = false;
     protected bool IsSaving = false;
@@ -23,6 +24,14 @@ public partial class MenuManager : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         await LoadMenus();
+    }
+
+    protected bool FilterFunc(NavigationMenuResponseDTO item, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString)) return true;
+        if (item.Title != null && item.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase)) return true;
+        if (item.Route != null && item.Route.Contains(searchString, StringComparison.OrdinalIgnoreCase)) return true;
+        return false;
     }
 
     protected async Task OnOrgTypeChanged(int newType)
@@ -45,7 +54,7 @@ public partial class MenuManager : ComponentBase
         }
         catch (Exception ex)
         {
-            Snackbar.Add("Error cargando menús dinámicos: " + ex.Message, Severity.Error);
+            SnackbarService.ShowError("Error cargando menús dinámicos: " + ex.Message);
         }
         finally
         {
@@ -93,7 +102,7 @@ public partial class MenuManager : ComponentBase
                     CurrentUserId = 1 
                 };
                 var result = await Mediator.Send(cmd);
-                if (result.IsSuccess) Snackbar.Add("Menú Agregado.", Severity.Success);
+                if (result.IsSuccess) SnackbarService.ShowSuccess("Menú Agregado.");
             }
             else
             {
@@ -109,7 +118,7 @@ public partial class MenuManager : ComponentBase
                     IsActive = true
                 };
                 var result = await Mediator.Send(cmd);
-                if (result.IsSuccess) Snackbar.Add("Cambios Guardados.", Severity.Success);
+                if (result.IsSuccess) SnackbarService.ShowSuccess("Cambios Guardados.");
             }
             
             CloseDialog();
@@ -117,7 +126,7 @@ public partial class MenuManager : ComponentBase
         }
         catch (Exception ex)
         {
-            Snackbar.Add("Error al guardar: " + ex.Message, Severity.Error);
+            SnackbarService.ShowError("Error al guardar: " + ex.Message);
         }
         finally
         {

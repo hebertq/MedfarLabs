@@ -1,0 +1,62 @@
+@using MudBlazor
+@typeparam TModel
+
+<EditForm Model="@Model" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator/>
+
+    <div class="mf-form @(IsCompact ? "mf-form-compact" : "")">
+
+        @* Banner de error del servidor (BaseResponse.Message cuando IsSuccess=false) *@
+        @if (!string.IsNullOrEmpty(_serverError))
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-4" ShowCloseIcon="true"
+                      CloseIconClicked="@(() => _serverError = string.Empty)">
+                <div class="d-flex justify-space-between align-center w-100">
+                    <span>@_serverError</span>
+                    @if (!string.IsNullOrEmpty(_traceId))
+                    {
+                        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
+                                 OnClick="@CopyTraceId" Class="ml-2">
+                            TraceId: @_traceId.Substring(0, Math.Min(8, _traceId.Length))…
+                        </MudChip>
+                    }
+                </div>
+            </MudAlert>
+        }
+
+        @* Campos del formulario *@
+        @FormContent
+
+        @* Barra de acciones estándar *@
+        <div class="mf-form-actions @(ActionsSticky ? "mf-form-actions-sticky" : "")">
+            @if (ShowCancel)
+            {
+                <MudButton Variant="Variant.Text"
+                           OnClick="@OnCancelClick"
+                           Disabled="@_isSubmitting">
+                    @CancelText
+                </MudButton>
+            }
+            @if (SecondaryActions != null)
+            {
+                @SecondaryActions
+            }
+            <MudSpacer/>
+            <MudButton ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled"
+                       Class="btn-emerald-gradient"
+                       Disabled="@_isSubmitting"
+                       StartIcon="@(_isSubmitting ? null : SubmitIcon)">
+                @if (_isSubmitting)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2"/>
+                    <span>Guardando…</span>
+                }
+                else
+                {
+                    <span>@SubmitText</span>
+                }
+            </MudButton>
+        </div>
+    </div>
+</EditForm>

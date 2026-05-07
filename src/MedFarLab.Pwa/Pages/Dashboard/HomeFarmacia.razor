@@ -1,0 +1,30 @@
+@page "/home/farmacia"
+@using MudBlazor
+@using MedFarLab.Pwa.Shared.Components.Dashboard
+
+<div class="mf-dashboard">
+    <div class="mf-dashboard-greeting mb-6">
+        <MudText Typo="Typo.h5">Panel de Farmacia 💊</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">
+            @DateTime.Now.ToString("dddd, dd 'de' MMMM", new System.Globalization.CultureInfo("es-NI"))
+        </MudText>
+    </div>
+
+    <!-- Dummy Dashboard Content -->
+    <MudGrid Spacing="3">
+        <MudItem xs="12" sm="6" lg="3">
+            <MedFarStatCard Label="Recetas pendientes"
+                            Value="0"
+                            Icon="@Icons.Material.Filled.Medication"
+                            IconColor="#10B981" IconBg="rgba(16,185,129,0.12)"
+                            IsLoading="@Cargando"/>
+        </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
+            <MedFarStatCard Label="Productos bajo stock"
+                            Value="0"
+                            Icon="@Icons.Material.Filled.Warning"
+                            IconColor="#EF4444" IconBg="rgba(239,68,68,0.12)"
+                            IsLoading="@Cargando"/>
+        </MudItem>
+    </MudGrid>
+</div>

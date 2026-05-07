@@ -1,0 +1,41 @@
+@using MudBlazor
+
+<div class="mf-empty-state">
+    <div class="mf-empty-icon-wrap">
+        <MudIcon Icon="@Icon" Style="font-size: 4rem; opacity: 0.25;"/>
+    </div>
+    <MudText Typo="Typo.h6" Class="mf-empty-title">@Title</MudText>
+    <MudText Typo="Typo.body2" Class="mf-empty-message">@Message</MudText>
+    @if (ActionContent != null)
+    {
+        <div class="mt-6">@ActionContent</div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Icon { get; set; } = Icons.Material.Outlined.Inbox;
+    [Parameter] public string Title { get; set; } = "Sin registros";
+    [Parameter] public string Message { get; set; } = "No hay datos disponibles en este momento.";
+    [Parameter] public RenderFragment? ActionContent { get; set; }
+
+    // Variantes predefinidas para los módulos mÃ¡s comunes
+    public static (string Icon, string Title, string Message) Patients =>
+        (Icons.Material.Outlined.PersonSearch,
+         "Directorio vacÃ­o",
+         "No has registrado pacientes en esta sucursal aÃºn.");
+
+    public static (string Icon, string Title, string Message) LabOrders =>
+        (Icons.Material.Outlined.Biotech,
+         "Sin Ã³rdenes de laboratorio",
+         "Las Ã³rdenes aparecerÃ¡n aquÃ­ cuando el mÃ©dico las emita.");
+
+    public static (string Icon, string Title, string Message) Invoices =>
+        (Icons.Material.Outlined.ReceiptLong,
+         "Sin facturas registradas",
+         "Las facturas generadas aparecerÃ¡n en este listado.");
+
+    public static (string Icon, string Title, string Message) Appointments =>
+        (Icons.Material.Outlined.CalendarMonth,
+         "Agenda vacÃ­a",
+         "No hay citas programadas para este perÃ­odo.");
+}

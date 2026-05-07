@@ -12,7 +12,10 @@ namespace MedFarLab.Pwa.Pages.Care.Consultation.Dialogs
         [Inject] private ISender Mediator { get; set; } = default!;
 
         [Parameter] public PrescriptionItemDTO? InitialData { get; set; }
+        [Parameter] public List<string> PatientAllergies { get; set; } = new();
         
+        protected MedFarLab.Pwa.Shared.Clinical.AllergyWarningModal AllergyModal { get; set; } = default!;
+
         public ModelData Model { get; set; } = new();
         protected List<MedicationItemDTO> GlobalMedications { get; set; } = new();
 
@@ -54,10 +57,19 @@ namespace MedFarLab.Pwa.Pages.Care.Consultation.Dialogs
             !string.IsNullOrWhiteSpace(Model.Frequency) &&
             !string.IsNullOrWhiteSpace(Model.Duration);
 
-        protected void Submit()
+        protected async Task Submit()
         {
             if (IsFormValid)
             {
+                if (PatientAllergies.Any())
+                {
+                    bool isSafe = await AllergyModal.CheckAndConfirmAsync(Model.MedicationName, PatientAllergies);
+                    if (!isSafe)
+                    {
+                        return;
+                    }
+                }
+
                 MudDialog.Close(DialogResult.Ok(new PrescriptionItemDTO(Model.MedicationName, Model.Dosage, Model.Frequency, Model.Duration, Model.Instructions)));
             }
         }

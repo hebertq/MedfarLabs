@@ -1,0 +1,30 @@
+@using MudBlazor
+
+<div class="mf-lab-value @GetCssClass()">
+    <span class="mf-lab-number">@FormattedValue</span>
+    <span class="mf-lab-unit">@Unit</span>
+    @if (IsOutOfRange)
+    {
+        <MudTooltip Text="@($"Rango: {RefMin} â€“ {RefMax} {Unit}")">
+            <span class="mf-lab-arrow">@(NumericValue > RefMax ? "â†‘" : "â†“")</span>
+        </MudTooltip>
+    }
+</div>
+
+@code {
+    [Parameter] public decimal? NumericValue { get; set; }
+    [Parameter] public string? TextValue { get; set; }
+    [Parameter] public string? Unit { get; set; }
+    [Parameter] public decimal? RefMin { get; set; }
+    [Parameter] public decimal? RefMax { get; set; }
+    [Parameter] public bool IsOutOfRange { get; set; }
+
+    private string FormattedValue =>
+        NumericValue.HasValue ? NumericValue.Value.ToString("G6") : TextValue ?? "â€”";
+
+    private string GetCssClass()
+    {
+        if (!IsOutOfRange) return "mf-lab-normal";
+        return NumericValue > RefMax ? "mf-lab-high" : "mf-lab-low";
+    }
+}

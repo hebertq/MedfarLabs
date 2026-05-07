@@ -1,0 +1,17 @@
+.mf-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    text-align: center;
+}
+.mf-empty-icon-wrap {
+    width: 96px; height: 96px;
+    border-radius: 50%;
+    background: var(--mf-primary-light);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+}
+.mf-empty-title   { font-weight: 700; margin-bottom: 8px; }
+.mf-empty-message { color: var(--mud-palette-text-secondary); max-width: 360px; }

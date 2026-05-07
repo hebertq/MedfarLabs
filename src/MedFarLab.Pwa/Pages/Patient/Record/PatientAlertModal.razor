@@ -2,16 +2,18 @@
     <DialogContent>
         <MudForm @ref="form" @bind-IsValid="success" @bind-Errors="errors">
             <MudSelect T="int" Label="Tipo de Alerta" @bind-Value="Model.AlertTypeId" Required="true" RequiredError="Debe seleccionar un tipo.">
-                <MudSelectItem Value="1">Alergia Letal</MudSelectItem>
-                <MudSelectItem Value="2">Condición Preexistente Grave</MudSelectItem>
-                <MudSelectItem Value="3">Contraindicación</MudSelectItem>
-                <MudSelectItem Value="4">Aviso Administrativo</MudSelectItem>
+                <MudSelectItem T="int" Value="0" Disabled="true">Seleccione...</MudSelectItem>
+                <MudSelectItem T="int" Value="1">Alergia Letal</MudSelectItem>
+                <MudSelectItem T="int" Value="2">Condición Preexistente Grave</MudSelectItem>
+                <MudSelectItem T="int" Value="3">Contraindicación</MudSelectItem>
+                <MudSelectItem T="int" Value="4">Aviso Administrativo</MudSelectItem>
             </MudSelect>
 
             <MudSelect T="int" Label="Severidad" @bind-Value="Model.SeverityId" Required="true" RequiredError="Debe seleccionar la severidad." Class="mt-4">
-                <MudSelectItem Value="1">Baja/Media</MudSelectItem>
-                <MudSelectItem Value="2">Alta</MudSelectItem>
-                <MudSelectItem Value="3">Crítica</MudSelectItem>
+                <MudSelectItem T="int" Value="0" Disabled="true">Seleccione...</MudSelectItem>
+                <MudSelectItem T="int" Value="1">Baja/Media</MudSelectItem>
+                <MudSelectItem T="int" Value="2">Alta</MudSelectItem>
+                <MudSelectItem T="int" Value="3">Crítica</MudSelectItem>
             </MudSelect>
 
             <MudTextField T="string" Label="Mensaje / Descripción" @bind-Value="Model.Message" Required="true" RequiredError="El mensaje es obligatorio." Lines="3" Class="mt-4" />

@@ -4,120 +4,42 @@
 @using MedFarLab.Application.Features.System.Queries.GetMenus
 @using MedfarLabs.Core.Application.Features.System.Dtos
 @inject IMediator Mediator
+@inject NavigationManager NavManager
 
-@if (IsMobile)
-{
-    <nav class="mobile-nav-links fade-in">
-        @if (!AppState.IsMasterAdmin)
+<MudNavMenu Class="pt-4">
+    @if (!AppState.IsMasterAdmin)
+    {
+        if (DynamicMenus == null)
         {
-            @if (DynamicMenus != null && DynamicMenus.Any())
+            <div class="pa-4 d-flex justify-center flex-column align-center">
+                <MedFarLab.Pwa.Shared.Components.MedFarSkeleton Type="MedFarLab.Pwa.Shared.Components.MedFarSkeletonType.List" />
+            </div>
+        }
+        else
+        {
+            foreach (var menu in DynamicMenus)
             {
-                foreach (var menu in DynamicMenus)
-                {
-                    <NavLink href="@menu.Route" class="m-nav-item">
-                        <MudIcon Icon="@GetMudIcon(menu.Icon)" Class="icon" />
-                        <span>@menu.Title</span>
-                    </NavLink>
-                }
-            }
-            else
-            {
-                <div class="p-2 d-flex justify-center"><MudProgressCircular Indeterminate="true" Size="MudBlazor.Size.Small" /></div>
+                <MudNavLink Href="@menu.Route" Icon="@GetMudIcon(menu.Icon)" Match="NavLinkMatch.Prefix">@menu.Title</MudNavLink>
             }
         }
-        @if (AppState.IsMasterAdmin)
-        {
-            <NavLink href="/admin/dashboard" class="m-nav-item" style="color: var(--mud-palette-secondary) !important;">
-                <MudIcon Icon="@Icons.Material.Filled.AdminPanelSettings" Class="icon" />
-                <span>SaaS Admin</span>
-            </NavLink>
-            <NavLink href="/admin/menus" class="m-nav-item">
-                <MudIcon Icon="@Icons.Material.Filled.Widgets" Class="icon" />
-                <span>Menús Dinámicos</span>
-            </NavLink>
-            <NavLink href="/admin/laboratory/templates" class="m-nav-item" style="color: var(--mud-palette-info) !important;">
-                <MudIcon Icon="@Icons.Material.Filled.Science" Class="icon" />
-                <span>Plantillas Laboratorio</span>
-            </NavLink>
-        }
-    </nav>
-}
-else
-{
-    <nav class="desktop-sidebar fade-in-up">
-        <div class="sidebar-header">
-            <img src="/images/logo.png" alt="MedFarLab Logo" class="d-logo-img" />
-        </div>
 
-        <div class="d-nav-links">
-            @if (!AppState.IsMasterAdmin)
-            {
-                if (DynamicMenus == null)
-                {
-                    <div class="p-4 d-flex justify-center flex-column align-center">
-                        <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
-                        <MudText Typo="Typo.caption" Class="mt-2 text-muted">Cargando módulos...</MudText>
-                    </div>
-                }
-                else
-                {
-                    foreach (var menu in DynamicMenus)
-                    {
-                        <NavLink href="@menu.Route" class="d-nav-item scale-on-hover">
-                            <MudIcon Icon="@GetMudIcon(menu.Icon)" Class="icon mr-2" />
-                            <span>@menu.Title</span>
-                        </NavLink>
-                    }
-                }
-
-                <div class="my-4" style="border-top: 1px solid rgba(255,255,255,0.05);"></div>
-                <NavLink href="/ajustes" class="d-nav-item">
-                    <MudIcon Icon="@Icons.Material.Filled.Settings" Class="icon mr-2" />
-                    <span>Ajustes Generales</span>
-                </NavLink>
-            }
-            
-            @if (AppState.IsMasterAdmin)
-            {
-                <NavLink href="/admin/dashboard" class="d-nav-item mt-4" style="color: var(--mud-palette-secondary) !important; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
-                    <MudIcon Icon="@Icons.Material.Filled.Speed" Class="icon mr-2" />
-                    <span>Central MedfarLabs</span>
-                </NavLink>
-
-                <NavLink href="/admin/organizations" class="d-nav-item" style="color: var(--mud-palette-success) !important;">
-                    <MudIcon Icon="@Icons.Material.Filled.Business" Class="icon mr-2" />
-                    <span>Organizaciones</span>
-                </NavLink>
-
-                <NavLink href="/admin/plans" class="d-nav-item" style="color: var(--mud-palette-info) !important;">
-                    <MudIcon Icon="@Icons.Material.Filled.Loyalty" Class="icon mr-2" />
-                    <span>SaaS Planes</span>
-                </NavLink>
-
-                <NavLink href="/admin/menus" class="d-nav-item" style="color: var(--mud-palette-warning) !important;">
-                    <MudIcon Icon="@Icons.Material.Filled.MenuOpen" Class="icon mr-2" />
-                    <span>Constructor de Menú</span>
-                </NavLink>
-
-                <NavLink href="/admin/laboratory/templates" class="d-nav-item" style="color: var(--mud-palette-info) !important; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
-                    <MudIcon Icon="@Icons.Material.Filled.Science" Class="icon mr-2" />
-                    <span>Plantillas Globales Lab</span>
-                </NavLink>
-            }
-        </div>
-        
-        <div class="sidebar-footer">
-            <button class="logout-btn" @onclick="Logout">
-                <MudIcon Icon="@Icons.Material.Filled.Logout" Class="mr-2" />
-                <span>Cerrar Sesión</span>
-            </button>
-        </div>
-    </nav>
-}
+        <MudDivider Class="my-4" />
+        <MudNavLink Href="/ajustes" Icon="@Icons.Material.Filled.Settings" Match="NavLinkMatch.Prefix">Ajustes Generales</MudNavLink>
+    }
+    
+    @if (AppState.IsMasterAdmin)
+    {
+        <MudNavLink Href="/admin/dashboard" Icon="@Icons.Material.Filled.Speed" IconColor="Color.Secondary" Match="NavLinkMatch.Prefix">Central MedfarLabs</MudNavLink>
+        <MudNavLink Href="/admin/organizations" Icon="@Icons.Material.Filled.Business" IconColor="Color.Success" Match="NavLinkMatch.Prefix">Organizaciones</MudNavLink>
+        <MudNavLink Href="/admin/plans" Icon="@Icons.Material.Filled.Loyalty" IconColor="Color.Info" Match="NavLinkMatch.Prefix">SaaS Planes</MudNavLink>
+        <MudNavLink Href="/admin/menus" Icon="@Icons.Material.Filled.MenuOpen" IconColor="Color.Warning" Match="NavLinkMatch.Prefix">Constructor de Menú</MudNavLink>
+        <MudDivider Class="my-2" />
+        <MudNavLink Href="/admin/laboratory/templates" Icon="@Icons.Material.Filled.Science" IconColor="Color.Info" Match="NavLinkMatch.Prefix">Plantillas Globales Lab</MudNavLink>
+    }
+</MudNavMenu>
 
 @code {
     [Parameter] public bool IsMobile { get; set; } = false;
-    [Inject] private NavigationManager NavManager { get; set; } = default!;
 
     private IEnumerable<NavigationMenuResponseDTO>? DynamicMenus;
 
@@ -172,18 +94,5 @@ else
     public void Dispose()
     {
         AppState.OnChange -= StateHasChanged;
-    }
-
-    private async Task Logout()
-    {
-        await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "medfarlab_token");
-        await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "medfarlab_userId");
-        await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "medfarlab_isMaster");
-        await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "medfarlab_orgtype");
-        AppState.UserId = 0;
-        AppState.SessionToken = string.Empty;
-        AppState.OrganizationId = 0;
-        AppState.IsMasterAdmin = false;
-        NavManager.NavigateTo("/");
     }
 }

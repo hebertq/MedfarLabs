@@ -1,0 +1,115 @@
+@typeparam TItem
+@using MudBlazor
+
+<div class="mf-table-wrapper @(Dense ? "mf-table-dense" : "")">
+
+    @* Toolbar opcional con bÃºsqueda y acciones *@
+    @if (ShowToolbar)
+    {
+        <div class="mf-table-toolbar surface-glass">
+            @if (ShowSearch)
+            {
+                <MudTextField @bind-Value="_searchTerm"
+                              Placeholder="@SearchPlaceholder"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search"
+                              Immediate="true" Clearable="true"
+                              Variant="Variant.Outlined"
+                              Class="mf-table-search"
+                              OnClearButtonClick="@(() => _searchTerm = string.Empty)"/>
+            }
+            <div class="mf-table-actions">
+                @ToolbarContent
+            </div>
+        </div>
+    }
+
+    <MudTable T="TItem"
+              Items="@Items"
+              Filter="@(ShowSearch ? new Func<TItem, bool>(FilterFunc) : null)"
+              Loading="@IsLoading"
+              Hover="true"
+              Striped="@Striped"
+              Elevation="0"
+              Class="mf-table surface-glass shadow-float"
+              Breakpoint="Breakpoint.Sm"
+              FixedHeader="@FixedHeader"
+              Height="@(FixedHeader ? TableHeight : null)"
+              @ref="_table">
+
+        <ToolBarContent>
+            @* Espacio reservado â€” toolbar manejada arriba *@
+        </ToolBarContent>
+
+        <HeaderContent>
+            @HeaderContent
+        </HeaderContent>
+
+        <RowTemplate>
+            @RowTemplate(context)
+        </RowTemplate>
+
+        <LoadingContent>
+            <MudTd colspan="@ColumnCount">
+                <div class="pa-4">
+                    <MedFarSkeleton Type="MedFarSkeletonType.List" Rows="@SkeletonRows"/>
+                </div>
+            </MudTd>
+        </LoadingContent>
+
+        <NoRecordsContent>
+            <MudTd colspan="@ColumnCount">
+                <MedFarEmptyState Title="@EmptyTitle"
+                                  Message="@EmptyMessage"
+                                  Icon="@EmptyIcon"
+                                  ActionContent="@EmptyActionContent"/>
+            </MudTd>
+        </NoRecordsContent>
+
+        <PagerContent>
+            <MudTablePager InfoFormat="{first_item}-{last_item} de {all_items}"
+                           RowsPerPageString="Filas:"
+                           PageSizeOptions="new[] {10, 25, 50, 100}"/>
+        </PagerContent>
+
+    </MudTable>
+</div>
+
+@code {
+    private MudTable<TItem>? _table;
+    private string _searchTerm = string.Empty;
+
+    [Parameter] public IEnumerable<TItem>? Items { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public RenderFragment? HeaderContent { get; set; }
+    [Parameter] public RenderFragment<TItem> RowTemplate { get; set; } = null!;
+    [Parameter] public RenderFragment? ToolbarContent { get; set; }
+
+    // BÃºsqueda
+    [Parameter] public bool ShowSearch { get; set; } = true;
+    [Parameter] public bool ShowToolbar { get; set; } = true;
+    [Parameter] public string SearchPlaceholder { get; set; } = "Buscar...";
+    [Parameter] public Func<TItem, string, bool>? SearchFilter { get; set; }
+
+    // Layout
+    [Parameter] public bool Dense { get; set; } = false;
+    [Parameter] public bool Striped { get; set; } = true;
+    [Parameter] public bool FixedHeader { get; set; } = false;
+    [Parameter] public string TableHeight { get; set; } = "500px";
+    [Parameter] public int ColumnCount { get; set; } = 5;
+    [Parameter] public int SkeletonRows { get; set; } = 5;
+
+    // Empty State
+    [Parameter] public string EmptyTitle { get; set; } = "Sin registros";
+    [Parameter] public string EmptyMessage { get; set; } = "No hay datos disponibles.";
+    [Parameter] public string EmptyIcon { get; set; } = Icons.Material.Outlined.Inbox;
+    [Parameter] public RenderFragment? EmptyActionContent { get; set; }
+
+    private bool FilterFunc(TItem item)
+    {
+        if (string.IsNullOrWhiteSpace(_searchTerm)) return true;
+        if (SearchFilter != null) return SearchFilter(item, _searchTerm);
+        // Fallback: buscar en ToString()
+        return item?.ToString()?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false;
+    }
+}

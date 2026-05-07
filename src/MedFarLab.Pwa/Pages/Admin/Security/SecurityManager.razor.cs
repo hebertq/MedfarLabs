@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using MedFarLab.Pwa.Services;
 
 namespace MedFarLab.Pwa.Pages.Admin.Security;
 
@@ -7,7 +8,9 @@ public partial class SecurityManager : ComponentBase
 {
     [Inject] protected NavigationManager NavManager { get; set; } = default!;
     [Inject] protected IDialogService DialogService { get; set; } = default!;
-    [Inject] protected ISnackbar Snackbar { get; set; } = default!;
+    [Inject] protected MedFarSnackbarService SnackbarService { get; set; } = default!;
+    
+    protected bool IsLoading { get; set; } = false;
 
     protected List<MockGroup> mockGroups = new() {
         new MockGroup { Id = 1, Name = "Director Médico", Alias = "GRP_DIR_MEDICO" },
@@ -38,6 +41,29 @@ public partial class SecurityManager : ComponentBase
         };
     }
 
+    protected bool FilterGroup(MockGroup item, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString)) return true;
+        if (item.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase)) return true;
+        if (item.Alias.Contains(searchString, StringComparison.OrdinalIgnoreCase)) return true;
+        return false;
+    }
+
+    protected bool FilterRole(MockRole item, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString)) return true;
+        if (item.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase)) return true;
+        return false;
+    }
+
+    protected bool FilterAction(MedFarLab.Pwa.Pages.Admin.Components.RoleActionMapDialog.ActionItem item, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString)) return true;
+        if (item.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase)) return true;
+        if (item.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase)) return true;
+        return false;
+    }
+
     // --- GRUPOS ---
     protected async Task OpenAddGroupModal()
     {
@@ -47,7 +73,7 @@ public partial class SecurityManager : ComponentBase
         {
             dynamic data = result.Data;
             mockGroups.Add(new MockGroup { Id = mockGroups.Max(x => x.Id) + 1, Name = data.Name, Alias = data.Alias });
-            Snackbar.Add("Grupo creado", Severity.Success);
+            SnackbarService.ShowSuccess("Grupo creado");
             StateHasChanged();
         }
     }
@@ -62,7 +88,7 @@ public partial class SecurityManager : ComponentBase
             dynamic data = result.Data;
             grp.Name = data.Name;
             grp.Alias = data.Alias;
-            Snackbar.Add("Grupo actualizado", Severity.Info);
+            SnackbarService.ShowSuccess("Grupo actualizado");
             StateHasChanged();
         }
     }
@@ -73,7 +99,7 @@ public partial class SecurityManager : ComponentBase
         if (result == true)
         {
             mockGroups.Remove(grp);
-            Snackbar.Add("Grupo removido", Severity.Error);
+            SnackbarService.ShowError("Grupo removido");
             StateHasChanged();
         }
     }
@@ -87,7 +113,7 @@ public partial class SecurityManager : ComponentBase
         {
             dynamic data = result.Data;
             mockRoles.Add(new MockRole { Id = mockRoles.Max(x => x.Id) + 1, Name = data.Name });
-            Snackbar.Add("Rol creado", Severity.Success);
+            SnackbarService.ShowSuccess("Rol creado");
             StateHasChanged();
         }
     }
@@ -101,7 +127,7 @@ public partial class SecurityManager : ComponentBase
         {
             dynamic data = result.Data;
             rol.Name = data.Name;
-            Snackbar.Add("Rol actualizado", Severity.Info);
+            SnackbarService.ShowSuccess("Rol actualizado");
             StateHasChanged();
         }
     }
@@ -112,7 +138,7 @@ public partial class SecurityManager : ComponentBase
         if (result == true)
         {
             mockRoles.Remove(rol);
-            Snackbar.Add("Rol removido", Severity.Error);
+            SnackbarService.ShowError("Rol removido");
             StateHasChanged();
         }
     }
@@ -129,7 +155,7 @@ public partial class SecurityManager : ComponentBase
         if (!result.Canceled)
         {
             // El resultado es List<int> con la nueva selección de ActionIds
-            Snackbar.Add($"Matriz de seguridad actualizada para el Rol: {rol.Name}", Severity.Success);
+            SnackbarService.ShowSuccess($"Matriz de seguridad actualizada para el Rol: {rol.Name}");
         }
     }
 
@@ -141,37 +167,36 @@ public partial class SecurityManager : ComponentBase
         if (!result.Canceled)
         {
             dynamic data = result.Data;
-            mockActions.Add(new MedFarLab.Pwa.Pages.Admin.Components.RoleActionMapDialog.ActionItem { Id = mockActions.Max(x => x.Id) + 1, ModuleId = data.ModuleId, Name = data.Name, Description = data.Description });
-            Snackbar.Add("Acción mapeada en el registro global", Severity.Success);
+            mockActions.Add(new MedFarLab.Pwa.Pages.Admin.Components.RoleActionMapDialog.ActionItem { Id = mockActions.Max(x => x.Id) + 1, Name = data.Name, ModuleId = data.ModuleId, Description = data.Description });
+            SnackbarService.ShowSuccess("Acción creada");
             StateHasChanged();
         }
     }
 
-    protected async Task OpenEditActionModal(MedFarLab.Pwa.Pages.Admin.Components.RoleActionMapDialog.ActionItem action)
+    protected async Task OpenEditActionModal(MedFarLab.Pwa.Pages.Admin.Components.RoleActionMapDialog.ActionItem act)
     {
-        var parameters = new DialogParameters { ["ModuleId"] = action.ModuleId, ["Name"] = action.Name, ["Description"] = action.Description };
+        var parameters = new DialogParameters { ["ModuleId"] = act.ModuleId, ["Name"] = act.Name, ["Description"] = act.Description };
         var dialog = await DialogService.ShowAsync<MedFarLab.Pwa.Pages.Admin.Components.ActionPermissionDialog>("Editar Acción", parameters);
         var result = await dialog.Result;
         if (!result.Canceled)
         {
             dynamic data = result.Data;
-            action.ModuleId = data.ModuleId;
-            action.Name = data.Name;
-            action.Description = data.Description;
-            Snackbar.Add("Acción actualizada", Severity.Info);
+            act.Name = data.Name;
+            act.ModuleId = data.ModuleId;
+            act.Description = data.Description;
+            SnackbarService.ShowSuccess("Acción actualizada");
             StateHasChanged();
         }
     }
 
-    protected async Task DeleteAction(MedFarLab.Pwa.Pages.Admin.Components.RoleActionMapDialog.ActionItem action)
+    protected async Task DeleteAction(MedFarLab.Pwa.Pages.Admin.Components.RoleActionMapDialog.ActionItem act)
     {
-        bool? result = await DialogService.ShowMessageBox("Cuidado Crítico", $"¿Estás seguro de eliminar el rastreo de la acción {action.Name}? Los usuarios con este claim lo perderán.", yesText: "Sí, desvincular", cancelText: "Cancelar");
+        bool? result = await DialogService.ShowMessageBox("Cuidado Crítico", $"¿Estás seguro de eliminar el rastreo de la acción {act.Name}? Los usuarios con este claim lo perderán.", yesText: "Sí, desvincular", cancelText: "Cancelar");
         if (result == true)
         {
-            mockActions.Remove(action);
-            Snackbar.Add("Acción expulsada del sistema de Role Mapping", Severity.Error);
+            mockActions.Remove(act);
+            SnackbarService.ShowError("Acción eliminada");
             StateHasChanged();
         }
     }
 }
-

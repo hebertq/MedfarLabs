@@ -1,92 +1,78 @@
 @page "/inventory/catalog"
-@using MudBlazor
+@using MedFarLab.Pwa.Shared.Components
 
 <PageTitle>Catálogo de Servicios - MedFarLab</PageTitle>
 
-<div class="glass-header mb-4">
-    <div>
-        <MudText Typo="Typo.h5" Class="text-primary fw-bold">Gestión de Catálogo y Precios</MudText>
-        <MudText Typo="Typo.body2" Class="text-muted">Directorio unificado de Servicios Médicos, Laboratorio y Procedimientos.</MudText>
-    </div>
-    
-    <div style="display: flex; gap: 1rem;">
-        <MudButton Variant="Variant.Text" Color="Color.Default" StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="GoBack">
-            Regresar
-        </MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenNewServiceModal">
+<MedFarPageHeader Title="Gestión de Catálogo y Precios"
+                  Icon="@Icons.Material.Filled.List"
+                  Subtitle="Directorio unificado de Servicios Médicos, Laboratorio y Procedimientos."
+                  ShowBack="true"
+                  OnBackClick="GoBack">
+    <PrimaryActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenNewServiceModal" Class="btn-emerald-gradient">
             Nuevo Servicio
         </MudButton>
-        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.FileDownload">
+    </PrimaryActions>
+    <SecondaryActions>
+        <MudMenuItem Icon="@Icons.Material.Filled.FileDownload">
             Exportar
-        </MudButton>
-    </div>
-</div>
+        </MudMenuItem>
+    </SecondaryActions>
+</MedFarPageHeader>
 
-<MudPaper Class="pa-6" Elevation="1" Style="border-radius: 12px;">
-    <MudDataGrid T="MedFarLab.Application.Features.Inventory.Models.ServiceItemVM" 
+<div class="mt-4">
+    <MedFarTable TItem="MedFarLab.Application.Features.Inventory.Models.ServiceItemVM" 
                  Items="@Services" 
-                 Loading="@IsLoading"
-                 Filterable="true" 
-                 SortMode="SortMode.Multiple"
-                 QuickFilter="@FilterFunc"
-                 Elevation="0"
-                 Hover="true">
-                 
-        <ToolBarContent>
-            <MudText Typo="Typo.h6">Listado de Precios Base</MudText>
-            <MudSpacer />
-            <MudTextField @bind-Value="SearchString" Placeholder="Buscar por Nombre, Código o Categoría..." Adornment="Adornment.Start" Immediate="true"
-                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-        </ToolBarContent>
-        
-        <Columns>
-            <PropertyColumn Property="x => x.Code" Title="Código" Sortable="true" />
-            <PropertyColumn Property="x => x.Name" Title="Nombre del Servicio" Sortable="true" />
-            <PropertyColumn Property="x => x.Category" Title="Área/Categoría" Sortable="true">
-                <CellTemplate>
-                    <MudChip T="string" Size="Size.Small" Color="@(context.Item.Category == "Médico" ? Color.Info : context.Item.Category == "Laboratorio" ? Color.Warning : Color.Success)" Variant="Variant.Outlined">
-                        @context.Item.Category
-                    </MudChip>
-                </CellTemplate>
-            </PropertyColumn>
-            <PropertyColumn Property="x => x.UnitPrice" Title="Precio Unitario" Sortable="true">
-                <CellTemplate>
-                    <MudText Typo="Typo.body2" Class="fw-bold">$@context.Item.UnitPrice.ToString("0.00")</MudText>
-                </CellTemplate>
-            </PropertyColumn>
-            <PropertyColumn Property="x => x.IsTaxable" Title="Aplica Impuesto">
-                <CellTemplate>
-                    @if (context.Item.IsTaxable)
-                    {
-                        <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" Size="Size.Small" />
-                    }
-                    else
-                    {
-                        <MudIcon Icon="@Icons.Material.Filled.Close" Color="Color.Error" Size="Size.Small" />
-                    }
-                </CellTemplate>
-            </PropertyColumn>
-            <TemplateColumn Title="Estado">
-                <CellTemplate>
-                    <MudChip T="string" Color="Color.Success" Size="Size.Small" Variant="Variant.Filled">Activo</MudChip>
-                </CellTemplate>
-            </TemplateColumn>
-            <TemplateColumn Title="Acciones" Sortable="false">
-                <CellTemplate>
-                    @if (context.Item.Category == "Laboratorio" || context.Item.Category == "Exámenes")
-                    {
-                        <MudTooltip Text="Configurar Requerimientos de Muestra">
-                            <MudIconButton Icon="@Icons.Material.Filled.Science" Color="Color.Warning" Size="Size.Small" OnClick="@(() => OpenSampleConfig(context.Item))" />
-                        </MudTooltip>
-                    }
-                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" Size="Size.Small" />
-                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" />
-                </CellTemplate>
-            </TemplateColumn>
-        </Columns>
-        
-        <PagerContent>
-            <MudDataGridPager T="MedFarLab.Application.Features.Inventory.Models.ServiceItemVM" />
-        </PagerContent>
-    </MudDataGrid>
-</MudPaper>
+                 IsLoading="@IsLoading"
+                 ShowSearch="true"
+                 SearchPlaceholder="Buscar por Nombre, Código o Categoría..."
+                 SearchFilter="@FilterFunc"
+                 ColumnCount="7"
+                 EmptyTitle="Catálogo Vacío"
+                 EmptyMessage="No se han registrado servicios o productos en el inventario.">
+        <HeaderContent>
+            <MudTh>Código</MudTh>
+            <MudTh>Nombre del Servicio</MudTh>
+            <MudTh>Área/Categoría</MudTh>
+            <MudTh>Precio Unitario</MudTh>
+            <MudTh>Aplica Impuesto</MudTh>
+            <MudTh>Estado</MudTh>
+            <MudTh>Acciones</MudTh>
+        </HeaderContent>
+        <RowTemplate Context="context">
+            <MudTd DataLabel="Código">@context.Code</MudTd>
+            <MudTd DataLabel="Nombre del Servicio">@context.Name</MudTd>
+            <MudTd DataLabel="Área/Categoría">
+                <MudChip T="string" Size="Size.Small" Color="@(context.Category == "Médico" ? Color.Info : context.Category == "Laboratorio" ? Color.Warning : Color.Success)" Variant="Variant.Outlined">
+                    @context.Category
+                </MudChip>
+            </MudTd>
+            <MudTd DataLabel="Precio Unitario">
+                <MudText Typo="Typo.body2" Class="fw-bold">$@context.UnitPrice.ToString("0.00")</MudText>
+            </MudTd>
+            <MudTd DataLabel="Aplica Impuesto">
+                @if (context.IsTaxable)
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" Size="Size.Small" />
+                }
+                else
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.Close" Color="Color.Error" Size="Size.Small" />
+                }
+            </MudTd>
+            <MudTd DataLabel="Estado">
+                <MudChip T="string" Color="Color.Success" Size="Size.Small" Variant="Variant.Filled">Activo</MudChip>
+            </MudTd>
+            <MudTd DataLabel="Acciones">
+                @if (context.Category == "Laboratorio" || context.Category == "Exámenes")
+                {
+                    <MudTooltip Text="Configurar Requerimientos de Muestra">
+                        <MudIconButton Icon="@Icons.Material.Filled.Science" Color="Color.Warning" Size="Size.Small" OnClick="@(() => OpenSampleConfig(context))" />
+                    </MudTooltip>
+                }
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" Size="Size.Small" />
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" />
+            </MudTd>
+        </RowTemplate>
+    </MedFarTable>
+</div>

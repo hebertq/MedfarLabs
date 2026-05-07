@@ -1,0 +1,7 @@
+.mf-stat-card      { transition: var(--mf-transition); border-radius: var(--mf-radius-lg) !important; }
+.mf-stat-card:hover { transform: translateY(-2px); box-shadow: var(--mf-shadow-modal) !important; }
+.mf-stat-number    { font-weight: 800; font-size: 2rem !important; line-height: 1; }
+.mf-stat-icon      { width: 56px; height: 56px; border-radius: var(--mf-radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.mf-stat-trend     { display: flex; align-items: center; gap: 4px; }
+.trend-up          { color: var(--mf-success); }
+.trend-down        { color: var(--mf-danger); }

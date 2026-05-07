@@ -1,40 +1,40 @@
 @page "/admin/menus"
-@using MudBlazor
-@using MediatR
-@using MedfarLabs.Core.Application.Features.System.Dtos
-@using MedfarLabs.Core.Application.Features.System.Commands.CreateMenu
-@using MedfarLabs.Core.Application.Features.System.Commands.UpdateMenu
-@using MedFarLab.Application.Features.System.Queries.GetMenus
-
-
+@using MedFarLab.Pwa.Shared.Components
 
 <PageTitle>Gestor de Menús Dinámicos</PageTitle>
 
-<PageActionHeader ShowBackButton="true" BackUrl="/admin/dashboard">
-    <StatusContent>
-        <div>
-            <MudText Typo="Typo.h5" Class="fw-bold gradient-text">Gestor de Menús Dinámicos</MudText>
-            <MudText Typo="Typo.subtitle2" Class="text-muted">Parametrización de accesos directos por tipo de organización</MudText>
-        </div>
-    </StatusContent>
-    <ActionContent>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenNewDialog">
+<MedFarPageHeader Title="Gestor de Menús Dinámicos"
+                  Icon="@Icons.Material.Filled.Menu"
+                  Subtitle="Parametrización de accesos directos por tipo de organización."
+                  ShowBack="true"
+                  OnBackClick='() => NavManager.NavigateTo("/admin/dashboard")'>
+    <PrimaryActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenNewDialog" Class="btn-emerald-gradient">
             Nuevo Menú
         </MudButton>
-    </ActionContent>
-</PageActionHeader>
+    </PrimaryActions>
+</MedFarPageHeader>
 
-<MudGrid>
+<MudGrid Class="mt-4">
     <MudItem xs="12">
         <MudSelect T="int" Label="Filtrar por Tipo de Organización" ValueChanged="OnOrgTypeChanged" Value="SelectedOrgTypeId" Variant="Variant.Outlined" Class="mb-4 bg-white">
-            <MudSelectItem Value="124">Clínica / Sector Médico</MudSelectItem>
-            <MudSelectItem Value="125">Farmacia</MudSelectItem>
-            <MudSelectItem Value="15">Laboratorio</MudSelectItem>
+            <MudSelectItem T="int" Value="0">Todas las organizaciones...</MudSelectItem>
+            <MudSelectItem T="int" Value="124">Clínica / Sector Médico</MudSelectItem>
+            <MudSelectItem T="int" Value="125">Farmacia</MudSelectItem>
+            <MudSelectItem T="int" Value="15">Laboratorio</MudSelectItem>
         </MudSelect>
     </MudItem>
 
     <MudItem xs="12">
-        <MudTable Items="@MenusList" Hover="true" Loading="@IsLoading" Elevation="1" Style="border-radius: 12px;" Striped="true">
+        <MedFarTable TItem="MedfarLabs.Core.Application.Features.System.Dtos.NavigationMenuResponseDTO"
+                     Items="@MenusList"
+                     IsLoading="@IsLoading"
+                     ShowSearch="true"
+                     SearchFilter="@FilterFunc"
+                     SearchPlaceholder="Buscar menú por título o ruta..."
+                     ColumnCount="5"
+                     EmptyTitle="Sin Menús"
+                     EmptyMessage="No hay menús registrados para este tipo de organización.">
             <HeaderContent>
                 <MudTh>Icono</MudTh>
                 <MudTh>Título Visible</MudTh>
@@ -42,7 +42,7 @@
                 <MudTh>Orden</MudTh>
                 <MudTh>Acciones</MudTh>
             </HeaderContent>
-            <RowTemplate>
+            <RowTemplate Context="context">
                 <MudTd DataLabel="Icono"><MudIcon Icon="@context.Icon" Color="Color.Secondary" /></MudTd>
                 <MudTd DataLabel="Título Visible" Style="font-weight: 500;">@context.Title</MudTd>
                 <MudTd DataLabel="Ruta (URL)" Class="text-muted">@context.Route</MudTd>
@@ -54,10 +54,7 @@
                     <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" />
                 </MudTd>
             </RowTemplate>
-            <PagerContent>
-                <MudTablePager />
-            </PagerContent>
-        </MudTable>
+        </MedFarTable>
     </MudItem>
 </MudGrid>
 
@@ -67,10 +64,11 @@
     </TitleContent>
     <DialogContent>
         <EditForm Model="MenuModel" OnValidSubmit="SaveMenu">
-            <MudSelect @bind-Value="MenuModel.OrganizationTypeId" Label="Aplica a" Variant="Variant.Outlined" Class="mb-3">
-                <MudSelectItem Value="124">Clínica (CLI)</MudSelectItem>
-                <MudSelectItem Value="125">Farmacia (PHA)</MudSelectItem>
-                <MudSelectItem Value="15">Laboratorio (LAB)</MudSelectItem>
+            <MudSelect T="MedfarLabs.Core.Domain.Enums.TipoOrganizacion" @bind-Value="MenuModel.OrganizationTypeId" Label="Aplica a" Variant="Variant.Outlined" Class="mb-3">
+                <MudSelectItem T="MedfarLabs.Core.Domain.Enums.TipoOrganizacion" Value="(MedfarLabs.Core.Domain.Enums.TipoOrganizacion)0" Disabled="true">Seleccione una organización...</MudSelectItem>
+                <MudSelectItem T="MedfarLabs.Core.Domain.Enums.TipoOrganizacion" Value="(MedfarLabs.Core.Domain.Enums.TipoOrganizacion)124">Clínica (CLI)</MudSelectItem>
+                <MudSelectItem T="MedfarLabs.Core.Domain.Enums.TipoOrganizacion" Value="(MedfarLabs.Core.Domain.Enums.TipoOrganizacion)125">Farmacia (PHA)</MudSelectItem>
+                <MudSelectItem T="MedfarLabs.Core.Domain.Enums.TipoOrganizacion" Value="(MedfarLabs.Core.Domain.Enums.TipoOrganizacion)15">Laboratorio (LAB)</MudSelectItem>
             </MudSelect>
 
             <MudTextField @bind-Value="MenuModel.Title" Label="Etiqueta del Menú" Placeholder="Ej. Mis Pacientes" Variant="Variant.Outlined" Class="mb-3" Required />

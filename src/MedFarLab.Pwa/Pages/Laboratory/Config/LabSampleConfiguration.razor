@@ -1,62 +1,63 @@
 @page "/laboratory/config/samples/{ServiceId:long}"
-@using MudBlazor
+@using MedFarLab.Pwa.Shared.Components
+@inherits ComponentBase
 
 <PageTitle>Configuración de Muestras - MedFarLab</PageTitle>
 
-<div class="glass-header mb-4">
-    <div>
-        <MudText Typo="Typo.h5" Class="text-primary fw-bold">Configuración de Requerimientos de Muestra</MudText>
-        <MudText Typo="Typo.body2" Class="text-muted">Gestione el tipo de muestra, contenedor y volumen para este estudio.</MudText>
-    </div>
-    
-    <div style="display: flex; gap: 1rem;">
-        <MudButton Variant="Variant.Text" Color="Color.Default" StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="GoBack">
-            Regresar
-        </MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save" OnClick="SaveConfigsAsync">
+<MedFarPageHeader Title="Configuración de Requerimientos de Muestra"
+                  Icon="@Icons.Material.Filled.SettingsApplications"
+                  Subtitle="Gestione el tipo de muestra, contenedor y volumen para este estudio."
+                  ShowBack="true"
+                  OnBackClick="GoBack">
+    <PrimaryActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+                   StartIcon="@Icons.Material.Filled.Save" 
+                   Class="btn-emerald-gradient"
+                   OnClick="SaveConfigsAsync">
             Guardar Cambios
         </MudButton>
-    </div>
-</div>
+    </PrimaryActions>
+</MedFarPageHeader>
 
-@if (IsLoading)
-{
-    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
-}
-else
-{
-    <MudPaper Class="pa-6" Elevation="1" Style="border-radius: 12px;">
-        <MudTable Items="@Configs" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
-            <ToolBarContent>
-                <MudText Typo="Typo.h6">Requerimientos Configurados</MudText>
-                <MudSpacer />
-                <MudButton Color="Color.Success" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddDialog" Variant="Variant.Outlined">Agregar Muestra</MudButton>
-            </ToolBarContent>
-            <HeaderContent>
-                <MudTh>Tipo de Muestra</MudTh>
-                <MudTh>Tipo de Contenedor</MudTh>
-                <MudTh>Volumen Mínimo</MudTh>
-                <MudTh>Instrucciones Especiales</MudTh>
-                <MudTh>Activo</MudTh>
-                <MudTh>Acciones</MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd DataLabel="Tipo">@context.SampleType</MudTd>
-                <MudTd DataLabel="Contenedor">@context.ContainerType</MudTd>
-                <MudTd DataLabel="Volumen">@context.RequiredVolume</MudTd>
-                <MudTd DataLabel="Instrucciones">@context.SpecialInstructions</MudTd>
-                <MudTd DataLabel="Activo">
-                    @if(context.IsActive) { <MudChip T="string" Size="Size.Small" Color="Color.Success">Sí</MudChip> }
-                    else { <MudChip T="string" Size="Size.Small" Color="Color.Error">No</MudChip> }
-                </MudTd>
-                <MudTd>
-                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="@(() => OpenEditDialog(context))" Size="Size.Small" />
-                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() => RemoveRow(context))" Size="Size.Small" />
-                </MudTd>
-            </RowTemplate>
-            <NoRecordsContent>
-                <MudText>No hay requerimientos configurados. Presione "Agregar Muestra" para comenzar.</MudText>
-            </NoRecordsContent>
-        </MudTable>
-    </MudPaper>
-}
+<MudPaper Class="pa-6 mt-6" Elevation="1" Style="border-radius: 12px;">
+    <MedFarTable TItem="MedFarLab.Application.Features.Laboratory.Models.ServiceSampleConfigDTO"
+                 Items="@Configs"
+                 IsLoading="@IsLoading"
+                 ShowSearch="false"
+                 ColumnCount="6"
+                 EmptyTitle="Sin Requerimientos"
+                 EmptyMessage="No hay requerimientos configurados. Presione 'Agregar Muestra' para comenzar."
+                 EmptyIcon="@Icons.Material.Filled.Science">
+
+        <ToolbarContent>
+            <MudText Typo="Typo.h6">Requerimientos Configurados</MudText>
+            <MudSpacer />
+            <MudButton Color="Color.Success" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddDialog" Variant="Variant.Outlined">Agregar Muestra</MudButton>
+        </ToolbarContent>
+
+        <HeaderContent>
+            <MudTh>Tipo de Muestra</MudTh>
+            <MudTh>Tipo de Contenedor</MudTh>
+            <MudTh>Volumen Mínimo</MudTh>
+            <MudTh>Instrucciones Especiales</MudTh>
+            <MudTh>Activo</MudTh>
+            <MudTh>Acciones</MudTh>
+        </HeaderContent>
+
+        <RowTemplate>
+            <MudTd DataLabel="Tipo">@context.SampleType</MudTd>
+            <MudTd DataLabel="Contenedor">@context.ContainerType</MudTd>
+            <MudTd DataLabel="Volumen">@context.RequiredVolume</MudTd>
+            <MudTd DataLabel="Instrucciones">@context.SpecialInstructions</MudTd>
+            <MudTd DataLabel="Activo">
+                @if(context.IsActive) { <MudChip T="string" Size="Size.Small" Color="Color.Success">Sí</MudChip> }
+                else { <MudChip T="string" Size="Size.Small" Color="Color.Error">No</MudChip> }
+            </MudTd>
+            <MudTd DataLabel="Acciones">
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="@(() => OpenEditDialog(context))" Size="Size.Small" />
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() => RemoveRow(context))" Size="Size.Small" />
+            </MudTd>
+        </RowTemplate>
+
+    </MedFarTable>
+</MudPaper>

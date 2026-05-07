@@ -14,7 +14,7 @@ namespace MedFarLab.Pwa.Pages.Laboratory.Config
         [Inject] private NavigationManager NavManager { get; set; } = default!;
         [Inject] private ISender Mediator { get; set; } = default!;
         [Inject] private AppState AppState { get; set; } = default!;
-        [Inject] private ISnackbar Snackbar { get; set; } = default!;
+        [Inject] private MedFarLab.Pwa.Services.MedFarSnackbarService Snackbar { get; set; } = default!;
 
         protected bool IsLoading { get; set; } = true;
         protected List<ServiceSampleConfigDTO> Configs { get; set; } = new();
@@ -37,7 +37,7 @@ namespace MedFarLab.Pwa.Pages.Laboratory.Config
             }
             catch (Exception ex)
             {
-                Snackbar.Add("Error de conexión: " + ex.Message, Severity.Error);
+                Snackbar.ShowError("Error de conexión", ex.Message);
             }
             finally
             {
@@ -105,7 +105,7 @@ namespace MedFarLab.Pwa.Pages.Laboratory.Config
         {
             if (Configs.Any(c => string.IsNullOrWhiteSpace(c.SampleType)))
             {
-                Snackbar.Add("El 'Tipo de Muestra' es obligatorio para todas las filas.", Severity.Warning);
+                Snackbar.ShowWarning("El 'Tipo de Muestra' es obligatorio para todas las filas.");
                 return;
             }
 
@@ -117,12 +117,12 @@ namespace MedFarLab.Pwa.Pages.Laboratory.Config
 
             if (response != null && response.IsSuccess)
             {
-                Snackbar.Add("Configuraciones guardadas exitosamente", Severity.Success);
+                Snackbar.ShowSuccess("Configuraciones guardadas exitosamente");
                 GoBack();
             }
             else
             {
-                Snackbar.Add(response?.Message ?? "Error al guardar", Severity.Error);
+                Snackbar.ShowError(response?.Message ?? "Error al guardar");
             }
         }
 

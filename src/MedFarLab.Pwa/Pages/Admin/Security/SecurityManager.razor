@@ -1,82 +1,120 @@
 @page "/admin/security"
+@using MedFarLab.Pwa.Shared.Components
 
 <PageTitle>Seguridad Interna & Roles</PageTitle>
 
-<PageActionHeader ShowBackButton="true" BackUrl="/admin/dashboard">
-    <StatusContent>
-        <div>
-            <MudText Typo="Typo.h5" Class="text-secondary fw-bold">Políticas y Seguridad Corporativa</MudText>
-            <MudText Typo="Typo.body2" Class="text-muted">Control transaccional RBAC: Grupos de Roles, Roles individuales y Permisos (Actions).</MudText>
-        </div>
-    </StatusContent>
-</PageActionHeader>
+<MedFarPageHeader Title="Políticas y Seguridad Corporativa"
+                  Icon="@Icons.Material.Filled.Security"
+                  Subtitle="Control transaccional RBAC: Grupos de Roles, Roles individuales y Permisos (Actions)."
+                  ShowBack="true"
+                  OnBackClick='() => NavManager.NavigateTo("/admin/dashboard")'>
+</MedFarPageHeader>
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="pa-0">
+<MudContainer MaxWidth="MaxWidth.Large" Class="pa-0 mt-4">
     <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Color="Color.Secondary">
         
         <!-- Tab: Grupos de Roles -->
-        <MudTabPanel Text="Grupos de Roles">
+        <MudTabPanel Text="Grupos de Roles" Icon="@Icons.Material.Filled.GroupWork">
             <div class="d-flex justify-space-between align-center mb-4">
                 <MudText Typo="Typo.h6" Class="fw-bold">Grupos (RoleGroups)</MudText>
-                <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Small" OnClick="OpenAddGroupModal">Crear Grupo</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddGroupModal">Crear Grupo</MudButton>
             </div>
-            <MudDataGrid Items="@mockGroups" Dense="true" Bordered="true">
-                <Columns>
-                    <PropertyColumn Property="x => x.Id" Title="ID" />
-                    <PropertyColumn Property="x => x.Name" Title="Nombre Formateado" />
-                    <PropertyColumn Property="x => x.Alias" Title="Alias Sistema" />
-                    <TemplateColumn Title="Controles">
-                        <CellTemplate>
-                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Info" OnClick="@(() => OpenEditGroupModal(context.Item))" />
-                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="@(() => DeleteGroup(context.Item))" />
-                            <MudButton Size="Size.Small" Variant="Variant.Text" Color="Color.Primary">Asignar Roles</MudButton>
-                        </CellTemplate>
-                    </TemplateColumn>
-                </Columns>
-            </MudDataGrid>
+            
+            <MedFarTable TItem="MedFarLab.Pwa.Pages.Admin.Security.SecurityManager.MockGroup"
+                         Items="@mockGroups"
+                         IsLoading="@IsLoading"
+                         ShowSearch="true"
+                         SearchFilter="@FilterGroup"
+                         SearchPlaceholder="Buscar grupo..."
+                         ColumnCount="4"
+                         EmptyTitle="Sin Grupos"
+                         EmptyMessage="No hay grupos de roles registrados.">
+                <HeaderContent>
+                    <MudTh>ID</MudTh>
+                    <MudTh>Nombre Formateado</MudTh>
+                    <MudTh>Alias Sistema</MudTh>
+                    <MudTh>Controles</MudTh>
+                </HeaderContent>
+                <RowTemplate Context="context">
+                    <MudTd DataLabel="ID">@context.Id</MudTd>
+                    <MudTd DataLabel="Nombre Formateado">@context.Name</MudTd>
+                    <MudTd DataLabel="Alias Sistema">@context.Alias</MudTd>
+                    <MudTd DataLabel="Controles">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Info" OnClick="@(() => OpenEditGroupModal(context))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="@(() => DeleteGroup(context))" />
+                        <MudButton Size="Size.Small" Variant="Variant.Text" Color="Color.Primary">Asignar Roles</MudButton>
+                    </MudTd>
+                </RowTemplate>
+            </MedFarTable>
         </MudTabPanel>
 
         <!-- Tab: Roles -->
-        <MudTabPanel Text="Roles Básicos">
+        <MudTabPanel Text="Roles Básicos" Icon="@Icons.Material.Filled.Badge">
             <div class="d-flex justify-space-between align-center mb-4">
                 <MudText Typo="Typo.h6" Class="fw-bold">Lista de Roles</MudText>
-                <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Small" OnClick="OpenAddRoleModal">Crear Rol</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddRoleModal">Crear Rol</MudButton>
             </div>
-            <MudDataGrid Items="@mockRoles" Dense="true" Bordered="true">
-                <Columns>
-                    <PropertyColumn Property="x => x.Id" Title="ID" />
-                    <PropertyColumn Property="x => x.Name" Title="Referencia (Name)" />
-                    <TemplateColumn Title="Vincular">
-                        <CellTemplate>
-                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Info" OnClick="@(() => OpenEditRoleModal(context.Item))" />
-                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="@(() => DeleteRole(context.Item))" />
-                            <MudButton Size="Size.Small" Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => OpenAssignActionsModal(context.Item))">Validar Permisos</MudButton>
-                        </CellTemplate>
-                    </TemplateColumn>
-                </Columns>
-            </MudDataGrid>
+            
+            <MedFarTable TItem="MedFarLab.Pwa.Pages.Admin.Security.SecurityManager.MockRole"
+                         Items="@mockRoles"
+                         IsLoading="@IsLoading"
+                         ShowSearch="true"
+                         SearchFilter="@FilterRole"
+                         SearchPlaceholder="Buscar rol..."
+                         ColumnCount="3"
+                         EmptyTitle="Sin Roles"
+                         EmptyMessage="No hay roles registrados.">
+                <HeaderContent>
+                    <MudTh>ID</MudTh>
+                    <MudTh>Referencia (Name)</MudTh>
+                    <MudTh>Vincular</MudTh>
+                </HeaderContent>
+                <RowTemplate Context="context">
+                    <MudTd DataLabel="ID">@context.Id</MudTd>
+                    <MudTd DataLabel="Referencia (Name)">@context.Name</MudTd>
+                    <MudTd DataLabel="Vincular">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Info" OnClick="@(() => OpenEditRoleModal(context))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="@(() => DeleteRole(context))" />
+                        <MudButton Size="Size.Small" Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => OpenAssignActionsModal(context))">Validar Permisos</MudButton>
+                    </MudTd>
+                </RowTemplate>
+            </MedFarTable>
         </MudTabPanel>
 
         <!-- Tab: Permisos -->
-        <MudTabPanel Text="Action Permissions">
+        <MudTabPanel Text="Action Permissions" Icon="@Icons.Material.Filled.VpnKey">
             <div class="d-flex justify-space-between align-center mb-4">
                 <MudAlert Severity="Severity.Warning" Class="mr-4">Las acciones son insertadas al código fuente como Constantes. Desde aquí puedes visualizarlas y habilitar su lectura dinámica para los JWT de autenticación.</MudAlert>
-                <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Small" OnClick="OpenAddActionModal">Nueva Acción</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddActionModal">Nueva Acción</MudButton>
             </div>
-            <MudDataGrid Items="@mockActions" Dense="true" Bordered="true">
-                <Columns>
-                    <PropertyColumn Property="x => x.Id" Title="ID" />
-                    <PropertyColumn Property="x => GetModuleName(x.ModuleId)" Title="Módulo C#" />
-                    <PropertyColumn Property="x => x.Name" Title="Constante / Código" />
-                    <PropertyColumn Property="x => x.Description" Title="Descripción" />
-                    <TemplateColumn Title="Controles">
-                        <CellTemplate>
-                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Info" OnClick="@(() => OpenEditActionModal(context.Item))" />
-                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="@(() => DeleteAction(context.Item))" />
-                        </CellTemplate>
-                    </TemplateColumn>
-                </Columns>
-            </MudDataGrid>
+            
+            <MedFarTable TItem="MedFarLab.Pwa.Pages.Admin.Components.RoleActionMapDialog.ActionItem"
+                         Items="@mockActions"
+                         IsLoading="@IsLoading"
+                         ShowSearch="true"
+                         SearchFilter="@FilterAction"
+                         SearchPlaceholder="Buscar acción..."
+                         ColumnCount="5"
+                         EmptyTitle="Sin Permisos"
+                         EmptyMessage="No hay permisos registrados.">
+                <HeaderContent>
+                    <MudTh>ID</MudTh>
+                    <MudTh>Módulo C#</MudTh>
+                    <MudTh>Constante / Código</MudTh>
+                    <MudTh>Descripción</MudTh>
+                    <MudTh>Controles</MudTh>
+                </HeaderContent>
+                <RowTemplate Context="context">
+                    <MudTd DataLabel="ID">@context.Id</MudTd>
+                    <MudTd DataLabel="Módulo C#">@GetModuleName(context.ModuleId)</MudTd>
+                    <MudTd DataLabel="Constante / Código">@context.Name</MudTd>
+                    <MudTd DataLabel="Descripción">@context.Description</MudTd>
+                    <MudTd DataLabel="Controles">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Info" OnClick="@(() => OpenEditActionModal(context))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="@(() => DeleteAction(context))" />
+                    </MudTd>
+                </RowTemplate>
+            </MedFarTable>
         </MudTabPanel>
 
     </MudTabs>

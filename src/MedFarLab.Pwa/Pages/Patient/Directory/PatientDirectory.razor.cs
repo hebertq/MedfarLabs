@@ -13,6 +13,7 @@ namespace MedFarLab.Pwa.Pages.Patient.Directory;
 public partial class PatientDirectory : ComponentBase
 {
     [Inject] private IDialogService DialogService { get; set; } = default!;
+    [Inject] private NavigationManager NavManager { get; set; } = default!;
     [Inject] private ISender Mediator { get; set; } = default!;
     [Inject] private MedFarLab.Pwa.State.AppState AppState { get; set; } = default!;
 
@@ -54,6 +55,21 @@ public partial class PatientDirectory : ComponentBase
         NavManager.NavigateTo($"/patients/record/{id}");
     }
 
+    private void EditarPaciente(string id)
+    {
+        NavManager.NavigateTo($"/patients/edit/{id}");
+    }
+
+    private Task ExportarCSV()
+    {
+        // TODO: Implement CSV export
+        return Task.CompletedTask;
+    }
+
+    private bool FiltrarPaciente(PatientDirectoryVM p, string term) =>
+        p.FullName.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+        p.DocumentId.Contains(term, StringComparison.OrdinalIgnoreCase);
+
     private async Task OpenGlobalSearch()
     {
         var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true };
@@ -62,7 +78,6 @@ public partial class PatientDirectory : ComponentBase
 
         if (!result.Canceled && result.Data is MedFarLab.Pwa.Shared.PatientSearchDialog.PatientSearchResultVM patient)
         {
-            // Immediately navigate to the patient's record after selecting from the global search.
             NavManager.NavigateTo($"/patients/record/{patient.PatientId}");
         }
     }

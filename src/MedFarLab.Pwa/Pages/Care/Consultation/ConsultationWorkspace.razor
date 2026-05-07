@@ -4,11 +4,11 @@
 @using MedFarLab.Pwa.Pages.Care.Consultation
 
 <div class="consulta-workspace fade-in">
-    <MedFarLab.Pwa.Shared.PageActionHeader ShowBackButton="true" BackUrl="@ReturnUrl">
-        <ActionContent>
-            <MudText Typo="Typo.h5" Color="Color.Primary" Class="fw-bold">@(AppointmentId.HasValue ? "Realizar Consulta" : "Detalle de Consulta")</MudText>
-        </ActionContent>
-    </MedFarLab.Pwa.Shared.PageActionHeader>
+    <MedFarLab.Pwa.Shared.Components.MedFarPageHeader Title="@(AppointmentId.HasValue ? "Realizar Consulta" : "Detalle de Consulta")" 
+                  Icon="@Icons.Material.Filled.MedicalServices"
+                  ShowBack="true" 
+                  OnBackClick="GoBack">
+    </MedFarLab.Pwa.Shared.Components.MedFarPageHeader>
     <!-- Header: Patient Info -->
     <MudPaper Class="pa-4 mb-4 surface-glass" Elevation="0">
         <MudGrid>
@@ -199,7 +199,12 @@
                                 }
                                 else
                                 {
-                                    <MudTable Items="@Prescriptions" Dense="true" Hover="true" Elevation="0">
+                                    <MedFarLab.Pwa.Shared.Components.MedFarTable TItem="MedfarLabs.Core.Application.Features.Care.Dtos.Request.PrescriptionItemDTO" 
+                                             Items="@Prescriptions" 
+                                             ShowSearch="false" 
+                                             ColumnCount="5"
+                                             EmptyTitle="Sin Recetas"
+                                             EmptyMessage="No se han recetado medicamentos.">
                                         <HeaderContent>
                                             <MudTh>Medicamento</MudTh>
                                             <MudTh>Dosis</MudTh>
@@ -217,7 +222,7 @@
                                                 <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => DeletePrescription(context))" />
                                             </MudTd>
                                         </RowTemplate>
-                                    </MudTable>
+                                    </MedFarLab.Pwa.Shared.Components.MedFarTable>
                                 }
                             </MudPaper>
 
@@ -248,7 +253,12 @@
                                 }
                                 else
                                 {
-                                    <MudTable Items="@LabOrders" Dense="true" Hover="true" Elevation="0">
+                                    <MedFarLab.Pwa.Shared.Components.MedFarTable TItem="MedfarLabs.Core.Application.Features.Care.Dtos.Request.LabOrderDTO" 
+                                             Items="@LabOrders" 
+                                             ShowSearch="false" 
+                                             ColumnCount="3"
+                                             EmptyTitle="Sin Exámenes"
+                                             EmptyMessage="No se han solicitado exámenes.">
                                         <HeaderContent>
                                             <MudTh>Examen / Prueba</MudTh>
                                             <MudTh>Notas Adicionales</MudTh>
@@ -262,7 +272,7 @@
                                                 <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => DeleteLabOrder(context))" />
                                             </MudTd>
                                         </RowTemplate>
-                                    </MudTable>
+                                    </MedFarLab.Pwa.Shared.Components.MedFarTable>
                                 }
                             </MudPaper>
 
@@ -281,7 +291,12 @@
                                 }
                                 else
                                 {
-                                    <MudTable Items="@AppliedProducts" Dense="true" Hover="true" Elevation="0">
+                                    <MedFarLab.Pwa.Shared.Components.MedFarTable TItem="MedFarLab.Pwa.Pages.Care.Consultation.ConsultationWorkspace.AppliedProductItem" 
+                                             Items="@AppliedProducts" 
+                                             ShowSearch="false" 
+                                             ColumnCount="3"
+                                             EmptyTitle="Sin Insumos"
+                                             EmptyMessage="No se aplicaron insumos en consulta.">
                                         <HeaderContent>
                                             <MudTh>Cantidad</MudTh>
                                             <MudTh>Insumo / Producto</MudTh>
@@ -295,7 +310,7 @@
                                                 <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => DeleteAppliedProduct(context))" />
                                             </MudTd>
                                         </RowTemplate>
-                                    </MudTable>
+                                    </MedFarLab.Pwa.Shared.Components.MedFarTable>
                                 }
                             </MudPaper>
 

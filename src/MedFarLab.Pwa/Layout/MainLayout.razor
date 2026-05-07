@@ -1,59 +1,62 @@
 @inherits LayoutComponentBase
-@using MedFarLab.Pwa.Shared
+@using MudBlazor
+@using MedFarLab.Pwa.Shared.Components
+@inject MedFarLab.Pwa.Services.MedFarThemeService ThemeService
 
-<ToastContainer />
-<MudThemeProvider Theme="MedFarLab.Pwa.Shared.CorporateTheme.ModernTheme" />
-<MudDialogProvider />
-<MudSnackbarProvider />
-<MudPopoverProvider /> @* <-- AGREGA ESTA LÍNEA *@
+<MudThemeProvider Theme="@MedFarLab.Pwa.Services.MedFarTheme.Build()"
+                  IsDarkMode="@ThemeService.IsDarkMode"/>
+<MudSnackbarProvider/>
+<MudDialogProvider MaxWidth="MaxWidth.Medium"
+                   FullWidth="false"
+                   CloseButton="true"
+                   BackdropClick="false"/>
+<MudPopoverProvider />
 
-<!-- Shell Container App -->
-<div class="app-container">
+<MudLayout Class="@(ThemeService.IsDarkMode ? "theme-dark" : "")">
+    <!-- AppBar glassmorphism -->
+    <MudAppBar Elevation="0" Class="mf-appbar surface-glass">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                       Edge="Edge.Start"
+                       OnClick="@ToggleDrawer"/>
+        <div class="mf-appbar-brand ml-4">
+            <img src="/img/logo-medfar.svg" alt="MedFarLab" height="48" onerror="this.src='/images/logo.png';"/>
+        </div>
+        <MudSpacer/>
+        <MedFarDarkModeToggle/>
+        <MudMenu Icon="@Icons.Material.Filled.AccountCircle"
+                 AnchorOrigin="Origin.BottomRight">
+            <MudMenuItem Icon="@Icons.Material.Filled.Person">Mi Perfil</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Logout" OnClick="Logout">Cerrar Sesión</MudMenuItem>
+        </MudMenu>
+    </MudAppBar>
+
+    <!-- Sidebar glassmorphism -->
+    <MudDrawer @bind-Open="@_drawerOpen"
+               Elevation="0"
+               Class="mf-sidebar surface-glass"
+               ClipMode="DrawerClipMode.Always">
+        <MedFarLab.Pwa.Layout.NavMenu/>
+    </MudDrawer>
+
+    <!-- Contenido principal -->
+    <MudMainContent Class="mf-main-content">
+        <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
     
-    <!-- Desktop Floating Glass Sidebar -->
-    <div class="sidebar-wrapper surface-glass fade-in">
-        <NavMenu />
-    </div>
+    protected override void OnInitialized()
+    {
+        ThemeService.OnChange += StateHasChanged;
+    }
 
-    <main class="main-content">
-        <!-- Topbar Mobile Only -->
-        <header class="mobile-topbar d-md-none fade-in">
-            <img src="/images/logo.png" alt="MedFarLab" style="height: 55px; transform: translateX(-10px); object-fit: contain;" />
-            <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
-                <ActivatorContent>
-                    
-                </ActivatorContent>
-                <ChildContent>
-                    <div class="pa-3">
-                        <MudText Typo="Typo.subtitle2">Dr. Admin</MudText>
-                        <MudText Typo="Typo.body2" Class="text-muted">admin@medfarlab.com</MudText>
-                    </div>
-                    <MudDivider />
-                    <MudMenuItem Href="/ajustes/medico" Icon="@Icons.Material.Filled.Settings">Ajustes Operativos</MudMenuItem>
-                    <MudMenuItem Href="/ajustes" Icon="@Icons.Material.Filled.Business">Mi Clínica</MudMenuItem>
-                    <MudDivider />
-                    <MudMenuItem Icon="@Icons.Material.Filled.Logout" Color="Color.Error" OnClick="Logout">Cerrar Sesión</MudMenuItem>
-                </ChildContent>
-            </MudMenu>
-        </header>
-
-        
-
-
-        <!-- Dynamic Content Display -->
-        <div class="content-scrollable">
-            <article class="content fade-in" style="animation-delay: 0.1s;">
-                @Body
-            </article>
-        </div>
-    </main>
-
-    <!-- Bottom Navigation Pill for Mobile Only -->
-    <div class="mobile-navbar-wrapper d-md-none fade-in" style="animation-delay: 0.2s;">
-        <div class="mobile-navbar-glass">
-            <NavMenu IsMobile="true" />
-        </div>
-    </div>
-</div>
-
-
+    public void Dispose()
+    {
+        ThemeService.OnChange -= StateHasChanged;
+    }
+}

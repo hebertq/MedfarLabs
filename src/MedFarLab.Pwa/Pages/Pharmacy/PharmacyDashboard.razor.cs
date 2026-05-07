@@ -13,11 +13,13 @@ namespace MedFarLab.Pwa.Pages.Pharmacy
 
         protected bool ShowRestockModal { get; set; }
         protected bool IsSending { get; set; }
+        protected bool IsLoading { get; set; } = true;
         protected long CurrentItemId { get; set; }
         protected int RestockQuantity { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
+            IsLoading = true;
             var query = new GetPharmacyDashboardQuery { BranchId = 1 };
             var response = await Mediator.Send(query);
 
@@ -29,6 +31,7 @@ namespace MedFarLab.Pwa.Pages.Pharmacy
             {
                 Model = new PharmacyDashboardVM();
             }
+            IsLoading = false;
         }
 
         protected void OpenRestockModal(long itemId)

@@ -1,0 +1,12 @@
+@using MudBlazor
+
+<div class="mf-field mb-4">
+    @FieldContent
+    @if (!string.IsNullOrEmpty(ServerError))
+    {
+        <div class="mf-field-server-error">
+            <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Size="Size.Small"/>
+            <span>@ServerError</span>
+        </div>
+    }
+</div>

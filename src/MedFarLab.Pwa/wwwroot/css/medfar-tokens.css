@@ -1,0 +1,95 @@
+/* ═══════════════════════════════════════════════
+   TOKENS GLOBALES — MedFarLab Design System
+   Importar en app.css antes de cualquier otro css
+═══════════════════════════════════════════════ */
+
+:root {
+  /* ── Colores primarios ── */
+  --mf-primary:        #10B981;   /* Emerald 500 */
+  --mf-primary-dark:   #059669;   /* Emerald 600 */
+  --mf-primary-light:  #D1FAE5;   /* Emerald 100 */
+  --mf-accent:         #6366F1;   /* Indigo 500 */
+
+  /* ── Semánticos clínicos ── */
+  --mf-danger:         #EF4444;   /* Red 500 — alergias, crítico */
+  --mf-warning:        #F97316;   /* Orange 500 — precaución */
+  --mf-success:        #22C55E;   /* Green 500 — normal */
+  --mf-info:           #3B82F6;   /* Blue 500 — informativo */
+
+  /* ── Superficies Light Mode ── */
+  --mf-surface:        rgba(255, 255, 255, 0.75);
+  --mf-surface-solid:  #FFFFFF;
+  --mf-bg:             #F0FDF4;
+  --mf-border:         rgba(0, 0, 0, 0.08);
+
+  /* ── Glassmorphism ── */
+  --mf-glass-bg:       rgba(255, 255, 255, 0.70);
+  --mf-glass-blur:     12px;
+  --mf-glass-border:   1px solid rgba(255, 255, 255, 0.50);
+
+  /* ── Sombras flotantes ── */
+  --mf-shadow-sm:      0 2px 8px rgba(16, 185, 129, 0.08);
+  --mf-shadow-float:   0 8px 32px rgba(16, 185, 129, 0.15);
+  --mf-shadow-modal:   0 24px 64px rgba(0, 0, 0, 0.20);
+
+  /* ── Tipografía ── */
+  --mf-font:           'Inter', -apple-system, sans-serif;
+  --mf-font-mono:      'JetBrains Mono', monospace;
+
+  /* ── Radios ── */
+  --mf-radius-sm:      8px;
+  --mf-radius-md:      12px;
+  --mf-radius-lg:      16px;
+  --mf-radius-xl:      24px;
+
+  /* ── Transiciones ── */
+  --mf-transition:     0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark Mode — detección automática + manual */
+[data-theme="dark"], .dark-mode {
+  --mf-surface:        rgba(30, 30, 46, 0.85);
+  --mf-surface-solid:  #1E1E2E;
+  --mf-bg:             #121218;
+  --mf-border:         rgba(255, 255, 255, 0.08);
+  --mf-glass-bg:       rgba(30, 30, 46, 0.80);
+  --mf-glass-border:   1px solid rgba(255, 255, 255, 0.10);
+
+  /* Primarios más brillantes en dark para accesibilidad */
+  --mf-primary:        #4ADE80;
+  --mf-primary-light:  rgba(74, 222, 128, 0.15);
+}
+
+/* ── Clases utilitarias globales ── */
+.surface-glass {
+  background:    var(--mf-glass-bg) !important;
+  backdrop-filter: blur(var(--mf-glass-blur));
+  -webkit-backdrop-filter: blur(var(--mf-glass-blur));
+  border:        var(--mf-glass-border) !important;
+  border-radius: var(--mf-radius-lg) !important;
+}
+
+.shadow-float {
+  box-shadow: var(--mf-shadow-float) !important;
+}
+
+.btn-emerald-gradient {
+  background:    linear-gradient(135deg, var(--mf-primary), var(--mf-accent)) !important;
+  color:         white !important;
+  border:        none !important;
+  box-shadow:    var(--mf-shadow-sm) !important;
+  transition:    var(--mf-transition) !important;
+}
+
+.btn-emerald-gradient:hover {
+  transform:     translateY(-1px);
+  box-shadow:    var(--mf-shadow-float) !important;
+}
+
+/* ── Clínico: colores de riesgo ── */
+.clinical-critical { color: var(--mf-danger); font-weight: 700; }
+.clinical-warning  { color: var(--mf-warning); font-weight: 600; }
+.clinical-normal   { color: var(--mf-success); }
+.lab-out-of-range  { color: var(--mf-danger); font-weight: 700; }
+.lab-out-of-range::after { content: ' ↑'; }
+.lab-below-range::after  { content: ' ↓'; color: var(--mf-info); font-weight: 700; }

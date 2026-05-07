@@ -1,21 +1,20 @@
 @page "/pharmacy/dashboard"
-@using MudBlazor
+@using MedFarLab.Pwa.Shared.Components
 
-<div class="glass-header mb-4 fade-in-up">
-    <div>
-        <MudText Typo="Typo.h5" Class="gradient-text-success fw-bold">Dashboard de Farmacia</MudText>
-        <MudText Typo="Typo.body2" Class="text-muted">Control de inventario, dispensación y alertas de caducidad.</MudText>
-    </div>
-    
-    <div style="display: flex; gap: 1rem;">
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Medication">
+<PageTitle>Dashboard de Farmacia</PageTitle>
+
+<MedFarPageHeader Title="Dashboard de Farmacia"
+                  Icon="@Icons.Material.Filled.LocalPharmacy"
+                  Subtitle="Control de inventario, dispensación y alertas de caducidad.">
+    <PrimaryActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Medication" Class="btn-emerald-gradient">
             Dispensar Receta
         </MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Inventory">
+        <MudButton Variant="Variant.Filled" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Inventory" Class="ml-2">
             Revisar Inventario
         </MudButton>
-    </div>
-</div>
+    </PrimaryActions>
+</MedFarPageHeader>
 
 <MudGrid Class="mb-6 fade-in-up delay-1">
     <MudItem xs="12" sm="4">
@@ -47,12 +46,18 @@
     </MudItem>
 </MudGrid>
 
-<div class="glass-panel pa-6 fade-in-up delay-2">
+<div class="glass-panel pa-6 fade-in-up delay-2 mt-4">
     <div class="d-flex justify-space-between align-center mb-4">
         <MudText Typo="Typo.h6">Centro de Alertas (Inventario)</MudText>
     </div>
 
-    <MudTable Items="@Model.InventoryAlerts" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Style="border: 1px solid var(--mud-palette-lines-default); border-radius: 8px;">
+    <MedFarTable TItem="MedFarLab.Application.Features.Pharmacy.Models.InventoryAlertVM"
+                 Items="@Model.InventoryAlerts"
+                 IsLoading="@IsLoading"
+                 ShowSearch="false"
+                 ColumnCount="5"
+                 EmptyTitle="Sin Alertas"
+                 EmptyMessage="No hay alertas pendientes de inventario.">
         <HeaderContent>
             <MudTh>Código Item</MudTh>
             <MudTh>Medicamento</MudTh>
@@ -60,7 +65,7 @@
             <MudTh>Detalles Alerta</MudTh>
             <MudTh>Acciones</MudTh>
         </HeaderContent>
-        <RowTemplate>
+        <RowTemplate Context="context">
             <MudTd DataLabel="Código Item">#PHM-@context.ItemId.ToString("D5")</MudTd>
             <MudTd DataLabel="Medicamento">@context.MedicationName</MudTd>
             <MudTd DataLabel="Stock Actual">
@@ -89,7 +94,7 @@
                 }
             </MudTd>
         </RowTemplate>
-    </MudTable>
+    </MedFarTable>
 </div>
 
 <MudDialog @bind-Visible="ShowRestockModal" Options="new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true }">

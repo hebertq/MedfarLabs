@@ -1,0 +1,26 @@
+@using MudBlazor
+@inject IDialogService DialogService
+
+@* Este componente actÃºa como un servicio para invocar el Poka-Yoke de duplicados *@
+@code {
+    public async Task<bool> CheckAndConfirmAsync(
+        string patientName, 
+        string idNumber, 
+        bool hasExactMatch)
+    {
+        if (!hasExactMatch) return true; // No hay duplicados
+
+        var result = await DialogService.ShowMessageBox(
+            "âš ï¸  Posible paciente duplicado",
+            $"Se ha encontrado un paciente registrado previamente con el nÃºmero de identificaciÃ³n '{idNumber}' o con un nombre muy similar ('{patientName}'). Â¿EstÃ¡ seguro de que desea crear un nuevo registro en lugar de actualizar el existente?",
+            yesText: "Crear duplicado bajo mi responsabilidad",
+            cancelText: "Cancelar y revisar",
+            options: new DialogOptions
+            {
+                MaxWidth = MaxWidth.Small,
+                BackgroundClass = "duplicate-warning-overlay"
+            });
+
+        return result == true;
+    }
+}

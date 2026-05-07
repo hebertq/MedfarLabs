@@ -8,9 +8,10 @@
             <MudTextField T="string" Label="Correo Electrónico" @bind-Value="Model.Email" Class="mt-4" />
 
             <MudSelect T="int" Label="Parentesco / Relación" @bind-Value="Model.RelationshipId" Class="mt-4" Required="true">
+                <MudSelectItem T="int" Value="0" Disabled="true">Seleccione un parentesco...</MudSelectItem>
                 @foreach (var parentesco in Enum.GetValues<MedfarLabs.Core.Domain.Enums.Parentesco>())
                 {
-                    <MudSelectItem Value="(int)parentesco">@parentesco.ToString()</MudSelectItem>
+                    <MudSelectItem T="int" Value="(int)parentesco">@parentesco.ToString()</MudSelectItem>
                 }
             </MudSelect>
 

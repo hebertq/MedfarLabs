@@ -11,7 +11,8 @@ namespace MedFarLab.Pwa.Pages.Laboratory.Config
     public partial class LabTemplates : ComponentBase
     {
         [Inject] private IMediator Mediator { get; set; } = default!;
-        [Inject] private ISnackbar Snackbar { get; set; } = default!;
+        [Inject] private MedFarLab.Pwa.Services.MedFarSnackbarService Snackbar { get; set; } = default!;
+        [Inject] private NavigationManager NavManager { get; set; } = default!;
 
         protected bool IsLoading { get; set; } = true;
         protected bool IsLoadingItems { get; set; }
@@ -28,23 +29,33 @@ namespace MedFarLab.Pwa.Pages.Laboratory.Config
             await LoadTemplates();
         }
 
+        protected void GoBack()
+        {
+            NavManager.NavigateTo("/laboratory/dashboard");
+        }
+
         private async Task LoadTemplates()
         {
             IsLoading = true;
             StateHasChanged();
 
-            var response = await Mediator.Send(new GetLabExamTemplatesQuery());
-            if (response.IsSuccess && response.Data != null)
+            try
             {
-                Templates = response.Data.ToList();
+                var response = await Mediator.Send(new GetLabExamTemplatesQuery());
+                if (response.IsSuccess && response.Data != null)
+                {
+                    Templates = response.Data.ToList();
+                }
             }
-            else
+            catch (System.Exception ex)
             {
-                Snackbar.Add("Error al cargar las plantillas globales.", Severity.Error);
+                Snackbar.ShowError("Error cargando el catálogo de exámenes.", ex.Message);
             }
-
-            IsLoading = false;
-            StateHasChanged();
+            finally
+            {
+                IsLoading = false;
+                StateHasChanged();
+            }
         }
 
         protected async Task OnTemplateSelected(long templateId)
@@ -63,19 +74,29 @@ namespace MedFarLab.Pwa.Pages.Laboratory.Config
             IsLoadingItems = true;
             StateHasChanged();
 
-            var response = await Mediator.Send(new GetLabExamTemplateItemsQuery(templateId));
-            if (response.IsSuccess && response.Data != null)
+            try
             {
-                TemplateItems = response.Data.ToList();
+                var response = await Mediator.Send(new GetLabExamTemplateItemsQuery(templateId));
+                if (response.IsSuccess && response.Data != null)
+                {
+                    TemplateItems = response.Data.ToList();
+                }
+                else
+                {
+                    TemplateItems.Clear();
+                    Snackbar.ShowError("Error al cargar los analitos.");
+                }
             }
-            else
+            catch (System.Exception ex)
             {
                 TemplateItems.Clear();
-                Snackbar.Add("Error al cargar los analitos.", Severity.Error);
+                Snackbar.ShowError("Error cargando los analitos.", ex.Message);
             }
-
-            IsLoadingItems = false;
-            StateHasChanged();
+            finally
+            {
+                IsLoadingItems = false;
+                StateHasChanged();
+            }
         }
 
         protected async Task CloneTemplate()
@@ -88,20 +109,29 @@ namespace MedFarLab.Pwa.Pages.Laboratory.Config
             // In real app, organizationId comes from Auth Context. Hardcoding to 1 for this module
             long organizationId = 1;
             
-            var command = new CloneLabTemplateCommand(organizationId, SelectedTemplate.Id);
-            var response = await Mediator.Send(command);
-
-            if (response.IsSuccess)
+            try
             {
-                Snackbar.Add($"Plantilla '{SelectedTemplate.Name}' clonada exitosamente a tu laboratorio.", Severity.Success);
-            }
-            else
-            {
-                Snackbar.Add(response.Message ?? "Error al clonar la plantilla. Tal vez ya la tienes configurada.", Severity.Warning);
-            }
+                var command = new CloneLabTemplateCommand(organizationId, SelectedTemplate.Id);
+                var response = await Mediator.Send(command);
 
-            IsCloning = false;
-            StateHasChanged();
+                if (response != null && response.IsSuccess)
+                {
+                    Snackbar.ShowSuccess($"Examen {SelectedTemplate.Name} clonado exitosamente.");
+                }
+                else
+                {
+                    Snackbar.ShowError(response?.Message ?? "Error al clonar plantilla.");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Snackbar.ShowError("Fallo en la comunicación al clonar.", ex.Message);
+            }
+            finally
+            {
+                IsCloning = false;
+                StateHasChanged();
+            }
         }
     }
 }

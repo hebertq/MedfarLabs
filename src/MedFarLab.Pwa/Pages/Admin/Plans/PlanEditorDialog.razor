@@ -8,10 +8,11 @@
             <MudNumericField @bind-Value="PlanToEdit.MonthlyPrice" Label="Precio Mensual ($)" Required="true" Variant="Variant.Outlined" Class="mb-4" Min="0" />
             <MudTextField @bind-Value="PlanToEdit.Description" Label="Descripción Corta" Required="true" Variant="Variant.Outlined" Class="mb-4" Lines="2" />
             
-            <MudSelect @bind-Value="PlanToEdit.OrganizationTypeId" Label="Tipo de Organización" Variant="Variant.Outlined" Class="mb-4" AnchorOrigin="Origin.BottomCenter">
+            <MudSelect T="int" @bind-Value="PlanToEdit.OrganizationTypeId" Label="Tipo de Organización" Variant="Variant.Outlined" Class="mb-4" AnchorOrigin="Origin.BottomCenter">
+                <MudSelectItem T="int" Value="0" Disabled="true">Seleccione el Tipo de Organización...</MudSelectItem>
                 @foreach (var tipo in Enum.GetValues<MedfarLabs.Core.Domain.Enums.TipoOrganizacion>())
                 {
-                    <MudSelectItem Value="(int)tipo">@tipo.ToString().Replace("_", " ")</MudSelectItem>
+                    <MudSelectItem T="int" Value="(int)tipo">@tipo.ToString().Replace("_", " ")</MudSelectItem>
                 }
             </MudSelect>
 
