@@ -23,11 +23,7 @@
         </div>
         <MudSpacer/>
         <MedFarDarkModeToggle/>
-        <MudMenu Icon="@Icons.Material.Filled.AccountCircle"
-                 AnchorOrigin="Origin.BottomRight">
-            <MudMenuItem Icon="@Icons.Material.Filled.Person">Mi Perfil</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Logout" OnClick="Logout">Cerrar Sesión</MudMenuItem>
-        </MudMenu>
+        <MedFarProfileMenu />
     </MudAppBar>
 
     <!-- Sidebar glassmorphism -->
@@ -41,7 +37,19 @@
     <!-- Contenido principal -->
     <MudMainContent Class="mf-main-content">
         <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
-            @Body
+            @if (_isMenusLoaded || AppState.UserId == 0)
+            {
+                @Body
+            }
+            else
+            {
+                <div class="d-flex justify-center align-center" style="height: 60vh;">
+                    <div class="text-center">
+                        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" Class="mb-4"/>
+                        <MudText Typo="Typo.h6" Color="Color.Primary">Cargando módulos seguros...</MudText>
+                    </div>
+                </div>
+            }
         </MudContainer>
     </MudMainContent>
 </MudLayout>
@@ -53,10 +61,12 @@
     protected override void OnInitialized()
     {
         ThemeService.OnChange += StateHasChanged;
+        AppState.OnChange += StateHasChanged;
     }
 
     public void Dispose()
     {
         ThemeService.OnChange -= StateHasChanged;
+        AppState.OnChange -= StateHasChanged;
     }
 }

@@ -42,6 +42,8 @@ builder.Services.AddScoped<MedFarLab.Pwa.Services.MedFarThemeService>();
 builder.Services.AddScoped<MedFarLab.Pwa.Services.MedFarSnackbarService>();
 builder.Services.AddSingleton(MedFarLab.Pwa.Services.MedFarTheme.Build());
 builder.Services.AddScoped<MedFarLab.Pwa.Services.IExportService, MedFarLab.Pwa.Services.ExportService>();
+builder.Services.AddScoped<MedFarLab.Pwa.Services.IUserContextService, MedFarLab.Pwa.Services.UserContextService>();
+builder.Services.AddScoped<MedFarLab.Pwa.Services.MedFarMenuService>();
 builder.Services.AddApplicationServices();
 builder.Services.AddReportingServices();
 

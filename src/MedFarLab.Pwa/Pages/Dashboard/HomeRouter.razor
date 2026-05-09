@@ -1,19 +1,18 @@
-@page "/"
 @page "/home"
-@inject MedfarLabs.Core.Domain.Interfaces.Security.IUserContext UserCtx
+@inject Microsoft.JSInterop.IJSRuntime JSRuntime
 @inject NavigationManager Nav
 
 @* Redirige al dashboard correcto según el rol del usuario *@
 
 @code {
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        var destino = UserCtx.OrganizationTypeId switch
+        var storedOrgType = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "medfarlab_orgtype");
+        var destino = storedOrgType switch
         {
-            1 or 3 or 5 => "/home/medico",       // Clínica, Médico Independiente, Odontología
-            2           => "/home/laboratorio",   // Laboratorio
-            4           => "/home/farmacia",      // Farmacia
-            _           => "/home/medico"
+            "15" => "/laboratory/dashboard",   // Laboratorio
+            "125" => "/pharmacy/dashboard",      // Farmacia
+            _ => "/clinical/dashboard"             // Clínica por defecto (124)
         };
         Nav.NavigateTo(destino, replace: true);
     }

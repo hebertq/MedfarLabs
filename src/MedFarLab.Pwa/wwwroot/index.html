@@ -23,7 +23,7 @@
 <body>
     <div id="app">
         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; width:100vw; background:linear-gradient(135deg, #f5f7fa 0%, #eef2f9 100%); position:fixed; top:0; left:0; z-index:9999;">
-            <img src="/images/logo.png" alt="MedFarLab Booting..." style="height: auto; width: 65%; max-width: 320px; animation: pulse-boot 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;" />
+            <img src="/img/logo-medfar.svg" alt="MedFarLab Booting..." style="height: auto; width: 65%; max-width: 320px; animation: pulse-boot 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;" />
             <div style="margin-top:2.5rem; width:220px; height:4px; background:rgba(0,80,210,0.1); border-radius:10px; overflow:hidden;">
                 <div style="width:30%; height:100%; background:linear-gradient(90deg, transparent, #0050D2, #00cc7a, transparent); animation: load-bar 1.5s infinite linear;"></div>
             </div>
@@ -60,7 +60,7 @@
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
-    <script src="_content/MudBlazor/MudBlazor.min.js"></script> @* <-- Verifica que esté aquí *@
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script>
         window.downloadPdf = (fileName, byteBase64) => {
             const link = document.createElement('a');

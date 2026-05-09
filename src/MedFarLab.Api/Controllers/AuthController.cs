@@ -48,6 +48,9 @@ namespace MedFarLab.Api.Controllers
 
             bool isDoctor = await _userRepository.IsDoctorAsync(user.Id);
 
+            var branches = await _branchRepository.GetByOrganizationAsync(user.OrganizationId);
+            long primaryBranchId = branches.FirstOrDefault()?.Id ?? user.OrganizationId;
+
             List<string> roles = isDoctor ? new List<string> { "Admin-Clinical" } : new List<string> { "Admin-Recepcion" };
             List<string> modules = new List<string> { "All", "Appointments", "Clinical", "Patients", "Laboratory", "Pharmacy", "Admin-Billing", "Inventory" };
 
@@ -55,7 +58,7 @@ namespace MedFarLab.Api.Controllers
             {
                 UserId = user.Id,
                 OrganizationId = user.OrganizationId,
-                BranchId = 0,
+                BranchId = primaryBranchId,
                 Username = user.Username,
                 Token = newSessionGuid,
                 IsDoctor = isDoctor,

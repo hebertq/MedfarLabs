@@ -11,9 +11,12 @@ namespace MedFarLab.Pwa.Providers
             var identity = new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.Name, "Médico Mock (Desarrollo)"),
+                new Claim("name", "Médico Mock (Desarrollo)"),
                 new Claim(ClaimTypes.Role, "Doctor"),
+                new Claim("role", "Doctor"),
                 new Claim(ClaimTypes.Email, "doctor@medfarlabs.com"),
-                new Claim("OrganizationId", "1")
+                new Claim("OrganizationId", "1"),
+                new Claim("org_type", "124")
             }, "MockAuthType");
 
             var user = new ClaimsPrincipal(identity);

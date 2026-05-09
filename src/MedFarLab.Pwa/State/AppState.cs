@@ -23,8 +23,42 @@ public class AppState
 
     public MedfarLabs.Core.Domain.Models.Reporting.OrganizationInfoModel OrganizationInfo { get; set; } = new();
 
+    // Cache dynamic menus
+    public IEnumerable<MedfarLabs.Core.Application.Features.System.Dtos.NavigationMenuResponseDTO>? DynamicMenus { get; set; }
+
     public bool HasRole(string role) => UserRoles.Contains("All") || UserRoles.Contains(role);
     public bool HasModule(string module) => PlanModules.Contains("All") || PlanModules.Contains(module);
+
+    public bool IsRouteAllowed(string route)
+    {
+        if (IsMasterAdmin) return true;
+        
+        var normalizedRoute = route.ToLower().TrimEnd('/');
+        
+        // Whitelisted routes
+        if (string.IsNullOrEmpty(normalizedRoute) || 
+            normalizedRoute == "/" || 
+            normalizedRoute == "/home" || 
+            normalizedRoute.StartsWith("/user/profile") || 
+            normalizedRoute.StartsWith("/settings/"))
+            return true;
+
+        if (DynamicMenus == null || !DynamicMenus.Any()) return false;
+
+        foreach (var menu in DynamicMenus)
+        {
+            if (!string.IsNullOrEmpty(menu.Route) && menu.Route.ToLower().TrimEnd('/') == normalizedRoute)
+                return true;
+                
+            if (menu.SubMenus != null)
+            {
+                if (menu.SubMenus.Any(sub => !string.IsNullOrEmpty(sub.Route) && sub.Route.ToLower().TrimEnd('/') == normalizedRoute))
+                    return true;
+            }
+        }
+
+        return false;
+    }
 
     public event Action? OnChange;
     public void NotifyStateChanged() => OnChange?.Invoke();

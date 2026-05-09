@@ -108,7 +108,7 @@ namespace MedFarLab.Pwa.Pages.Common
                         };
                         await JSRuntime.InvokeVoidAsync("localStorage.setItem", "medfarlab_orgtype", orgTypeId.ToString());
                         
-                        NavManager.NavigateTo($"/{AppState.CurrentTenantRoute}/dashboard");
+                        NavManager.NavigateTo("/home");
                     }
                 }
                 else

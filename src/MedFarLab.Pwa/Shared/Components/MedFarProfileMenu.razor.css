@@ -1,0 +1,42 @@
+.mf-profile-trigger {
+    display: flex; align-items: center;
+    padding: 4px 8px; border-radius: var(--mf-radius-md);
+    cursor: pointer; transition: var(--mf-transition);
+}
+.mf-profile-trigger:hover {
+    background: rgba(255,255,255,0.15);
+}
+.mf-profile-info { display: flex; flex-direction: column; }
+.lh-1 { line-height: 1.2 !important; }
+
+/* Header del dropdown */
+.mf-profile-header {
+    display: flex; align-items: center;
+    padding: 16px; min-width: 260px;
+}
+
+/* Etiqueta de grupo de ajustes */
+.mf-settings-group-label {
+    padding: 4px 16px;
+    opacity: 0.6;
+}
+
+/* Ítem de ajuste */
+.mf-settings-item {
+    border-radius: var(--mf-radius-sm) !important;
+    margin: 1px 8px !important;
+    transition: var(--mf-transition) !important;
+}
+.mf-settings-item:hover {
+    background: var(--mf-primary-light) !important;
+}
+
+/* Logout con color de peligro */
+.mf-logout-item {
+    border-radius: var(--mf-radius-sm) !important;
+    margin: 1px 8px !important;
+    color: var(--mf-danger) !important;
+}
+.mf-logout-item:hover {
+    background: rgba(239,68,68,0.08) !important;
+}

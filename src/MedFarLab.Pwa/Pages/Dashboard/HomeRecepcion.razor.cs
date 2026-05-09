@@ -5,7 +5,7 @@ namespace MedFarLab.Pwa.Pages.Dashboard
 {
     public partial class HomeRecepcion : ComponentBase
     {
-        [Inject] private IApplicationDispatcher Dispatcher { get; set; } = null!;
+
         [Inject] private NavigationManager Nav { get; set; } = null!;
 
         protected string FechaHoy { get; set; } = DateTime.Now.ToString("dd/MM/yyyy");

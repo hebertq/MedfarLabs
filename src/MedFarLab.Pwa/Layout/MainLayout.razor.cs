@@ -35,8 +35,17 @@ namespace MedFarLab.Pwa.Layout
         [Inject] private MedFarLab.Pwa.State.AppState AppState { get; set; } = default!;
         [Inject] private NavigationManager NavManager { get; set; } = default!;
 
+        [Inject] private MediatR.IMediator Mediator { get; set; } = default!;
+        [Inject] private ISnackbar Snackbar { get; set; } = default!;
+        [Inject] private MedFarLab.Pwa.Services.IUserContextService UserCtx { get; set; } = default!;
+        [Inject] private MedFarLab.Pwa.Services.MedFarMenuService MenuService { get; set; } = default!;
+
+        private bool _isMenusLoaded = false;
+
         protected override async Task OnInitializedAsync()
         {
+            NavManager.LocationChanged += OnLocationChanged;
+
             if (AppState.UserId == 0)
             {
                 var storedUserId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "medfarlab_userId");
@@ -56,6 +65,69 @@ namespace MedFarLab.Pwa.Layout
                         catch { }
                     }
                 }
+            }
+
+            if (AppState.UserId > 0)
+            {
+                await LoadDynamicMenusAsync();
+                _isMenusLoaded = true;
+                CheckRoute(NavManager.Uri);
+            }
+        }
+
+        private async Task LoadDynamicMenusAsync()
+        {
+            if (AppState.IsMasterAdmin) return;
+
+            try
+            {
+                var storedOrgType = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "medfarlab_orgtype");
+                int orgTypeId = string.IsNullOrEmpty(storedOrgType) ? 1 : int.Parse(storedOrgType);
+
+                await MenuService.LoadAsync(orgTypeId, UserCtx.PrimaryRole);
+
+                if (MenuService.NavItems.Any())
+                {
+                    AppState.DynamicMenus = MenuService.NavItems.ToList();
+                    AppState.NotifyStateChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error loading dynamic menus: " + ex.ToString());
+                Snackbar.Add($"Exception: {ex.Message}", Severity.Error, config => { config.RequireInteraction = true; });
+            }
+        }
+
+        private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+        {
+            if (!_isMenusLoaded && AppState.UserId > 0) return;
+            CheckRoute(e.Location);
+        }
+
+        private void CheckRoute(string url)
+        {
+            var relativeUri = NavManager.ToBaseRelativePath(url).Split('?')[0].Split('#')[0];
+            var route = "/" + relativeUri;
+
+            if (AppState.UserId == 0 && route != "/" && !route.StartsWith("/user/login"))
+            {
+                NavManager.NavigateTo("/", forceLoad: true);
+                return;
+            }
+
+            if (AppState.UserId > 0 && !AppState.IsRouteAllowed(route))
+            {
+                Snackbar.Add($"Acceso denegado a la ruta solicitada: {route}", Severity.Warning);
+                
+                // Si no hay menús cargados (falla en API), no redirigir a /home para evitar loop infinito
+                if (AppState.DynamicMenus == null || !AppState.DynamicMenus.Any())
+                {
+                    // Mantener en una vista vacía o de error
+                    return;
+                }
+                
+                NavManager.NavigateTo("/home");
             }
         }
 

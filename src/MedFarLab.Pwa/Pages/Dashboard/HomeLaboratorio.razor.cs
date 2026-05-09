@@ -6,7 +6,7 @@ namespace MedFarLab.Pwa.Pages.Dashboard
 {
     public partial class HomeLaboratorio : ComponentBase
     {
-        [Inject] private IApplicationDispatcher Dispatcher { get; set; } = null!;
+
         [Inject] private NavigationManager Nav { get; set; } = null!;
 
         protected LabDashboardStatsDTO? Stats { get; set; }

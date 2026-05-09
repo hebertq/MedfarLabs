@@ -9,7 +9,7 @@
 <MudNavMenu Class="pt-4">
     @if (!AppState.IsMasterAdmin)
     {
-        if (DynamicMenus == null)
+        if (AppState.DynamicMenus == null)
         {
             <div class="pa-4 d-flex justify-center flex-column align-center">
                 <MedFarLab.Pwa.Shared.Components.MedFarSkeleton Type="MedFarLab.Pwa.Shared.Components.MedFarSkeletonType.List" />
@@ -17,14 +17,25 @@
         }
         else
         {
-            foreach (var menu in DynamicMenus)
+            var sidebarMenus = AppState.DynamicMenus.ToList();
+            foreach (var menu in sidebarMenus)
             {
-                <MudNavLink Href="@menu.Route" Icon="@GetMudIcon(menu.Icon)" Match="NavLinkMatch.Prefix">@menu.Title</MudNavLink>
+                if (menu.SubMenus != null && menu.SubMenus.Any())
+                {
+                    <MudNavGroup Title="@menu.Title" Icon="@GetMudIcon(menu.Icon)" Expanded="false">
+                        @foreach(var sub in menu.SubMenus)
+                        {
+                            <MudNavLink Href="@sub.Route" Icon="@GetMudIcon(sub.Icon)" Match="NavLinkMatch.Prefix">@sub.Title</MudNavLink>
+                        }
+                    </MudNavGroup>
+                }
+                else
+                {
+                    <MudNavLink Href="@menu.Route" Icon="@GetMudIcon(menu.Icon)" Match="NavLinkMatch.Prefix">@menu.Title</MudNavLink>
+                }
             }
         }
 
-        <MudDivider Class="my-4" />
-        <MudNavLink Href="/ajustes" Icon="@Icons.Material.Filled.Settings" Match="NavLinkMatch.Prefix">Ajustes Generales</MudNavLink>
     }
     
     @if (AppState.IsMasterAdmin)
@@ -41,34 +52,9 @@
 @code {
     [Parameter] public bool IsMobile { get; set; } = false;
 
-    private IEnumerable<NavigationMenuResponseDTO>? DynamicMenus;
-
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         AppState.OnChange += StateHasChanged;
-        await LoadDynamicMenus();
-    }
-
-    private async Task LoadDynamicMenus()
-    {
-        if (AppState.IsMasterAdmin) return;
-
-        try
-        {
-            // Extract from localstorage to quickly identify organization type mapped on login
-            var storedOrgType = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "medfarlab_orgtype");
-            int orgTypeId = string.IsNullOrEmpty(storedOrgType) ? 1 : int.Parse(storedOrgType);
-
-            var result = await Mediator.Send(new GetNavigationMenusQuery(orgTypeId));
-            if (result != null && result.IsSuccess && result.Data != null)
-            {
-                DynamicMenus = result.Data.OrderBy(m => m.OrderIndex);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Error loading dynamic menus: " + ex.Message);
-        }
     }
 
     private string GetMudIcon(string? iconName)

@@ -19,7 +19,7 @@ namespace MedFarLab.Application.Features.System.Queries.GetMenus
             {
                 var payload = global::System.Text.Json.JsonSerializer.Serialize(new { OrganizationTypeId = request.OrganizationTypeId });
                 var encodedPayload = global::System.Net.WebUtility.UrlEncode(payload);
-                var response = await _apiClient.GetAsync<IEnumerable<NavigationMenuResponseDTO>>($"api/System/12005?payload={encodedPayload}");
+                var response = await _apiClient.GetAsync<IEnumerable<NavigationMenuResponseDTO>>($"api/System/12001?payload={encodedPayload}");
                 if (response != null)
                 {
                     return response;

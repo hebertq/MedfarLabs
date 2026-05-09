@@ -2,18 +2,18 @@
 @using MudBlazor
 @using MedFarLab.Pwa.Shared
 
-<PageActionHeader Title="Plantillas de Laboratorio Globales"
+<MedFarLab.Pwa.Shared.Components.MedFarPageHeader Title="Plantillas de Laboratorio Globales"
                   Subtitle="Gestión de exámenes base para el sistema SaaS"
                   Icon="@Icons.Material.Filled.Science">
-    <ActionButtons>
+    <PrimaryActions>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenNewTemplateModal">
             Nueva Plantilla
         </MudButton>
         <MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadData">
             Refrescar
         </MudButton>
-    </ActionButtons>
-</PageActionHeader>
+    </PrimaryActions>
+</MedFarLab.Pwa.Shared.Components.MedFarPageHeader>
 
 <div class="fade-in-up mt-4">
     @if (IsLoading)

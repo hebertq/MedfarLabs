@@ -1,0 +1,36 @@
+@page "/settings/laboratory"
+@page "/settings/clinic"
+@page "/settings/pharmacy"
+
+@using MudBlazor
+@inject MedFarLab.Pwa.State.AppState AppState
+@inject NavigationManager NavManager
+
+<PageTitle>Configuración | MedFarLab</PageTitle>
+
+<MudText Typo="Typo.h5" Class="mb-4">Configuración del Sistema</MudText>
+
+<MudCard Class="surface-glass rounded-xl mb-4">
+    <MudCardContent>
+        <MudAlert Severity="Severity.Info" Class="mb-4">
+            Módulo en construcción. Próximamente podrá configurar parámetros específicos de @GetTenantName().
+        </MudAlert>
+
+        <MudList T="string">
+            <MudListItem Icon="@Icons.Material.Filled.Business" Text="Datos de la Organización" />
+            <MudListItem Icon="@Icons.Material.Filled.Group" Text="Gestión de Usuarios" />
+            <MudListItem Icon="@Icons.Material.Filled.Security" Text="Roles y Permisos" />
+        </MudList>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    private string GetTenantName()
+    {
+        var path = NavManager.Uri.ToLower();
+        if (path.Contains("laboratory")) return "Laboratorio";
+        if (path.Contains("clinic")) return "Clínica";
+        if (path.Contains("pharmacy")) return "Farmacia";
+        return "la Organización";
+    }
+}

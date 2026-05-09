@@ -8,7 +8,7 @@ namespace MedFarLab.Pwa.Pages.Dashboard
 {
     public partial class HomeMedico : ComponentBase
     {
-        [Inject] private IApplicationDispatcher Dispatcher { get; set; } = null!;
+
         [Inject] private NavigationManager Nav { get; set; } = null!;
 
         protected ClinicalDashboardStatsDTO? Stats { get; set; }

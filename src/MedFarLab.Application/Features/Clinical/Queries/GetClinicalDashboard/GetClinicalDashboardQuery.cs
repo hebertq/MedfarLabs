@@ -23,7 +23,9 @@ namespace MedFarLab.Application.Features.Clinical.Queries.GetClinicalDashboard
 
         public async Task<BaseResponse<ClinicalDashboardVM>> Handle(GetClinicalDashboardQuery request, CancellationToken cancellationToken)
         {
-            var apiResponse = await _apiClient.GetAsync<ClinicalDashboardVM>($"api/Care/Dashboard/Clinical?branchId={request.BranchId}&date={request.Date:yyyy-MM-dd}");
+            var payloadObj = new { BranchId = request.BranchId, Date = request.Date.ToString("yyyy-MM-ddTHH:mm:ssZ") };
+            var encodedPayload = global::System.Net.WebUtility.UrlEncode(global::System.Text.Json.JsonSerializer.Serialize(payloadObj));
+            var apiResponse = await _apiClient.GetAsync<ClinicalDashboardVM>($"api/Care/5008?payload={encodedPayload}");
 
             if (apiResponse != null && apiResponse.IsSuccess && apiResponse.Data != null)
             {

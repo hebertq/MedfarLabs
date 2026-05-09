@@ -1,0 +1,118 @@
+@using MudBlazor
+@inject MedFarLab.Pwa.Services.MedFarMenuService MenuService
+@inject MedFarLab.Pwa.Services.IUserContextService UserCtx
+@inject NavigationManager Nav
+@inject IDialogService DialogService
+
+<MudMenu AnchorOrigin="Origin.BottomRight"
+         TransformOrigin="Origin.TopRight"
+         Class="mf-profile-menu">
+
+    <ActivatorContent>
+        <!-- Trigger: avatar + nombre del usuario -->
+        <div class="mf-profile-trigger">
+            <MudAvatar Color="Color.Primary" Size="Size.Small" Class="mr-2">
+                @UserCtx.FullName?.FirstOrDefault()
+            </MudAvatar>
+            <div class="mf-profile-info hide-mobile">
+                <MudText Typo="Typo.body2" Class="font-weight-bold lh-1">
+                    @UserCtx.FullName
+                </MudText>
+                <MudText Typo="Typo.caption" Color="Color.Secondary" Class="lh-1">
+                    @UserCtx.PrimaryRole
+                </MudText>
+            </div>
+            <MudIcon Icon="@Icons.Material.Filled.ExpandMore"
+                     Size="Size.Small" Class="ml-1 hide-mobile"/>
+        </div>
+    </ActivatorContent>
+
+    <ChildContent>
+        <!-- Cabecera del dropdown -->
+        <div class="mf-profile-header">
+            <MudAvatar Color="Color.Primary" Size="Size.Large">
+                @UserCtx.FullName?.FirstOrDefault()
+            </MudAvatar>
+            <div class="ml-3">
+                <MudText Typo="Typo.subtitle1" Class="font-weight-bold">
+                    @UserCtx.FullName
+                </MudText>
+                <MudText Typo="Typo.caption" Color="Color.Secondary">
+                    @UserCtx.OrganizationName
+                </MudText>
+                <MudChip T="string" Size="Size.Small"
+                         Color="Color.Primary" Variant="Variant.Outlined"
+                         Class="mt-1">
+                    @UserCtx.PrimaryRole
+                </MudChip>
+            </div>
+        </div>
+
+        <MudDivider Class="my-2"/>
+
+        <!-- Sección de ajustes — agrupada dinámicamente -->
+        @if (MenuService.SettingsGroups != null && MenuService.SettingsGroups.Any())
+        {
+            @foreach (var grupo in MenuService.SettingsGroups)
+            {
+                <!-- Etiqueta del grupo -->
+                <div class="mf-settings-group-label">
+                    <MudText Typo="Typo.overline">
+                        @MenuService.GetGroupLabel(grupo.Key)
+                    </MudText>
+                </div>
+
+                @foreach (var item in grupo)
+                {
+                    @if (item.IsDivider && item != grupo.First())
+                    {
+                        <MudDivider Class="my-1"/>
+                    }
+
+                    <MudMenuItem Icon="@item.Icon"
+                                 OnClick="@(() => Navegar(item.Route))"
+                                 Class="mf-settings-item">
+                        @item.Title
+                    </MudMenuItem>
+                }
+
+                @if (grupo.Key < MenuService.SettingsGroups.Last().Key)
+                {
+                    <MudDivider Class="my-2"/>
+                }
+            }
+        }
+        else
+        {
+            <MudText Typo="Typo.caption" Class="px-4 py-2" Color="Color.Secondary">
+                No hay ajustes configurados.
+            </MudText>
+        }
+
+        <MudDivider Class="my-2"/>
+
+        <!-- Cerrar sesión — siempre al fondo -->
+        <MudMenuItem Icon="@Icons.Material.Filled.Logout"
+                     OnClick="@CerrarSesion"
+                     Class="mf-logout-item">
+            Cerrar sesión
+        </MudMenuItem>
+
+    </ChildContent>
+</MudMenu>
+
+@code {
+    private void Navegar(string route) => Nav.NavigateTo(route);
+
+    private async Task CerrarSesion()
+    {
+        var confirm = await DialogService.ShowMessageBox(
+            "Cerrar sesión",
+            "¿Estás seguro de que deseas cerrar tu sesión?",
+            yesText: "Cerrar sesión",
+            cancelText: "Cancelar");
+
+        if (confirm == true)
+            Nav.NavigateTo("/logout", forceLoad: true);
+    }
+}
