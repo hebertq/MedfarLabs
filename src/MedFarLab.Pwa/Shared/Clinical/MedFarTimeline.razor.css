@@ -1,0 +1,15 @@
+.mf-timeline          { display: flex; flex-direction: column; }
+.mf-timeline-item     { display: flex; gap: 16px; }
+.mf-timeline-indicator{ display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.mf-timeline-dot      { width: 14px; height: 14px; border-radius: 50%; margin-top: 12px; border: 2px solid white; box-shadow: var(--mf-shadow-sm); }
+.dot-owner   { background: var(--mf-primary); }
+.dot-shared  { background: var(--mf-warning); }
+.dot-blocked { background: var(--mud-palette-text-disabled); }
+.mf-timeline-line     { flex: 1; width: 2px; background: var(--mf-border); margin: 4px 0; }
+.mf-timeline-card     { flex: 1; border-left: 3px solid var(--mf-border) !important; }
+.mf-timeline-owner .mf-timeline-card  { border-left-color: var(--mf-primary) !important; }
+.mf-timeline-shared .mf-timeline-card { border-left-color: var(--mf-warning) !important; }
+
+.mf-soap-preview      { display: flex; flex-direction: column; gap: 8px; padding: 8px 0; font-size: 0.875rem; }
+.mf-soap-section      { display: flex; gap: 10px; }
+.mf-soap-label        { font-weight: 800; font-size: 1rem; color: var(--mf-primary); min-width: 16px; }

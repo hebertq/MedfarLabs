@@ -66,6 +66,17 @@ namespace MedFarLab.Pwa.Pages.Care.Consultation
 
         public List<MedfarLabs.Core.Application.Features.Clinical.Dtos.Response.DiagnosisCodeDTO> Diagnoses { get; set; } = new();
         public List<PrescriptionItemDTO> Prescriptions { get; set; } = new();
+        
+        public class PrescriptionFormModel
+        {
+            public string MedicationName { get; set; } = string.Empty;
+            public string Dosage { get; set; } = string.Empty;
+            public string Frequency { get; set; } = string.Empty;
+            public string Duration { get; set; } = string.Empty;
+            public string Instructions { get; set; } = string.Empty;
+        }
+        protected PrescriptionFormModel NuevaReceta { get; set; } = new();
+
         public List<LabOrderDTO> LabOrders { get; set; } = new();
         public DateTime? ScheduleNextAppointment { get; set; }
         public TimeSpan? NextAppointmentTime { get; set; }
@@ -271,9 +282,43 @@ namespace MedFarLab.Pwa.Pages.Care.Consultation
             return Array.Empty<MedfarLabs.Core.Application.Features.Clinical.Dtos.Response.DiagnosisCodeDTO>();
         }
 
+        protected async Task SearchDiagnosesApi() { } // Keeping placeholder if needed.
+
+        protected async Task AgregarReceta()
+        {
+            if (string.IsNullOrWhiteSpace(NuevaReceta.MedicationName))
+            {
+                Snackbar.Add("El nombre del medicamento es obligatorio.", Severity.Warning);
+                return;
+            }
+
+            // Poka-Yoke: Cross validation for allergies
+            bool hasAllergyMatch = PatientAllergies.Any(a => NuevaReceta.MedicationName.Contains(a, StringComparison.OrdinalIgnoreCase));
+            if (hasAllergyMatch)
+            {
+                bool? confirmResult = await DialogService.ShowMessageBox(
+                    "⚠️ Alerta de Alergia Cruzada", 
+                    $"El paciente tiene una alergia registrada que coincide con el medicamento '{NuevaReceta.MedicationName}'. ¿Está seguro de que desea recetarlo bajo su responsabilidad clínica?",
+                    yesText: "Sí, recetar bajo mi riesgo", cancelText: "Cancelar"
+                );
+
+                if (confirmResult != true)
+                {
+                    return; // The doctor cancelled
+                }
+            }
+
+            Prescriptions.Add(new PrescriptionItemDTO(
+                NuevaReceta.MedicationName, NuevaReceta.Dosage, NuevaReceta.Frequency, NuevaReceta.Duration, NuevaReceta.Instructions
+            ));
+            
+            NuevaReceta = new PrescriptionFormModel(); // reset form
+        }
+
         protected async Task OpenPrescriptionDialog()
         {
             var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
             var dialog = await DialogService.ShowAsync<Dialogs.PrescriptionDialog>("Añadir Medicamento", options);
             var result = await dialog.Result;
 

@@ -14,6 +14,9 @@ public partial class PatientRecord : ComponentBase
     [Inject] private NavigationManager NavManager { get; set; } = default!;
     [Inject] private ISender Mediator { get; set; } = default!;
     [Inject] private MedFarLab.Pwa.State.AppState AppState { get; set; } = default!;
+    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IDialogService DialogService { get; set; } = default!;
+    [Inject] private MedfarLabs.Core.Domain.Interfaces.Http.IExternalServiceClient ApiClient { get; set; } = default!;
 
     [Parameter]
     public string PatientId { get; set; } = string.Empty;
@@ -33,6 +36,11 @@ public partial class PatientRecord : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
         IsLoading = true;
         try
         {
@@ -46,6 +54,7 @@ public partial class PatientRecord : ComponentBase
                     Patient = response.Data;
                     
                     // Ejemplo de lógica para alertas críticas:
+                    CriticalRiskAlerts.Clear();
                     if (Patient.Age > 65) CriticalRiskAlerts.Add("Riesgo por edad avanzada");
                     if (Patient.Antecedents != null)
                     {
@@ -74,6 +83,7 @@ public partial class PatientRecord : ComponentBase
         finally 
         {
             IsLoading = false;
+            StateHasChanged();
         }
     }
 
@@ -85,6 +95,22 @@ public partial class PatientRecord : ComponentBase
     protected void NuevaConsulta()
     {
         NavManager.NavigateTo($"/care/consultation/new/{PatientId}");
+    }
+
+    private async Task AbrirModalAntecedente()
+    {
+        if (long.TryParse(PatientId, out long pId))
+        {
+            var parameters = new DialogParameters { ["PatientId"] = pId };
+            var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+            var dialog = DialogService.Show<AddAntecedentDialog>("Nuevo Antecedente", parameters, options);
+            var result = await dialog.Result;
+
+            if (!result.Canceled)
+            {
+                await LoadData(); // Reload data after adding
+            }
+        }
     }
 
     protected void EditarPaciente()

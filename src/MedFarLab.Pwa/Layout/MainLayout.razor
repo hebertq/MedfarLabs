@@ -22,6 +22,14 @@
             <img src="/img/logo-medfar.svg" alt="MedFarLab" height="48" onerror="this.src='/images/logo.png';"/>
         </div>
         <MudSpacer/>
+        
+        <!-- Indicador de Sincronización PWA -->
+        <MudTooltip Text="@(AppState.IsOffline ? "Modo Offline (Cambios pendientes)" : "Conectado y sincronizado")">
+            <MudIconButton Icon="@(AppState.IsOffline ? Icons.Material.Filled.CloudOff : Icons.Material.Filled.CloudDone)" 
+                           Color="@(AppState.IsOffline ? Color.Warning : Color.Success)" 
+                           Class="mr-2"/>
+        </MudTooltip>
+        
         <MedFarProfileMenu />
     </MudAppBar>
 

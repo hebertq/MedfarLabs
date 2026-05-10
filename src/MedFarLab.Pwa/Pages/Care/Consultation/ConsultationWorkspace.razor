@@ -60,8 +60,8 @@
     </MudPaper>
 
     <MudGrid>
-        <!-- Columna Izquierda: Tendencias y Signos Vitales -->
-        <MudItem xs="12" md="4">
+        <!-- Columna Izquierda: Signos Vitales -->
+        <MudItem xs="12" md="3">
             <MudPaper Class="pa-4 surface-card h-100" Elevation="0">
                 <MudText Typo="Typo.h6" Class="mb-4 text-primary"><MudIcon Icon="@Icons.Material.Filled.MonitorHeart" Size="Size.Small" Class="mr-2"/> Signos Vitales</MudText>
                 
@@ -92,294 +92,288 @@
                         }
                     </MudItem>
                 </MudGrid>
-
-                <MudDivider Class="my-4" />
-                
-                <!-- Chart Histórico (El Boom que pidió el usuario) -->
-                <MudText Typo="Typo.subtitle2" Class="mb-3">Histórico Frec. Cardíaca (Últimos 30 días)</MudText>
-                <div style="height:250px; width:100%;">
-                    <MudChart ChartType="ChartType.Line" ChartSeries="@VitalsSeries" XAxisLabels="@VitalsLabels" Width="100%" Height="220px"></MudChart>
-                </div>
             </MudPaper>
         </MudItem>
 
-        <!-- Columna Derecha: Metodología S.O.A.P -->
-        <MudItem xs="12" md="8">
-            <MudPaper Class="pa-0 h-100 surface-card" Elevation="0">
-                <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-4" Color="Color.Primary" Style="max-height: 65vh; overflow-y: auto; overflow-x: hidden;">
-                    
-                    <!-- S: Subjetivo -->
-                    <MudTabPanel Text="Motivo" Icon="@Icons.Material.Filled.RecordVoiceOver">
-                        <div class="pa-4">
-                            <MudGrid>
-                                <MudItem xs="12">
-                                    <MudAlert Severity="Severity.Info" Class="mb-3" Variant="Variant.Outlined">Motivo pre-cargado automáticamente desde la agenda médica.</MudAlert>
-                                    <MudText Typo="Typo.subtitle1" Class="mb-2" Color="Color.Primary" Style="font-weight: 500;">
-                                        <MudIcon Icon="@Icons.Material.Filled.RecordVoiceOver" Class="mr-2" Size="Size.Small" /> 
-                                        Motivo de la Consulta / Subjetivo
-                                    </MudText>
-                                    <MudPaper Elevation="0" Class="pa-0 mb-4" Style="border: 1px solid var(--mud-palette-primary-lighten); border-radius: 8px; overflow: hidden; background-color: var(--mud-palette-background);">
-                                        <MudTextField @bind-Value="SubjectiveInput" T="string" Placeholder="Describa el motivo, síntomas y antecedentes que refiere el paciente..." Variant="Variant.Text" Lines="10" FullWidth Underline="false" Class="px-4 py-2" Disabled="@ReadOnly" />
-                                    </MudPaper>
-                                </MudItem>
-                            </MudGrid>
-                        </div>
-                    </MudTabPanel>
+        <!-- Columna Derecha: Metodología S.O.A.P Continua -->
+        <MudItem xs="12" md="9">
+            <MudPaper Class="pa-6 surface-card h-100" Elevation="0" Style="overflow-y: auto; max-height: 75vh;">
+                
+                <!-- S: Subjetivo / Motivo -->
+                <div class="mb-6">
+                    <MudText Typo="Typo.h6" Class="mb-3 text-primary" Style="font-weight: 600;">
+                        <MudIcon Icon="@Icons.Material.Filled.RecordVoiceOver" Class="mr-2" Size="Size.Small" /> 
+                        Motivo de la Consulta / Subjetivo
+                    </MudText>
+                    <MudAlert Severity="Severity.Info" Class="mb-3" Variant="Variant.Outlined">Motivo pre-cargado automáticamente desde la agenda médica.</MudAlert>
+                    <MudPaper Elevation="0" Class="pa-0" Style="border: 1px solid var(--mud-palette-primary-lighten); border-radius: 8px; overflow: hidden; background-color: var(--mud-palette-background);">
+                        <MudTextField @bind-Value="SubjectiveInput" T="string" Placeholder="Describa el motivo, síntomas y antecedentes que refiere el paciente..." Variant="Variant.Text" Lines="4" FullWidth Underline="false" Class="px-4 py-2" Disabled="@ReadOnly" />
+                    </MudPaper>
+                </div>
 
-                    <!-- O: Objetivo -->
-                    <MudTabPanel Text="Examen" Icon="@Icons.Material.Filled.RemoveRedEye">
-                        <div class="pa-4">
-                            <MudGrid>
-                                <MudItem xs="12">
-                                    <MudText Typo="Typo.subtitle1" Class="mb-2" Color="Color.Primary" Style="font-weight: 500;">
-                                        <MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Class="mr-2" Size="Size.Small" /> 
-                                        Hallazgos médicos y examinación
-                                    </MudText>
-                                    <MudPaper Elevation="0" Class="pa-0 mb-4" Style="border: 1px solid var(--mud-palette-primary-lighten); border-radius: 8px; overflow: hidden; background-color: var(--mud-palette-background);">
-                                        <MudTextField @bind-Value="ObjectiveInput" T="string" Placeholder="Lo que observa el médico..." Variant="Variant.Text" Lines="10" FullWidth Underline="false" Class="px-4 py-2" Disabled="@ReadOnly" />
-                                    </MudPaper>
-                                </MudItem>
-                            </MudGrid>
-                        </div>
-                    </MudTabPanel>
+                <MudDivider Class="my-6" />
 
-                    <!-- A: Análisis / Diagnóstico -->
-                    <MudTabPanel Text="Diagnósticos" Icon="@Icons.Material.Filled.Analytics">
-                        <div class="pa-4">
-                            <MudText Typo="Typo.subtitle1" Class="mb-2" Color="Color.Primary" Style="font-weight: 500;">
-                                <MudIcon Icon="@Icons.Material.Filled.Analytics" Class="mr-2" Size="Size.Small" /> 
-                                Identificación de la patología
-                            </MudText>
-                            
-                            <div class="d-flex flex-column gap-2 mb-3 mt-2">
-                                <MudSelect T="int?" @bind-Value="SelectedCategoryId" Label="Categoría de Patología CIE-10" Variant="Variant.Outlined" Margin="Margin.Dense" Clearable="true" Placeholder="Seleccione un Capítulo">
+                <!-- O: Objetivo / Examen -->
+                <div class="mb-6">
+                    <MudText Typo="Typo.h6" Class="mb-3 text-primary" Style="font-weight: 600;">
+                        <MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Class="mr-2" Size="Size.Small" /> 
+                        Hallazgos Médicos / Examen Físico
+                    </MudText>
+                    <MudPaper Elevation="0" Class="pa-0" Style="border: 1px solid var(--mud-palette-primary-lighten); border-radius: 8px; overflow: hidden; background-color: var(--mud-palette-background);">
+                        <MudTextField @bind-Value="ObjectiveInput" T="string" Placeholder="Lo que observa el médico..." Variant="Variant.Text" Lines="4" FullWidth Underline="false" Class="px-4 py-2" Disabled="@ReadOnly" />
+                    </MudPaper>
+                </div>
+
+                <MudDivider Class="my-6" />
+
+                <!-- A: Análisis / Diagnóstico -->
+                <div class="mb-6">
+                    <MudText Typo="Typo.h6" Class="mb-3 text-primary" Style="font-weight: 600;">
+                        <MudIcon Icon="@Icons.Material.Filled.Analytics" Class="mr-2" Size="Size.Small" /> 
+                        Análisis Clínico y Diagnóstico
+                    </MudText>
+                    <MudPaper Elevation="0" Class="pa-0 mb-6" Style="border: 1px solid var(--mud-palette-primary-lighten); border-radius: 8px; overflow: hidden; background-color: var(--mud-palette-background);">
+                        <MudTextField @bind-Value="AnalysisInput" T="string" Placeholder="Describa el análisis clínico y justificación de los diagnósticos..." Variant="Variant.Text" Lines="4" FullWidth Underline="false" Class="px-4 py-2" Disabled="@ReadOnly" />
+                    </MudPaper>
+
+                    <!-- Diagnóstico Principal -->
+                    <MudPaper Class="pa-4 surface-glass shadow-float" Style="border-radius: 8px; border-left: 4px solid var(--mud-palette-primary);">
+                        <MudText Typo="Typo.subtitle1" Class="mb-3" Style="font-weight: 600;">
+                            <MudIcon Icon="@Icons.Material.Filled.LocalHospital" Size="Size.Small" Class="mr-2" />Diagnóstico Principal CIE-10
+                        </MudText>
+                        
+                        <div class="d-flex flex-row flex-wrap gap-2 mb-3">
+                            <div style="flex: 1; min-width: 250px;">
+                                <MudSelect T="int?" @bind-Value="SelectedCategoryId" Label="Categoría CIE-10" Variant="Variant.Outlined" Margin="Margin.Dense" Clearable="true">
                                     @foreach (var cat in DiagnosisCategories)
                                     {
                                         <MudSelectItem T="int?" Value="@((int?)cat.Id)">@cat.Name</MudSelectItem>
                                     }
                                 </MudSelect>
-                                
-                                <div class="d-flex gap-2">
-                                    <MudSelect T="string" 
-                                               @bind-Value="CurrentDiagnosisCode"
-                                               Label="Patología Específica" 
-                                               Variant="Variant.Outlined" 
-                                               Margin="Margin.Dense" 
-                                               Clearable="true" 
-                                               Disabled="@(SelectedCategoryId == null || !AvailableDiagnoses.Any())"
-                                               Placeholder="@(SelectedCategoryId == null ? "Seleccione primero la categoría" : "Seleccione la patología")">
-                                        @foreach (var diag in AvailableDiagnoses)
-                                        {
-                                            <MudSelectItem T="string" Value="@diag.Code">@($"{diag.Code} - {diag.Description}")</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </div>
                             </div>
-                            
-                            @if (Diagnoses.Any())
-                            {
-                                <MudPaper Class="pa-2 mb-4 d-flex flex-wrap gap-2" Elevation="0" Style="border: 1px solid var(--mud-palette-lines-default); border-radius: 4px;">
-                                    @foreach(var d in Diagnoses)
+                            <div style="flex: 2; min-width: 300px;">
+                                <MudSelect T="string" 
+                                           @bind-Value="CurrentDiagnosisCode"
+                                           Label="Patología Específica" 
+                                           Variant="Variant.Outlined" 
+                                           Margin="Margin.Dense" 
+                                           Clearable="true" 
+                                           Disabled="@(SelectedCategoryId == null || !AvailableDiagnoses.Any())">
+                                    @foreach (var diag in AvailableDiagnoses)
                                     {
-                                        <MudChip T="MedfarLabs.Core.Application.Features.Clinical.Dtos.Response.DiagnosisCodeDTO" Color="Color.Warning" OnClose="@(() => Diagnoses.Remove(d))">@($"[{d.Code}] {d.Description}")</MudChip>
+                                        <MudSelectItem T="string" Value="@diag.Code">@($"{diag.Code} - {diag.Description}")</MudSelectItem>
                                     }
-                                </MudPaper>
-                            }
-
-                            <MudText Typo="Typo.subtitle2" Class="mb-2 mt-4" Color="Color.Primary">Justificación Clínica / Análisis</MudText>
-                            <MudPaper Elevation="0" Class="pa-0 mb-4" Style="border: 1px solid var(--mud-palette-primary-lighten); border-radius: 8px; overflow: hidden; background-color: var(--mud-palette-background);">
-                                <MudTextField @bind-Value="AnalysisInput" T="string" Placeholder="Describa el análisis clínico y justificación de los diagnósticos..." Variant="Variant.Text" Lines="6" FullWidth Underline="false" Class="px-4 py-2" Disabled="@ReadOnly" />
-                            </MudPaper>
+                                </MudSelect>
+                            </div>
+                            <div class="d-flex align-center">
+                                @if (!ReadOnly)
+                                {
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddDiagnosis" Disabled="@(string.IsNullOrEmpty(CurrentDiagnosisCode))">
+                                        Añadir Diagnóstico
+                                    </MudButton>
+                                }
+                            </div>
                         </div>
-                    </MudTabPanel>
 
-                    <!-- P: Plan / Tratamiento -->
-                    <MudTabPanel Text="Plan" Icon="@Icons.Material.Filled.EventAvailable">
-                        <div class="pa-4">
-                            <MudText Typo="Typo.subtitle1" Class="mb-4" Color="Color.Primary" Style="font-weight: 500;">
-                                <MudIcon Icon="@Icons.Material.Filled.EventAvailable" Class="mr-2" Size="Size.Small" /> 
-                                Recetas, exámenes y próximos pasos
-                            </MudText>
-
-                            <!-- Panel de Recetas (Prescriptions) -->
-                            <div class="d-flex justify-space-between align-center mt-2 mb-2">
-                                <MudText Typo="Typo.subtitle2" Color="Color.Primary">Receta Médica</MudText>
-                                <div class="d-flex align-center">
-                                    <MudSelect T="string" @bind-Value="PrescriptionPrintFormat" Margin="Margin.Dense" Variant="Variant.Outlined" Class="mr-2" Style="width: 130px; margin-top: 0px;" Dense="true">
-                                        <MudSelectItem Value="@("A4")">Hoja A4</MudSelectItem>
-                                        <MudSelectItem Value="@("Ticket")">Ticket 80mm</MudSelectItem>
-                                    </MudSelect>
-                                    <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="PrintPrescriptionPDF" StartIcon="@Icons.Material.Filled.PictureAsPdf" Size="Size.Small" Class="mr-2" Disabled="@(!Prescriptions.Any() || IsPrinting)">
-                                        Imprimir
-                                    </MudButton>
-                                    @if (!ReadOnly)
-                                    {
-                                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenPrescriptionDialog" StartIcon="@Icons.Material.Filled.Add" Size="Size.Small">
-                                            Añadir Receta
-                                        </MudButton>
-                                    }
-                                </div>
-                            </div>
-                            
-                            <MudPaper Elevation="0" Class="mb-6 rounded-lg" Style="border: 1px solid var(--mud-palette-lines-default);">
-                                @if (!Prescriptions.Any())
+                        @if (Diagnoses.Any())
+                        {
+                            <MudPaper Class="pa-2 d-flex flex-wrap gap-2" Elevation="0" Style="background: transparent;">
+                                @foreach(var d in Diagnoses)
                                 {
-                                    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="text-center pa-4">No se han recetado medicamentos.</MudText>
-                                }
-                                else
-                                {
-                                    <MedFarLab.Pwa.Shared.Components.MedFarTable TItem="MedfarLabs.Core.Application.Features.Care.Dtos.Request.PrescriptionItemDTO" 
-                                             Items="@Prescriptions" 
-                                             ShowSearch="false" 
-                                             ColumnCount="5"
-                                             EmptyTitle="Sin Recetas"
-                                             EmptyMessage="No se han recetado medicamentos.">
-                                        <HeaderContent>
-                                            <MudTh>Medicamento</MudTh>
-                                            <MudTh>Dosis</MudTh>
-                                            <MudTh>Frecuencia</MudTh>
-                                            <MudTh>Duración</MudTh>
-                                            <MudTh Style="width: 100px; text-align: center;">Acciones</MudTh>
-                                        </HeaderContent>
-                                        <RowTemplate>
-                                            <MudTd DataLabel="Medicamento"><b>@context.MedicationName</b><br/><small class="text-muted">@context.Instructions</small></MudTd>
-                                            <MudTd DataLabel="Dosis">@context.Dosage</MudTd>
-                                            <MudTd DataLabel="Frecuencia">@context.Frequency</MudTd>
-                                            <MudTd DataLabel="Duración">@context.Duration</MudTd>
-                                            <MudTd DataLabel="Acciones" Style="text-align: center;">
-                                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Small" OnClick="@(() => EditPrescription(context))" />
-                                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => DeletePrescription(context))" />
-                                            </MudTd>
-                                        </RowTemplate>
-                                    </MedFarLab.Pwa.Shared.Components.MedFarTable>
+                                    <MudChip T="MedfarLabs.Core.Application.Features.Clinical.Dtos.Response.DiagnosisCodeDTO" Color="Color.Warning" OnClose="@(() => Diagnoses.Remove(d))">@d.Description</MudChip>
                                 }
                             </MudPaper>
+                        }
+                    </MudPaper>
+                </div>
 
-                            <!-- Formulario de Órdenes de Laboratorio -->
-                            <div class="d-flex justify-space-between align-center mt-4 mb-2">
-                                <MudText Typo="Typo.subtitle2" Color="Color.Primary">Orden de Laboratorio / Clínica</MudText>
-                                <div class="d-flex align-center">
-                                    <MudSelect T="string" @bind-Value="LabOrderPrintFormat" Margin="Margin.Dense" Variant="Variant.Outlined" Class="mr-2" Style="width: 130px; margin-top: 0px;" Dense="true">
-                                        <MudSelectItem Value="@("A4")">Hoja A4</MudSelectItem>
-                                        <MudSelectItem Value="@("Ticket")">Ticket 80mm</MudSelectItem>
-                                    </MudSelect>
-                                    <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="PrintLabOrderPDF" StartIcon="@Icons.Material.Filled.PictureAsPdf" Size="Size.Small" Class="mr-2" Disabled="@(!LabOrders.Any() || IsPrinting)">
-                                        Imprimir
-                                    </MudButton>
-                                    @if (!ReadOnly)
-                                    {
-                                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenLabOrderDialog" StartIcon="@Icons.Material.Filled.Add" Size="Size.Small">
-                                            Añadir Examen
-                                        </MudButton>
-                                    }
-                                </div>
-                            </div>
-                            
-                            <MudPaper Elevation="0" Class="mb-6 rounded-lg" Style="border: 1px solid var(--mud-palette-lines-default);">
-                                @if (!LabOrders.Any())
-                                {
-                                    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="text-center pa-4">No se han solicitado exámenes.</MudText>
-                                }
-                                else
-                                {
-                                    <MedFarLab.Pwa.Shared.Components.MedFarTable TItem="MedfarLabs.Core.Application.Features.Care.Dtos.Request.LabOrderDTO" 
-                                             Items="@LabOrders" 
-                                             ShowSearch="false" 
-                                             ColumnCount="3"
-                                             EmptyTitle="Sin Exámenes"
-                                             EmptyMessage="No se han solicitado exámenes.">
-                                        <HeaderContent>
-                                            <MudTh>Examen / Prueba</MudTh>
-                                            <MudTh>Notas Adicionales</MudTh>
-                                            <MudTh Style="width: 100px; text-align: center;">Acciones</MudTh>
-                                        </HeaderContent>
-                                        <RowTemplate>
-                                            <MudTd DataLabel="Examen"><b>@context.TestName</b></MudTd>
-                                            <MudTd DataLabel="Notas">@context.Notes</MudTd>
-                                            <MudTd DataLabel="Acciones" Style="text-align: center;">
-                                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Small" OnClick="@(() => EditLabOrder(context))" />
-                                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => DeleteLabOrder(context))" />
-                                            </MudTd>
-                                        </RowTemplate>
-                                    </MedFarLab.Pwa.Shared.Components.MedFarTable>
-                                }
-                            </MudPaper>
+                <MudDivider Class="my-6" />
 
-                            <!-- Órdenes, Procedimientos y Retorno -->
-                            <div class="d-flex justify-space-between align-center mt-4 mb-2">
-                                <MudText Typo="Typo.subtitle2" Color="Color.Primary">Insumos Aplicados</MudText>
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenAppliedProductDialog" StartIcon="@Icons.Material.Filled.Add" Size="Size.Small">
-                                    Añadir Insumo
-                                </MudButton>
-                            </div>
-                            
-                            <MudPaper Elevation="0" Class="mb-6 rounded-lg" Style="border: 1px solid var(--mud-palette-lines-default);">
-                                @if (!AppliedProducts.Any())
-                                {
-                                    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="text-center pa-4">No se aplicaron insumos en consulta.</MudText>
-                                }
-                                else
-                                {
-                                    <MedFarLab.Pwa.Shared.Components.MedFarTable TItem="MedFarLab.Pwa.Pages.Care.Consultation.ConsultationWorkspace.AppliedProductItem" 
-                                             Items="@AppliedProducts" 
-                                             ShowSearch="false" 
-                                             ColumnCount="3"
-                                             EmptyTitle="Sin Insumos"
-                                             EmptyMessage="No se aplicaron insumos en consulta.">
-                                        <HeaderContent>
-                                            <MudTh>Cantidad</MudTh>
-                                            <MudTh>Insumo / Producto</MudTh>
-                                            <MudTh Style="width: 100px; text-align: center;">Acciones</MudTh>
-                                        </HeaderContent>
-                                        <RowTemplate>
-                                            <MudTd DataLabel="Cantidad"><b>@context.Quantity</b></MudTd>
-                                            <MudTd DataLabel="Insumo">@context.ProductName</MudTd>
-                                            <MudTd DataLabel="Acciones" Style="text-align: center;">
-                                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Small" OnClick="@(() => EditAppliedProduct(context))" />
-                                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => DeleteAppliedProduct(context))" />
-                                            </MudTd>
-                                        </RowTemplate>
-                                    </MedFarLab.Pwa.Shared.Components.MedFarTable>
-                                }
-                            </MudPaper>
+                <!-- P: Plan / Tratamiento -->
+                <div class="mb-4">
+                    <MudText Typo="Typo.h6" Class="mb-4 text-primary" Style="font-weight: 600;">
+                        <MudIcon Icon="@Icons.Material.Filled.EventAvailable" Class="mr-2" Size="Size.Small" /> 
+                        Plan y Tratamiento
+                    </MudText>
 
-                            <MudGrid Class="mt-2 mb-4">
+                    <MudTextField @bind-Value="PlanInput" T="string" Label="Plan dietético y recomendaciones (No farmacológico)" Variant="Variant.Outlined" Lines="3" FullWidth Class="mb-6" Disabled="@ReadOnly" />
+
+                    <!-- Panel de Recetas (Prescriptions) -->
+                    <div class="d-flex justify-space-between align-center mt-2 mb-2">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Primary" Class="font-weight-bold">Receta Médica</MudText>
+                        <div class="d-flex align-center">
+                            <MudSelect T="string" @bind-Value="PrescriptionPrintFormat" Margin="Margin.Dense" Variant="Variant.Outlined" Class="mr-2" Style="width: 130px; margin-top: 0px;" Dense="true">
+                                <MudSelectItem Value="@("A4")">Hoja A4</MudSelectItem>
+                                <MudSelectItem Value="@("Ticket")">Ticket 80mm</MudSelectItem>
+                            </MudSelect>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="PrintPrescriptionPDF" StartIcon="@Icons.Material.Filled.PictureAsPdf" Size="Size.Small" Class="mr-2" Disabled="@(!Prescriptions.Any() || IsPrinting)">
+                                Imprimir
+                            </MudButton>
+                        </div>
+                    </div>
+                    
+                    @if (!ReadOnly)
+                    {
+                        <MudPaper Elevation="0" Class="pa-4 mb-4 surface-glass" Style="border: 1px dashed var(--mf-primary); border-radius: 8px;">
+                            <MudGrid>
                                 <MudItem xs="12" md="6">
-                                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Schedule" OnClick="OpenScheduleModal" FullWidth>
-                                        @(ScheduleNextAppointment.HasValue 
-                                            ? $"Cita: {ScheduleNextAppointment.Value:dd/MM/yyyy} a las {(NextAppointmentTime.HasValue ? NextAppointmentTime.Value.ToString(@"hh\:mm") : "00:00")}" 
-                                            : "Agendar próxima consulta (Revisión)")
-                                    </MudButton>
+                                    <MudTextField @bind-Value="NuevaReceta.MedicationName" Label="Medicamento" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                </MudItem>
+                                <MudItem xs="6" md="3">
+                                    <MudTextField @bind-Value="NuevaReceta.Dosage" Label="Dosis" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                </MudItem>
+                                <MudItem xs="6" md="3">
+                                    <MudTextField @bind-Value="NuevaReceta.Frequency" Label="Frecuencia" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                </MudItem>
+                                <MudItem xs="12" md="8">
+                                    <MudTextField @bind-Value="NuevaReceta.Instructions" Label="Instrucciones Adicionales" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                </MudItem>
+                                <MudItem xs="12" md="4" Class="d-flex align-center">
+                                    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="AgregarReceta" StartIcon="@Icons.Material.Filled.Add" FullWidth>Agregar a Receta</MudButton>
                                 </MudItem>
                             </MudGrid>
+                        </MudPaper>
+                    }
+                    
+                    <MudPaper Elevation="0" Class="mb-6 rounded-lg" Style="border: 1px solid var(--mud-palette-lines-default);">
+                        @if (!Prescriptions.Any())
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Secondary" Class="text-center pa-4">No se han recetado medicamentos.</MudText>
+                        }
+                        else
+                        {
+                            <MedFarLab.Pwa.Shared.Components.MedFarTable TItem="MedfarLabs.Core.Application.Features.Care.Dtos.Request.PrescriptionItemDTO" 
+                                     Items="@Prescriptions" 
+                                     ShowSearch="false" 
+                                     ColumnCount="5"
+                                     EmptyTitle="Sin Recetas"
+                                     EmptyMessage="No se han recetado medicamentos.">
+                                <HeaderContent>
+                                    <MudTh>Medicamento</MudTh>
+                                    <MudTh>Dosis</MudTh>
+                                    <MudTh>Frecuencia</MudTh>
+                                    <MudTh>Duración</MudTh>
+                                    <MudTh Style="width: 100px; text-align: center;">Acciones</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Medicamento"><b>@context.MedicationName</b><br/><small class="text-muted">@context.Instructions</small></MudTd>
+                                    <MudTd DataLabel="Dosis">@context.Dosage</MudTd>
+                                    <MudTd DataLabel="Frecuencia">@context.Frequency</MudTd>
+                                    <MudTd DataLabel="Duración">@context.Duration</MudTd>
+                                    <MudTd DataLabel="Acciones" Style="text-align: center;">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Small" OnClick="@(() => EditPrescription(context))" />
+                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => DeletePrescription(context))" />
+                                    </MudTd>
+                                </RowTemplate>
+                            </MedFarLab.Pwa.Shared.Components.MedFarTable>
+                        }
+                    </MudPaper>
+
+                    <!-- Formulario de Órdenes de Laboratorio -->
+                    <div class="d-flex justify-space-between align-center mt-4 mb-2">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Primary" Class="font-weight-bold">Orden de Laboratorio / Clínica</MudText>
+                        <div class="d-flex align-center">
+                            <MudSelect T="string" @bind-Value="LabOrderPrintFormat" Margin="Margin.Dense" Variant="Variant.Outlined" Class="mr-2" Style="width: 130px; margin-top: 0px;" Dense="true">
+                                <MudSelectItem Value="@("A4")">Hoja A4</MudSelectItem>
+                                <MudSelectItem Value="@("Ticket")">Ticket 80mm</MudSelectItem>
+                            </MudSelect>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="PrintLabOrderPDF" StartIcon="@Icons.Material.Filled.PictureAsPdf" Size="Size.Small" Class="mr-2" Disabled="@(!LabOrders.Any() || IsPrinting)">
+                                Imprimir
+                            </MudButton>
+                            @if (!ReadOnly)
+                            {
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenLabOrderDialog" StartIcon="@Icons.Material.Filled.Add" Size="Size.Small">
+                                    Añadir Examen
+                                </MudButton>
+                            }
                         </div>
+                    </div>
+                    
+                    <MudPaper Elevation="0" Class="mb-6 rounded-lg" Style="border: 1px solid var(--mud-palette-lines-default);">
+                        @if (!LabOrders.Any())
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Secondary" Class="text-center pa-4">No se han solicitado exámenes.</MudText>
+                        }
+                        else
+                        {
+                            <MedFarLab.Pwa.Shared.Components.MedFarTable TItem="MedfarLabs.Core.Application.Features.Care.Dtos.Request.LabOrderDTO" 
+                                     Items="@LabOrders" 
+                                     ShowSearch="false" 
+                                     ColumnCount="3"
+                                     EmptyTitle="Sin Exámenes"
+                                     EmptyMessage="No se han solicitado exámenes.">
+                                <HeaderContent>
+                                    <MudTh>Examen / Prueba</MudTh>
+                                    <MudTh>Notas Adicionales</MudTh>
+                                    <MudTh Style="width: 100px; text-align: center;">Acciones</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Examen"><b>@context.TestName</b></MudTd>
+                                    <MudTd DataLabel="Notas">@context.Notes</MudTd>
+                                    <MudTd DataLabel="Acciones" Style="text-align: center;">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Small" OnClick="@(() => EditLabOrder(context))" />
+                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => DeleteLabOrder(context))" />
+                                    </MudTd>
+                                </RowTemplate>
+                            </MedFarLab.Pwa.Shared.Components.MedFarTable>
+                        }
+                    </MudPaper>
 
-                        <MudTextField @bind-Value="PlanInput" T="string" Label="Plan dietético y recomendaciones (No farmacológico)" Variant="Variant.Outlined" Lines="3" FullWidth Class="mt-3" Disabled="@ReadOnly" />
-                    </MudTabPanel>
+                    <!-- Órdenes, Procedimientos y Retorno -->
+                    <div class="d-flex justify-space-between align-center mt-4 mb-2">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Primary" Class="font-weight-bold">Insumos Aplicados</MudText>
+                        @if (!ReadOnly)
+                        {
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenAppliedProductDialog" StartIcon="@Icons.Material.Filled.Add" Size="Size.Small">
+                                Añadir Insumo
+                            </MudButton>
+                        }
+                    </div>
+                    
+                    <MudPaper Elevation="0" Class="mb-6 rounded-lg" Style="border: 1px solid var(--mud-palette-lines-default);">
+                        @if (!AppliedProducts.Any())
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Secondary" Class="text-center pa-4">No se aplicaron insumos en consulta.</MudText>
+                        }
+                        else
+                        {
+                            <MedFarLab.Pwa.Shared.Components.MedFarTable TItem="MedFarLab.Pwa.Pages.Care.Consultation.ConsultationWorkspace.AppliedProductItem" 
+                                     Items="@AppliedProducts" 
+                                     ShowSearch="false" 
+                                     ColumnCount="3"
+                                     EmptyTitle="Sin Insumos"
+                                     EmptyMessage="No se aplicaron insumos en consulta.">
+                                <HeaderContent>
+                                    <MudTh>Cantidad</MudTh>
+                                    <MudTh>Insumo / Producto</MudTh>
+                                    <MudTh Style="width: 100px; text-align: center;">Acciones</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Cantidad"><b>@context.Quantity</b></MudTd>
+                                    <MudTd DataLabel="Insumo">@context.ProductName</MudTd>
+                                    <MudTd DataLabel="Acciones" Style="text-align: center;">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Small" OnClick="@(() => EditAppliedProduct(context))" />
+                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => DeleteAppliedProduct(context))" />
+                                    </MudTd>
+                                </RowTemplate>
+                            </MedFarLab.Pwa.Shared.Components.MedFarTable>
+                        }
+                    </MudPaper>
 
-                </MudTabs>
+                    <MudGrid Class="mt-2 mb-4">
+                        <MudItem xs="12" md="6">
+                            <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Schedule" OnClick="OpenScheduleModal" FullWidth>
+                                @(ScheduleNextAppointment.HasValue 
+                                    ? $"Cita: {ScheduleNextAppointment.Value:dd/MM/yyyy} a las {(NextAppointmentTime.HasValue ? NextAppointmentTime.Value.ToString(@"hh\:mm") : "00:00")}" 
+                                    : "Agendar próxima consulta (Revisión)")
+                            </MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </div>
+
             </MudPaper>
         </MudItem>
     </MudGrid>
-
-    <!-- Footer Acction Bar -->
-    @if (!ReadOnly)
-    {
-        <div class="mt-4 d-flex justify-end gap-3 fade-in" style="animation-delay:0.3s">
-            <MudButton Variant="Variant.Outlined" Color="Color.Default" StartIcon="@Icons.Material.Filled.Save" OnClick="@(() => SubmitConsultation(isDraft: true))" Disabled="IsSubmitting">Guardar Borrador</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(() => SubmitConsultation(isDraft: false))" Disabled="IsSubmitting">
-                @if (IsSubmitting)
-                {
-                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                    <MudText Class="ms-2">Procesando...</MudText>
-                }
-                else
-                {
-                    <MudText>Finalizar Consulta C.P</MudText>
-                }
-            </MudButton>
-        </div>
-    }
     }
 </div>
 

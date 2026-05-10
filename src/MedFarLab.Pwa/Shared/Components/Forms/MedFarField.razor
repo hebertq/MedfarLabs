@@ -1,6 +1,6 @@
 @using MudBlazor
 
-<div class="mf-field mb-4">
+<div class="mf-field mb-4 @(!string.IsNullOrEmpty(ServerError) ? "has-error" : "")">
     @FieldContent
     @if (!string.IsNullOrEmpty(ServerError))
     {

@@ -50,6 +50,7 @@ namespace MedFarLab.Application.Features.Patient.Models
         public bool IsOwner { get; set; }
         public string Diagnosis { get; set; } = string.Empty;
         public string Pathology { get; set; } = string.Empty;
+        public string DiagnosisDescription { get; set; } = string.Empty;
     }
 
     public class ActivePrescriptionVM

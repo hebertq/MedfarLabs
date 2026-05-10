@@ -70,190 +70,104 @@ else if (Patient != null)
         <StickyPatientAlerts Allergies="@PatientAllergies" CriticalAlerts="@CriticalRiskAlerts" />
     }
 
-    <MudGrid Class="mt-2 fade-in">
-        <!-- Columna Izquierda: Perfil y Contexto Clínico -->
-        <MudItem xs="12" md="4">
-            
-            <!-- Resumen Rápido -->
-            <MudCard Class="surface-glass shadow-float mb-4" Style="border-radius: 16px;">
-                <MudCardContent>
-                        <MudGrid>
-                            <MudItem xs="6">
-                                <MudText Typo="Typo.caption" Class="text-muted">Tipo de Sangre</MudText>
-                                <div class="d-flex align-center">
-                                    <MudIcon Icon="@Icons.Material.Filled.Bloodtype" Color="Color.Error" Size="Size.Small" Class="mr-1" />
-                                    <MudText Typo="Typo.body1" Style="font-weight: 600; color: var(--mud-palette-dark);">@Patient.BloodType</MudText>
-                                </div>
-                            </MudItem>
-                            <MudItem xs="6">
-                                <MudText Typo="Typo.caption" Class="text-muted">Última Presión</MudText>
-                                <div class="d-flex align-center">
-                                    <MudIcon Icon="@Icons.Material.Filled.MonitorHeart" Color="Color.Info" Size="Size.Small" Class="mr-1" />
-                                    @if (Patient.BloodPressureSystolic != null && Patient.BloodPressureSystolic.Any())
-                                    {
-                                        <MudText Typo="Typo.body1" Style="font-weight: 600; color: var(--mud-palette-dark);">@Patient.BloodPressureSystolic.LastOrDefault() / @Patient.BloodPressureDiastolic.LastOrDefault()</MudText>
-                                    }
-                                    else
-                                    {
-                                        <MudText Typo="Typo.body1" Style="font-weight: 600; color: var(--mud-palette-dark);">N/A</MudText>
-                                    }
-                                </div>
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudText Typo="Typo.caption" Class="text-muted">Estatura</MudText>
-                                <div class="d-flex align-center">
-                                    <MudIcon Icon="@Icons.Material.Filled.Height" Color="Color.Secondary" Size="Size.Small" Class="mr-1" />
-                                    <MudText Typo="Typo.body2" Style="font-weight: 600; color: var(--mud-palette-dark);">@Patient.Height</MudText>
-                                </div>
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudText Typo="Typo.caption" Class="text-muted">Peso</MudText>
-                                <div class="d-flex align-center">
-                                    <MudIcon Icon="@Icons.Material.Filled.MonitorWeight" Color="Color.Secondary" Size="Size.Small" Class="mr-1" />
-                                    <MudText Typo="Typo.body2" Style="font-weight: 600; color: var(--mud-palette-dark);">@Patient.Weight</MudText>
-                                </div>
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudText Typo="Typo.caption" Class="text-muted">Temp</MudText>
-                                <div class="d-flex align-center">
-                                    <MudIcon Icon="@Icons.Material.Filled.Thermostat" Color="Color.Secondary" Size="Size.Small" Class="mr-1" />
-                                    <MudText Typo="Typo.body2" Style="font-weight: 600; color: var(--mud-palette-dark);">@Patient.Temperature</MudText>
-                                </div>
-                            </MudItem>
-                        </MudGrid>
-                    </MudCardContent>
-                </MudCard>
-
-            <!-- Antecedentes -->
-            <MudCard Class="surface-glass shadow-float mb-4" Style="border-radius: 16px;">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.subtitle1" Style="font-weight: 600;"><MudIcon Icon="@Icons.Material.Filled.HistoryEdu" Size="Size.Small" Class="mr-2" />Antecedentes</MudText>
-                    </CardHeaderContent>
-                    <CardHeaderActions>
-                        <MudTooltip Text="Agregar Antecedente">
-                            <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" />
-                        </MudTooltip>
-                    </CardHeaderActions>
-                </MudCardHeader>
-                <MudCardContent Class="pt-0">
-                    @if (Patient.Antecedents != null && Patient.Antecedents.Any())
-                    {
-                        <MudList T="string" Dense="true" Class="pa-0">
-                            @foreach (var ant in Patient.Antecedents)
-                            {
-                                <MudListItem>
-                                    <div class="d-flex align-start">
-                                        <MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Warning" Style="font-size: 10px; margin-top: 6px;" Class="mr-3" />
-                                        <div>
-                                            <MudText Typo="Typo.body2" Style="color: var(--mud-palette-dark); line-height: 1.4;">@ant.Description</MudText>
-                                            <MudText Typo="Typo.caption" Class="text-muted">@ant.TypeName</MudText>
-                                        </div>
-                                    </div>
-                                </MudListItem>
-                            }
-                        </MudList>
-                    }
-                    else
-                    {
-                        <MudText Typo="Typo.body2" Color="Color.Secondary">Sin antecedentes registrados.</MudText>
-                    }
-                </MudCardContent>
-            </MudCard>
-
-            <!-- Gráfica de Signos Vitales (Movida a la izquierda) -->
-            @if (VitalsSeries.Any())
-            {
-                <MudCard Class="surface-glass shadow-float mb-4" Style="border-radius: 16px; overflow: hidden;">
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.subtitle1" Style="font-weight: 600;"><MudIcon Icon="@Icons.Material.Filled.Timeline" Size="Size.Small" Class="mr-2" />Tendencia de Presión</MudText>
-                        </CardHeaderContent>
-                    </MudCardHeader>
-                    <MudCardContent Class="px-4 pb-4 pt-0">
-                        <MudChart ChartType="ChartType.Line" ChartSeries="@VitalsSeries" XAxisLabels="@VitalsLabels" Width="100%" Height="250px" ChartOptions="new ChartOptions { YAxisTicks = 20 }" />
-                    </MudCardContent>
-                </MudCard>
-            }
+    <MudGrid Class="mt-4 fade-in" Spacing="4">
+        @* Left Column: Consultations Timeline *@
+        <MudItem xs="12" md="8">
+            <MudPaper Class="pa-4 surface-glass shadow-float h-100">
+                <div class="d-flex align-center mb-4">
+                    <MudIcon Icon="@Icons.Material.Filled.Article" Color="Color.Primary" Class="mr-2" />
+                    <MudText Typo="Typo.h6">Historial de Consultas</MudText>
+                </div>
+                <MedFarTimeline Consultations="@Patient.Consultations"
+                                OnVerDetalle="@VerConsulta"/>
+            </MudPaper>
         </MudItem>
 
-        <!-- Columna Derecha: Historial -->
-        <MudItem xs="12" md="8">
+        @* Right Column: Widgets (Vitals, Prescriptions, Antecedents) *@
+        <MudItem xs="12" md="4">
+            <MudGrid Spacing="4">
+                
+                @* Widget 1: Medidas Recientes *@
+                <MudItem xs="12">
+                    <MudPaper Class="pa-4 surface-glass shadow-float">
+                        <div class="d-flex align-center mb-3">
+                            <MudIcon Icon="@Icons.Material.Filled.AccessibilityNew" Color="Color.Success" Class="mr-2" />
+                            <MudText Typo="Typo.subtitle1" Class="font-weight-bold">Medidas Recientes</MudText>
+                        </div>
+                        <MudGrid Spacing="2">
+                            <MudItem xs="4">
+                                <MudText Typo="Typo.caption" Class="text-muted d-block">Peso</MudText>
+                                <MudText Typo="Typo.body2" Class="font-weight-bold">@(string.IsNullOrWhiteSpace(Patient.Weight) ? "--" : Patient.Weight)</MudText>
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudText Typo="Typo.caption" Class="text-muted d-block">Altura</MudText>
+                                <MudText Typo="Typo.body2" Class="font-weight-bold">@(string.IsNullOrWhiteSpace(Patient.Height) ? "--" : Patient.Height)</MudText>
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudText Typo="Typo.caption" Class="text-muted d-block">Temp.</MudText>
+                                <MudText Typo="Typo.body2" Class="font-weight-bold" Color="Color.Error">@(string.IsNullOrWhiteSpace(Patient.Temperature) ? "--" : Patient.Temperature)</MudText>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
 
-            <!-- Historial de Consultas -->
-            <MudCard Class="surface-glass shadow-float" Style="border-radius: 16px;">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.subtitle1" Style="font-weight: 600;"><MudIcon Icon="@Icons.Material.Filled.EventNote" Size="Size.Small" Class="mr-2" />Historial Clínico</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent Class="pa-0">
-                    <MedFarTable TItem="ClinicalHistoryItemVM"
-                                 Items="@Consultas"
-                                 IsLoading="false"
-                                 Dense="true"
-                                 ShowSearch="false"
-                                 ColumnCount="4"
-                                 EmptyTitle="Sin consultas"
-                                 EmptyMessage="Este paciente aún no tiene consultas registradas."
-                                 EmptyIcon="@Icons.Material.Filled.EventBusy">
-                        <HeaderContent>
-                            <MudTh>Fecha</MudTh>
-                            <MudTh>Patología</MudTh>
-                            <MudTh>Diagnóstico</MudTh>
-                            <MudTh>Médico</MudTh>
-                            <MudTh>Acciones</MudTh>
-                        </HeaderContent>
-                        <RowTemplate>
-                            <MudTd>
-                                <div class="d-flex align-center">
-                                    <MudIcon Icon="@Icons.Material.Filled.CalendarToday" Size="Size.Small" Color="Color.Primary" Class="mr-2" />
-                                    <MudText Typo="Typo.body2">@context.Date.ToString("dd/MMM/yyyy").ToUpper()</MudText>
-                                </div>
-                            </MudTd>
-                            <MudTd>
-                                <MudText Typo="Typo.body2" Style="font-weight: 500;">
-                                    @(string.IsNullOrWhiteSpace(context.Pathology) ? context.Title : context.Pathology)
-                                </MudText>
-                            </MudTd>
-                            <MudTd>
-                                @if (context.IsOwner)
+                @* Widget 2: Antecedentes *@
+                <MudItem xs="12">
+                    <MudPaper Class="pa-4 surface-glass shadow-float">
+                        <div class="d-flex align-center justify-space-between mb-3">
+                            <div class="d-flex align-center">
+                                <MudIcon Icon="@Icons.Material.Filled.History" Color="Color.Warning" Class="mr-2" />
+                                <MudText Typo="Typo.subtitle1" Class="font-weight-bold">Antecedentes</MudText>
+                            </div>
+                            <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Small" Color="Color.Primary" OnClick="@AbrirModalAntecedente" />
+                        </div>
+                        
+                        @if (Patient.Antecedents == null || !Patient.Antecedents.Any())
+                        {
+                            <MudText Typo="Typo.body2" Class="text-muted">No hay antecedentes registrados.</MudText>
+                        }
+                        else
+                        {
+                            <div class="d-flex flex-column gap-3 mt-2">
+                                @foreach (var ant in Patient.Antecedents)
                                 {
-                                    <MudText Typo="Typo.body2" Class="text-muted" Style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                        @(string.IsNullOrWhiteSpace(context.Diagnosis) ? context.Summary : context.Diagnosis)
-                                    </MudText>
-                                }
-                                else
-                                {
-                                    <div class="d-flex align-center">
-                                        <MudIcon Icon="@Icons.Material.Filled.Lock" Size="Size.Small" Color="Color.Secondary" Class="mr-1" />
-                                        <MudText Typo="Typo.caption" Color="Color.Secondary"><i>Protegido</i></MudText>
+                                    <div class="d-flex align-start">
+                                        <MudIcon Icon="@Icons.Material.Filled.Bookmark" Size="Size.Small" Color="Color.Secondary" Class="mr-2 mt-1" />
+                                        <div>
+                                            <div class="mb-1">
+                                                <MudChip T="string" Size="Size.Small" Color="@(ant.TypeName.Contains("Alergi", StringComparison.OrdinalIgnoreCase) ? Color.Error : Color.Primary)" Variant="Variant.Outlined" Class="ma-0">@ant.TypeName</MudChip>
+                                            </div>
+                                            <MudText Typo="Typo.body2">@ant.Description</MudText>
+                                        </div>
                                     </div>
                                 }
-                            </MudTd>
-                            <MudTd>
-                                @if (context.IsOwner)
-                                {
-                                    @context.DoctorName
-                                }
-                                else
-                                {
-                                    <span class="text-muted">-</span>
-                                }
-                            </MudTd>
-                            <MudTd>
-                                @if (context.IsOwner)
-                                {
-                                    <MudTooltip Text="Ver Consulta">
-                                        <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Primary" Size="Size.Small" Variant="Variant.Filled" OnClick="@(() => VerConsulta(context.ConsultationId))" Class="rounded-circle" />
-                                    </MudTooltip>
-                                }
-                            </MudTd>
-                        </RowTemplate>
-                    </MedFarTable>
-                </MudCardContent>
-            </MudCard>
+                            </div>
+                        }
+                    </MudPaper>
+                </MudItem>
 
+                @* Widget 3: Vitales *@
+                <MudItem xs="12">
+                    <MudPaper Class="pa-4 surface-glass shadow-float">
+                        <div class="d-flex align-center mb-3">
+                            <MudIcon Icon="@Icons.Material.Filled.MonitorHeart" Color="Color.Secondary" Class="mr-2" />
+                            <MudText Typo="Typo.subtitle1" Class="font-weight-bold">Evolución de Vitales</MudText>
+                        </div>
+                        @if (VitalsSeries.Any())
+                        {
+                            <MudChart ChartType="ChartType.Line"
+                                      ChartSeries="@VitalsSeries"
+                                      XAxisLabels="@VitalsLabels"
+                                      Width="100%" Height="200px"/>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Class="text-muted">Sin registros de signos vitales.</MudText>
+                        }
+                    </MudPaper>
+                </MudItem>
+
+            </MudGrid>
         </MudItem>
     </MudGrid>
 }

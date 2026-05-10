@@ -47,3 +47,18 @@ Para mantener una estricta separación de responsabilidades y evitar código esp
 - **`NombrePagina.razor`**: Contiene estrictamente el marcado HTML, la estructura visual y la invocación de otros componentes de Blazor. NO debe contener bloques `@code { }` con lógica compleja.
 - **`NombrePagina.razor.cs` (Code-Behind)**: Clase `partial` que alberga toda la lógica en C#. Es la única responsable de conectarse con la capa de aplicación (servicios inyectados), gestionar el estado y manejar los eventos delegados de las acciones de la página.
 - **`NombrePagina.razor.css` (Scoped CSS)**: Archivo opcional (pero recomendado si se requiere estilo personalizado) que contiene exclusivamente las reglas de diseño particulares de ese componente para evitar la contaminación global de estilos.
+
+## 7. Nomenclatura Estricta en Inglés para Archivos y Rutas
+- Todos los nombres de archivos de componentes, páginas Razor y código C# deben estar estrictamente en **Inglés** (Ej. `PatientRecord.razor` en lugar de `ExpedientePaciente.razor`, `ConsultationWorkspace.razor` en lugar de `ConsultaActiva.razor`).
+- Las rutas `@page` también deben seguir una estructura lógica en inglés o estandarizada (Ej. `@page "/patients/{PatientId:long}"`).
+
+## 8. Optimizaciones UI/UX y Sistema de Diseño (Fase 4)
+Para lograr una experiencia de usuario moderna e intuitiva, se deben respetar las siguientes directrices de diseño implementadas en la arquitectura base:
+- **Tokens Semánticos:** Utilizar siempre las variables CSS de `medfar-tokens.css` (Ej. `var(--mf-primary)`, `var(--mf-danger)`) en lugar de hardcodear colores. Para sombras y profundidades, usar `var(--mf-shadow-sm)` o `var(--mf-shadow-float)`.
+- **Componentes Compartidos Core:**
+  - Emplear `MedFarTable` para todas las tablas. Integrar un `EmptyState` visualmente atractivo cuando no haya datos (`EmptyTitle`, `EmptyMessage`, `EmptyIcon`).
+  - Utilizar `MedFarSkeleton` para animaciones fluidas (shimmer) durante los estados de carga `Cargando=true`.
+  - Asegurar un tamaño mínimo táctil de 44px en elementos interactivos y componentes de formulario.
+- **Flujos de Trabajo Optimizados (UX):**
+  - Los Dashboards principales (Ej. *ConsultationWorkspace*) deben utilizar un layout de "Paneles Maestros" (Master Panels) reduciendo la apertura de diálogos/modales innecesarios. Mostrar historial/contexto en un panel fijo y herramientas de edición/captura en el panel principal.
+- **Sincronización Offline:** Evidenciar visualmente si los datos están pendientes de sincronización (Nube Naranja) o al día (Nube Azul), respetando la Optimistic UI.

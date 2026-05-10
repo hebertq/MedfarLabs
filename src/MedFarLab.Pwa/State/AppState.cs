@@ -23,6 +23,9 @@ public class AppState
 
     public MedfarLabs.Core.Domain.Models.Reporting.OrganizationInfoModel OrganizationInfo { get; set; } = new();
 
+    // SyncManager state
+    public bool IsOffline { get; set; } = false;
+
     // Cache dynamic menus
     public IEnumerable<MedfarLabs.Core.Application.Features.System.Dtos.NavigationMenuResponseDTO>? DynamicMenus { get; set; }
 

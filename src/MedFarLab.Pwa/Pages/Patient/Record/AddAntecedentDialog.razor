@@ -1,0 +1,21 @@
+@using MedFarLab.Pwa.Shared.Components
+
+<MudDialog Class="surface-glass shadow-float" Style="border-radius: 16px;">
+    <DialogContent>
+        <div class="mb-4">
+            <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-1 d-block">Tipo de Antecedente *</MudText>
+            <select class="form-select" @bind="Model.TypeId" style="height: 56px; padding: 0 14px; border: 1px solid var(--mud-palette-lines-default); border-radius: 4px; background-color: transparent; color: var(--mud-palette-text-primary); cursor: pointer; width: 100%;">
+                <option value="1">Heredofamiliar</option>
+                <option value="2">Personal Patológico</option>
+                <option value="3">Personal No Patológico</option>
+                <option value="4">Alergia</option>
+                <option value="5">Quirúrgico</option>
+            </select>
+        </div>
+        <MudTextField Label="Descripción" @bind-Value="Model.Description" Required="true" Lines="3" Variant="Variant.Outlined" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Text" Color="Color.Default">Cancelar</MudButton>
+        <MudButton OnClick="Submit" Variant="Variant.Filled" Color="Color.Primary" Class="btn-emerald-gradient">Guardar Antecedente</MudButton>
+    </DialogActions>
+</MudDialog>

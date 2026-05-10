@@ -1,2 +1,11 @@
 .mf-field               { display: flex; flex-direction: column; }
 .mf-field-server-error  { display: flex; align-items: center; gap: 4px; color: var(--mf-danger); font-size: 0.75rem; margin-top: 4px; padding-left: 4px; }
+
+/* Asegurar tamaño táctil mínimo de 44px y mejorar bordes de validación */
+::deep .mud-input-control > .mud-input-control-input-container > .mud-input {
+    min-height: 44px;
+}
+.mf-field.has-error ::deep .mud-input-outlined {
+    border-color: var(--mf-danger) !important;
+    box-shadow: 0 0 0 1px var(--mf-danger);
+}
