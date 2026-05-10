@@ -142,7 +142,7 @@ namespace MedFarLab.Pwa.Pages.Care.Consultation
                     else
                     {
                         Snackbar.Add(response.Message ?? "Error al cargar la consulta", Severity.Error);
-                        NavManager.NavigateTo("/clinical/dashboard"); // Regresar si falló
+                        NavManager.NavigateTo($"/error/500?Message={Uri.EscapeDataString(response.Message ?? "Error interno al cargar la consulta.")}");
                     }
                 }
                 else if (AppointmentId.HasValue)
@@ -171,7 +171,7 @@ namespace MedFarLab.Pwa.Pages.Care.Consultation
                     else
                     {
                         Snackbar.Add(response.Message ?? "Error al cargar contexto", Severity.Error);
-                        NavManager.NavigateTo("/clinical/dashboard");
+                        NavManager.NavigateTo($"/error/500?Message={Uri.EscapeDataString(response.Message ?? "Error interno al inicializar el contexto de consulta.")}");
                     }
                 }
             }
@@ -179,7 +179,7 @@ namespace MedFarLab.Pwa.Pages.Care.Consultation
             {
                 var traceId = Guid.NewGuid().ToString().Substring(0,8);
                 Snackbar.Add($"Excepción cargando datos [TraceId: {traceId}]: " + ex.Message, Severity.Error);
-                NavManager.NavigateTo("/clinical/dashboard");
+                NavManager.NavigateTo($"/error/500?Message={Uri.EscapeDataString(ex.Message)}");
             }
             IsLoading = false;
         }

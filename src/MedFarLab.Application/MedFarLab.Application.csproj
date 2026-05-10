@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MedfarLabs.Core" Version="1.2.190" />
+    <PackageReference Include="MedfarLabs.Core" Version="1.2.193" />
     <PackageReference Include="MedfarLabs.Core.Reporting" Version="1.2.190" />
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageReference Include="FluentValidation" Version="12.1.1" />

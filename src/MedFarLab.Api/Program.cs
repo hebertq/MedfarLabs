@@ -60,6 +60,8 @@ builder.Services.AddControllers(options =>
 })
 .AddJsonOptions(options => 
 {
+    // Fix Native AOT serialization for BaseResponse<object> with dynamic inner payloads
+    options.JsonSerializerOptions.Converters.Add(new MedFarLab.Api.Converters.BaseResponseObjectConverter());
     // Habilitar Reflection para que el Serializador pueda resolver DTOs nuevos que no estén en el Contexto de AOT del Core
     options.JsonSerializerOptions.TypeInfoResolverChain.Add(new System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver());
 });

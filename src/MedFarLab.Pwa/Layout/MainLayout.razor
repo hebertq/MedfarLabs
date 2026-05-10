@@ -38,7 +38,14 @@
         <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
             @if (_isMenusLoaded || AppState.UserId == 0)
             {
-                @Body
+                <ErrorBoundary Context="ExceptionContext">
+                    <ChildContent>
+                        @Body
+                    </ChildContent>
+                    <ErrorContent>
+                        <MedFarLab.Pwa.Pages.Common.Errors.SystemError Message="@ExceptionContext.Message" />
+                    </ErrorContent>
+                </ErrorBoundary>
             }
             else
             {

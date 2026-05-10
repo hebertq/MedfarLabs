@@ -1,0 +1,41 @@
+@page "/error/500"
+@using MudBlazor
+@inject NavigationManager NavManager
+
+<div class="d-flex justify-center align-center h-100" style="min-height: 80vh;">
+    <MudPaper Class="pa-8 d-flex flex-column align-center surface-glass" Elevation="3" Style="max-width: 500px; text-align: center;">
+        <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Color="Color.Error" Style="font-size: 80px;" Class="mb-4" />
+        <MudText Typo="Typo.h4" Color="Color.Error" Class="mb-2">¡Ups! Algo salió mal</MudText>
+        <MudText Typo="Typo.body1" Class="mb-6 text-muted">
+            Ha ocurrido un error inesperado al procesar la solicitud en el servidor. 
+            Nuestros ingenieros ya han sido notificados y están trabajando en una solución.
+        </MudText>
+
+        @if (!string.IsNullOrEmpty(Message))
+        {
+            <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Class="mb-6 w-100 text-start">
+                <MudText Typo="Typo.caption" Style="font-family: monospace;">@Message</MudText>
+            </MudAlert>
+        }
+
+        <div class="d-flex gap-4">
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="GoBack" StartIcon="@Icons.Material.Filled.ArrowBack">Volver Atrás</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GoHome" StartIcon="@Icons.Material.Filled.Home">Ir al Inicio</MudButton>
+        </div>
+    </MudPaper>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public string? Message { get; set; }
+
+    private void GoBack()
+    {
+        NavManager.NavigateTo("javascript:history.back()");
+    }
+
+    private void GoHome()
+    {
+        NavManager.NavigateTo("/");
+    }
+}
