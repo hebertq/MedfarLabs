@@ -28,6 +28,9 @@ public partial class PatientRecord : ComponentBase
 
     protected List<ClinicalHistoryItemVM> Consultas => Patient?.Consultations ?? new List<ClinicalHistoryItemVM>();
 
+    public List<ChartSeries> VitalsSeries = new List<ChartSeries>();
+    public string[] VitalsLabels = Array.Empty<string>();
+
     protected override async Task OnInitializedAsync()
     {
         IsLoading = true;
@@ -54,6 +57,15 @@ public partial class PatientRecord : ComponentBase
                                 CriticalRiskAlerts.Add(ant.Description);
                             }
                         }
+                    }
+
+                    // Setup Chart Data
+                    if (Patient.BloodPressureSystolic != null && Patient.BloodPressureDiastolic != null)
+                    {
+                        VitalsSeries.Clear();
+                        VitalsSeries.Add(new ChartSeries { Name = "Sistólica", Data = Patient.BloodPressureSystolic });
+                        VitalsSeries.Add(new ChartSeries { Name = "Diastólica", Data = Patient.BloodPressureDiastolic });
+                        VitalsLabels = Patient.VitalsLabels ?? Array.Empty<string>();
                     }
                 }
             }

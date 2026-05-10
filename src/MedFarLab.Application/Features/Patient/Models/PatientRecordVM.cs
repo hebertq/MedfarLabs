@@ -9,6 +9,10 @@ namespace MedFarLab.Application.Features.Patient.Models
         public string Gender { get; set; } = string.Empty;
         public string BloodType { get; set; } = string.Empty;
         
+        public string Weight { get; set; } = string.Empty;
+        public string Height { get; set; } = string.Empty;
+        public string Temperature { get; set; } = string.Empty;
+        
         public string Initials
         {
             get
@@ -44,6 +48,8 @@ namespace MedFarLab.Application.Features.Patient.Models
         public string Summary { get; set; } = string.Empty;
         public string DoctorName { get; set; } = string.Empty;
         public bool IsOwner { get; set; }
+        public string Diagnosis { get; set; } = string.Empty;
+        public string Pathology { get; set; } = string.Empty;
     }
 
     public class ActivePrescriptionVM

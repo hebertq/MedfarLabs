@@ -42,7 +42,10 @@ namespace MedFarLab.Application.Features.Patient.Queries.GetPatientRecord
                         Allergies = dto.Allergies ?? new List<string>(),
                         BloodPressureSystolic = dto.BloodPressureSystolic,
                         BloodPressureDiastolic = dto.BloodPressureDiastolic,
-                        VitalsLabels = dto.VitalsLabels
+                        VitalsLabels = dto.VitalsLabels,
+                        Weight = dto.Weight ?? "N/D",
+                        Height = dto.Height ?? "N/D",
+                        Temperature = dto.Temperature ?? "N/D"
                     };
 
                     if (dto.Antecedents != null)
@@ -67,7 +70,9 @@ namespace MedFarLab.Application.Features.Patient.Queries.GetPatientRecord
                             Title = c.Title,
                             Summary = c.Summary,
                             DoctorName = c.DoctorName,
-                            IsOwner = c.IsOwner
+                            IsOwner = c.IsOwner,
+                            Diagnosis = c.Diagnosis ?? string.Empty,
+                            Pathology = c.Pathology ?? string.Empty
                         }).ToList();
                     }
 
