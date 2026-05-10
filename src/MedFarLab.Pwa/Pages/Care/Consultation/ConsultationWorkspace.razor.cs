@@ -26,6 +26,8 @@ namespace MedFarLab.Pwa.Pages.Care.Consultation
         [SupplyParameterFromQuery] public bool ReadOnly { get; set; }
         [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
 
+        public bool IsLoading { get; set; } = true;
+
         protected bool IsSubmitting { get; set; }
         
         // Mock UI state for patient banner
@@ -175,9 +177,11 @@ namespace MedFarLab.Pwa.Pages.Care.Consultation
             }
             catch (Exception ex)
             {
-                Snackbar.Add("Excepción cargando datos: " + ex.Message, Severity.Error);
+                var traceId = Guid.NewGuid().ToString().Substring(0,8);
+                Snackbar.Add($"Excepción cargando datos [TraceId: {traceId}]: " + ex.Message, Severity.Error);
                 NavManager.NavigateTo("/clinical/dashboard");
             }
+            IsLoading = false;
         }
 
         private int? _selectedCategoryId;
@@ -275,6 +279,22 @@ namespace MedFarLab.Pwa.Pages.Care.Consultation
 
             if (!result.Canceled && result.Data is PrescriptionItemDTO data)
             {
+                // Poka-Yoke: Cross validation for allergies
+                bool hasAllergyMatch = PatientAllergies.Any(a => data.MedicationName.Contains(a, StringComparison.OrdinalIgnoreCase));
+                if (hasAllergyMatch)
+                {
+                    bool? confirmResult = await DialogService.ShowMessageBox(
+                        "⚠️ Alerta de Alergia Cruzada", 
+                        $"El paciente tiene una alergia registrada que coincide con el medicamento '{data.MedicationName}'. ¿Está seguro de que desea recetarlo bajo su responsabilidad clínica?",
+                        yesText: "Sí, recetar bajo mi riesgo", cancelText: "Cancelar"
+                    );
+
+                    if (confirmResult != true)
+                    {
+                        return; // The doctor cancelled
+                    }
+                }
+
                 // To display it in the grid with a brand new instace:
                 Prescriptions.Add(new PrescriptionItemDTO(
                     data.MedicationName, data.Dosage, data.Frequency, data.Duration, data.Instructions
@@ -620,6 +640,10 @@ namespace MedFarLab.Pwa.Pages.Care.Consultation
         protected bool IsPrinting { get; set; }
         protected string PrescriptionPrintFormat { get; set; } = "A4";
         protected string LabOrderPrintFormat { get; set; } = "A4";
+
+        // Poka-Yoke / UI Mock Data for Clinical Safety Phase
+        public List<string> PatientAllergies { get; set; } = new() { "Penicilina" };
+        public List<string> PatientRisks { get; set; } = new() { "Hipertensión Severa" };
 
         protected async Task PrintPrescriptionPDF()
         {

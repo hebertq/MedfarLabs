@@ -57,6 +57,11 @@ builder.Services.AddTransient<MedfarLabs.Core.Domain.Interfaces.IReportGenerator
 builder.Services.AddControllers(options => 
 {
     options.Filters.Add<MedFarLab.Api.Filters.ApiExceptionFilterAttribute>();
+})
+.AddJsonOptions(options => 
+{
+    // Habilitar Reflection para que el Serializador pueda resolver DTOs nuevos que no estén en el Contexto de AOT del Core
+    options.JsonSerializerOptions.TypeInfoResolverChain.Add(new System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver());
 });
 
 builder.Services.AddCors();

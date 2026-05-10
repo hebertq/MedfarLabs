@@ -8,7 +8,26 @@
                   Icon="@Icons.Material.Filled.MedicalServices"
                   ShowBack="true" 
                   OnBackClick="GoBack">
+        <PrimaryActions>
+            @if (!ReadOnly)
+            {
+                <MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(() => SubmitConsultation(isDraft: false))" Disabled="IsSubmitting" Class="btn-emerald-gradient">
+                    Finalizar
+                </MudButton>
+            }
+        </PrimaryActions>
+        <SecondaryActions>
+            <MudMenuItem Icon="@Icons.Material.Filled.Save" OnClick="@(() => SubmitConsultation(isDraft: true))" Disabled="IsSubmitting">Guardar Borrador</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Print" Disabled="true">Imprimir Resumen</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.FolderShared" Href="@($"/patients/record/{MedicalRecordId}")">Ver Expediente</MudMenuItem>
+        </SecondaryActions>
     </MedFarLab.Pwa.Shared.Components.MedFarPageHeader>
+    @if (IsLoading)
+    {
+        <MedFarLab.Pwa.Shared.Components.MedFarSkeleton Type="MedFarLab.Pwa.Shared.Components.MedFarSkeletonType.Card" />
+    }
+    else
+    {
     <!-- Header: Patient Info -->
     <MudPaper Class="pa-4 mb-4 surface-glass" Elevation="0">
         <MudGrid>
@@ -17,6 +36,16 @@
                 <div>
                     <MudText Typo="Typo.h5" Class="brand-text">@PatientName</MudText>
                     <MudText Typo="Typo.body2" Color="Color.Default">Expediente: #@MedicalRecordId | Edad: 34 años | Sexo: M</MudText>
+                    <div class="d-flex gap-2 mt-1">
+                        @foreach (var allergy in PatientAllergies)
+                        {
+                            <MudChip T="string" Color="Color.Error" Size="Size.Small" Icon="@Icons.Material.Filled.Warning">Alergia: @allergy</MudChip>
+                        }
+                        @foreach (var risk in PatientRisks)
+                        {
+                            <MudChip T="string" Color="Color.Warning" Size="Size.Small" Icon="@Icons.Material.Filled.ReportProblem">Riesgo: @risk</MudChip>
+                        }
+                    </div>
                 </div>
             </MudItem>
             <MudItem xs="12" md="4" Class="d-flex align-center justify-end gap-2">
@@ -351,6 +380,7 @@
             </MudButton>
         </div>
     }
+    }
 </div>
 
 <!-- Modal para Agendar Cita -->
@@ -374,10 +404,3 @@
     </DialogActions>
 </MudDialog>
 
-<style>
-    .consulta-workspace {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding-bottom: 30px;
-    }
-</style>
