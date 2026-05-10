@@ -22,15 +22,14 @@
             <MudText Typo="Typo.h6" Color="Color.Primary" Class="font-weight-bold">Ajustes del Sistema</MudText>
         </div>
         <MudSpacer/>
-        <MedFarDarkModeToggle/>
         <MedFarProfileMenu />
     </MudAppBar>
 
     <MudMainContent Class="mf-main-content">
         <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
             <MudGrid Class="mt-2">
-                <!-- Columna Izquierda: Navegación de Ajustes -->
-                <MudItem xs="12" md="3">
+                <!-- Columna Izquierda: Navegación de Ajustes (Oculta en móviles) -->
+                <MudItem xs="12" md="3" Class="d-none d-md-block">
                     <MudPaper Elevation="0" Class="pa-4 surface-glass">
                         <MudText Typo="Typo.h6" Class="mb-4 font-weight-bold">Opciones</MudText>
                         
@@ -48,7 +47,7 @@
                                     @foreach (var item in grupo)
                                     {
                                         <MudNavLink Href="@item.Route" 
-                                                    Icon="@item.Icon"
+                                                    Icon="@GetMudIcon(item.Icon)"
                                                     Match="NavLinkMatch.All">
                                             @item.Title
                                         </MudNavLink>
@@ -100,5 +99,35 @@
         else if (UserCtx.IsLaboratorio) Nav.NavigateTo("/laboratory/dashboard");
         else if (UserCtx.IsFarmacia) Nav.NavigateTo("/pharmacy/dashboard");
         else Nav.NavigateTo("/");
+    }
+
+    private string GetMudIcon(string? iconName)
+    {
+        if (string.IsNullOrEmpty(iconName)) return Icons.Material.Filled.Circle;
+        
+        var shortName = iconName.Replace("Icons.Material.Filled.", "");
+        
+        return shortName switch
+        {
+            "Person" => Icons.Material.Filled.Person,
+            "Lock" => Icons.Material.Filled.Lock,
+            "Settings" => Icons.Material.Filled.Settings,
+            "Notifications" => Icons.Material.Filled.Notifications,
+            "NoteAlt" => Icons.Material.Filled.NoteAlt,
+            "Receipt" => Icons.Material.Filled.Receipt,
+            "Business" => Icons.Material.Filled.Business,
+            "Group" => Icons.Material.Filled.Group,
+            "Science" => Icons.Material.Filled.Science,
+            "Biotech" => Icons.Material.Filled.Biotech,
+            "LocalPharmacy" => Icons.Material.Filled.LocalPharmacy,
+            "Dashboard" => Icons.Material.Filled.Dashboard,
+            "Key" => Icons.Material.Filled.Key,
+            "Assignment" => Icons.Material.Filled.Assignment,
+            "Print" => Icons.Material.Filled.Print,
+            "Storefront" => Icons.Material.Filled.Storefront,
+            "Schedule" => Icons.Material.Filled.Schedule,
+            "MonitorHeart" => Icons.Material.Filled.MonitorHeart,
+            _ => Icons.Material.Filled.SettingsApplications
+        };
     }
 }

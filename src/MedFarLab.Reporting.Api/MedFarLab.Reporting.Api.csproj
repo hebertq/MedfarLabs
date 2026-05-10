@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MedfarLabs.Core" Version="1.2.194" />
-    <PackageReference Include="MedfarLabs.Core.Reporting" Version="1.2.194" />
+    <PackageReference Include="MedfarLabs.Core" Version="1.2.192" />
+    <PackageReference Include="MedfarLabs.Core.Reporting" Version="1.2.192" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
   </ItemGroup>
   <ItemGroup>

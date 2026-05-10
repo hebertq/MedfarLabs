@@ -91,7 +91,7 @@ html, body {
     color: var(--text-primary);
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow-x: hidden; /* Permite scroll vertical, bloquea el horizontal */
     -webkit-font-smoothing: antialiased;
 }
 
@@ -435,6 +435,19 @@ h1, h2, h3, h4, h5, h6, .page-title, .brand-text {
 .action-header-inner { min-height: 55px; }
 .action-status-container { font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 .action-header .mud-button { font-weight: 600; text-transform: none; border-radius: 4px; box-shadow: none !important; }
+
+/* Global fix for MudMenu popover overflowing on mobile */
+.mf-profile-popover {
+    max-width: calc(100vw - 24px) !important;
+    overflow-x: hidden !important;
+}
+
+@media (max-width: 600px) {
+    .mf-profile-popover {
+        right: 12px !important;
+        left: auto !important;
+    }
+}
 
 
 

@@ -39,8 +39,12 @@ public class AppState
         if (string.IsNullOrEmpty(normalizedRoute) || 
             normalizedRoute == "/" || 
             normalizedRoute == "/home" || 
-            normalizedRoute.StartsWith("/user/profile") || 
-            normalizedRoute.StartsWith("/settings/"))
+            normalizedRoute.StartsWith("/user/") || 
+            normalizedRoute.StartsWith("/settings/") ||
+            normalizedRoute.StartsWith("/patients/") ||
+            normalizedRoute.StartsWith("/care/consultation") ||
+            normalizedRoute.StartsWith("/billing/new") ||
+            normalizedRoute.StartsWith("/billing/invoice"))
             return true;
 
         if (DynamicMenus == null || !DynamicMenus.Any()) return false;

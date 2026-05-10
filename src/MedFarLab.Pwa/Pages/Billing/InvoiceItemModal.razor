@@ -1,4 +1,4 @@
-﻿@using MudBlazor
+@using MudBlazor
 @using MedFarLab.Application.Features.Inventory.Models
 @using MedFarLab.Pwa.Pages.Billing
 
@@ -33,7 +33,7 @@
                              CoerceText="false"
                              Class="mb-4" />
 
-            <MudTextField @bind-Value="Model.Description" Label="DescripciÃ³n (Manual si no estÃ¡ en catÃ¡logo)" Variant="Variant.Outlined" Class="mb-4" Required="true" />
+            <MudTextField @bind-Value="Model.Description" Label="Descripción (Manual si no está en catálogo)" Variant="Variant.Outlined" Class="mb-4" Required="true" />
             
             <div class="d-flex gap-4">
                 <MudNumericField T="int" @bind-Value="Model.Quantity" Label="Cantidad" Variant="Variant.Outlined" Min="1" Required="true" />

@@ -37,6 +37,7 @@
     margin: 1px 8px !important;
     color: var(--mf-danger) !important;
 }
+
 .mf-logout-item:hover {
     background: rgba(239,68,68,0.08) !important;
 }

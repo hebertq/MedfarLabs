@@ -1,6 +1,7 @@
 @page "/patients/record/{PatientId}"
 @using MedFarLab.Pwa.Shared.Components
 @using MedFarLab.Pwa.Shared.Clinical
+@using MedFarLab.Application.Features.Patient.Models
 @inherits ComponentBase
 
 <PageTitle>Expediente - MedFarLab</PageTitle>
@@ -13,7 +14,7 @@ else if (Patient != null)
 {
     <MedFarPageHeader Title="@Patient.FullName"
                       Icon="@Icons.Material.Filled.AssignmentInd"
-                      Subtitle="@($"DNI: {Patient.DocumentId} | Edad: {Patient.DateOfBirth.ToString()} (aprox)")"
+                      Subtitle="@($"DNI: {Patient.Identifier} | Edad: {Patient.Age} años | Género: {Patient.Gender}")"
                       ShowBack="true"
                       OnBackClick="VolverAlDirectorio">
         <PrimaryActions>
@@ -42,21 +43,51 @@ else if (Patient != null)
                     </CardHeaderContent>
                 </MudCardHeader>
                 <MudCardContent>
-                    <MudText><b>Tipo de Sangre:</b> O+</MudText>
-                    <MudText><b>Peso:</b> 75 kg</MudText>
-                    <MudText><b>Estatura:</b> 1.80 m</MudText>
+                    <MudText><b>Tipo de Sangre:</b> @Patient.BloodType</MudText>
+                    
+                    @if (Patient.BloodPressureSystolic != null && Patient.BloodPressureSystolic.Any())
+                    {
+                        <MudText><b>Última Presión Arterial:</b> @Patient.BloodPressureSystolic.LastOrDefault() / @Patient.BloodPressureDiastolic.LastOrDefault()</MudText>
+                    }
+                    
+                    @if (Patient.Allergies != null && Patient.Allergies.Any())
+                    {
+                        <MudText Class="mt-2" Color="Color.Error"><b>Alergias:</b> @string.Join(", ", Patient.Allergies)</MudText>
+                    }
+
+                    @if (Patient.Antecedents != null && Patient.Antecedents.Any())
+                    {
+                        <MudText Class="mt-2"><b>Antecedentes:</b></MudText>
+                        <ul style="padding-left: 20px;">
+                            @foreach (var ant in Patient.Antecedents)
+                            {
+                                <li>@ant.Description (@ant.TypeName)</li>
+                            }
+                        </ul>
+                    }
+                    
+                    @if (Patient.ActivePrescriptions != null && Patient.ActivePrescriptions.Any())
+                    {
+                        <MudText Class="mt-2"><b>Recetas Activas:</b></MudText>
+                        <ul style="padding-left: 20px;">
+                            @foreach (var p in Patient.ActivePrescriptions)
+                            {
+                                <li>@p.MedicationName - @p.Dosage</li>
+                            }
+                        </ul>
+                    }
                 </MudCardContent>
             </MudCard>
         </MudItem>
 
         <!-- Historial de Consultas (Uso de MedFarTable con Densidad) -->
         <MudItem xs="12" md="8">
-            <MedFarTable TItem="ConsultaHistorialDTO"
+            <MedFarTable TItem="ClinicalHistoryItemVM"
                          Items="@Consultas"
                          IsLoading="false"
                          Dense="true"
                          ShowSearch="false"
-                         ColumnCount="3"
+                         ColumnCount="4"
                          EmptyTitle="Sin consultas"
                          EmptyMessage="Este paciente aún no tiene consultas registradas."
                          EmptyIcon="@Icons.Material.Filled.EventBusy">
@@ -64,11 +95,15 @@ else if (Patient != null)
                     <MudTh>Fecha</MudTh>
                     <MudTh>Motivo</MudTh>
                     <MudTh>Médico</MudTh>
+                    <MudTh>Acciones</MudTh>
                 </HeaderContent>
                 <RowTemplate>
-                    <MudTd>@context.Fecha.ToString("dd/MM/yyyy")</MudTd>
-                    <MudTd>@context.Motivo</MudTd>
-                    <MudTd>@context.Medico</MudTd>
+                    <MudTd>@context.Date.ToString("dd/MM/yyyy")</MudTd>
+                    <MudTd>@context.Title</MudTd>
+                    <MudTd>@context.DoctorName</MudTd>
+                    <MudTd>
+                        <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Primary" Size="Size.Small" OnClick="@(() => VerConsulta(context.ConsultationId))" />
+                    </MudTd>
                 </RowTemplate>
             </MedFarTable>
         </MudItem>

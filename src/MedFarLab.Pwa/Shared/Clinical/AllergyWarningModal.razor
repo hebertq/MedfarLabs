@@ -18,17 +18,17 @@
         {
             // HARD BLOCK: No se puede proceder
             await DialogService.ShowMessageBox(
-                "â›” ContraindicaciÃ³n absoluta",
+                "⛔ Contraindicación absoluta",
                 $"El paciente tiene alergia documentada a '{match}'. No es posible prescribir '{medicamentName}'.",
                 yesText: "Entendido",
                 options: new DialogOptions { MaxWidth = MaxWidth.Small });
             return false;
         }
 
-        // SOFT BLOCK: Requiere confirmaciÃ³n doble
+        // SOFT BLOCK: Requiere confirmación doble
         var result = await DialogService.ShowMessageBox(
-            "âš ï¸ Advertencia de alergia",
-            $"El paciente tiene alergia a '{match}'. Â¿EstÃ¡ seguro de que desea prescribir '{medicamentName}'? Esta acciÃ³n quedarÃ¡ registrada en la auditorÃ­a.",
+            "⚠️ Advertencia de alergia",
+            $"El paciente tiene alergia a '{match}'. ¿Está seguro de que desea prescribir '{medicamentName}'? Esta acción quedará registrada en la auditoría.",
             yesText: "Confirmar y continuar",
             cancelText: "Cancelar",
             options: new DialogOptions

@@ -18,24 +18,24 @@
     [Parameter] public string Message { get; set; } = "No hay datos disponibles en este momento.";
     [Parameter] public RenderFragment? ActionContent { get; set; }
 
-    // Variantes predefinidas para los módulos mÃ¡s comunes
+    // Variantes predefinidas para los módulos más comunes
     public static (string Icon, string Title, string Message) Patients =>
         (Icons.Material.Outlined.PersonSearch,
-         "Directorio vacÃ­o",
-         "No has registrado pacientes en esta sucursal aÃºn.");
+         "Directorio vacío",
+         "No has registrado pacientes en esta sucursal aún.");
 
     public static (string Icon, string Title, string Message) LabOrders =>
         (Icons.Material.Outlined.Biotech,
-         "Sin Ã³rdenes de laboratorio",
-         "Las Ã³rdenes aparecerÃ¡n aquÃ­ cuando el mÃ©dico las emita.");
+         "Sin órdenes de laboratorio",
+         "Las órdenes aparecerán aquí cuando el médico las emita.");
 
     public static (string Icon, string Title, string Message) Invoices =>
         (Icons.Material.Outlined.ReceiptLong,
          "Sin facturas registradas",
-         "Las facturas generadas aparecerÃ¡n en este listado.");
+         "Las facturas generadas aparecerán en este listado.");
 
     public static (string Icon, string Title, string Message) Appointments =>
         (Icons.Material.Outlined.CalendarMonth,
-         "Agenda vacÃ­a",
-         "No hay citas programadas para este perÃ­odo.");
+         "Agenda vacía",
+         "No hay citas programadas para este período.");
 }
