@@ -17,7 +17,14 @@
             }
         </PrimaryActions>
         <SecondaryActions>
-            <MudMenuItem Icon="@Icons.Material.Filled.Save" OnClick="@(() => SubmitConsultation(isDraft: true))" Disabled="IsSubmitting">Guardar Borrador</MudMenuItem>
+            @if (!ReadOnly)
+            {
+                <MudMenuItem Icon="@Icons.Material.Filled.Save" OnClick="@(() => SubmitConsultation(isDraft: true))" Disabled="IsSubmitting">Guardar Borrador</MudMenuItem>
+            }
+            else
+            {
+                <MudMenuItem Icon="@Icons.Material.Filled.Lock" Disabled="true">Consulta Cerrada</MudMenuItem>
+            }
             <MudMenuItem Icon="@Icons.Material.Filled.Print" Disabled="true">Imprimir Resumen</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Filled.FolderShared" Href="@($"/patients/record/{MedicalRecordId}")">Ver Expediente</MudMenuItem>
         </SecondaryActions>
@@ -36,7 +43,11 @@
                 <div>
                     <MudText Typo="Typo.h5" Class="brand-text">@PatientName</MudText>
                     <MudText Typo="Typo.body2" Color="Color.Default">Expediente: #@MedicalRecordId | Edad: 34 años | Sexo: M</MudText>
-                    <div class="d-flex gap-2 mt-1">
+                    <div class="d-flex flex-wrap gap-2 mt-1">
+                        @if (ReadOnly)
+                        {
+                            <MudChip T="string" Color="Color.Success" Size="Size.Small" Icon="@Icons.Material.Filled.Lock">Finalizada</MudChip>
+                        }
                         @foreach (var allergy in PatientAllergies)
                         {
                             <MudChip T="string" Color="Color.Error" Size="Size.Small" Icon="@Icons.Material.Filled.Warning">Alergia: @allergy</MudChip>

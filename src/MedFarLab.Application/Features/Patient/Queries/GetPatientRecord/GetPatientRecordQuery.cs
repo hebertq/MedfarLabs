@@ -73,7 +73,8 @@ namespace MedFarLab.Application.Features.Patient.Queries.GetPatientRecord
                             IsOwner = c.IsOwner,
                             Diagnosis = c.Diagnosis ?? string.Empty,
                             Pathology = c.Pathology ?? string.Empty,
-                            DiagnosisDescription = c.DiagnosisDescription ?? string.Empty
+                            DiagnosisDescription = c.DiagnosisDescription ?? string.Empty,
+                            AnalysisData = c.AnalysisData ?? string.Empty
                         }).ToList();
                     }
 

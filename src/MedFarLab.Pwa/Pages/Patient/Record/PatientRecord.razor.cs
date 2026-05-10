@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
@@ -6,6 +6,7 @@ using MudBlazor;
 using MediatR;
 using MedFarLab.Application.Features.Patient.Queries.GetPatientRecord;
 using MedFarLab.Application.Features.Patient.Models;
+using Microsoft.JSInterop;
 
 namespace MedFarLab.Pwa.Pages.Patient.Record;
 
@@ -17,6 +18,7 @@ public partial class PatientRecord : ComponentBase
     [Inject] private ISnackbar Snackbar { get; set; } = default!;
     [Inject] private IDialogService DialogService { get; set; } = default!;
     [Inject] private MedfarLabs.Core.Domain.Interfaces.Http.IExternalServiceClient ApiClient { get; set; } = default!;
+    [Inject] private Microsoft.JSInterop.IJSRuntime JSRuntime { get; set; } = default!;
 
     [Parameter]
     public string PatientId { get; set; } = string.Empty;
@@ -115,7 +117,7 @@ public partial class PatientRecord : ComponentBase
 
     protected void EditarPaciente()
     {
-        NavManager.NavigateTo($"/patients/edit/{PatientId}");
+        Snackbar.Add("El módulo de edición de expediente se encuentra en desarrollo por el equipo de ingeniería.", Severity.Info);
     }
 
     protected void VerConsulta(long consultationId)
@@ -123,8 +125,8 @@ public partial class PatientRecord : ComponentBase
         NavManager.NavigateTo($"/care/consultation/ver/{consultationId}");
     }
 
-    protected void ImprimirExpediente()
+    protected async Task ImprimirExpediente()
     {
-        // TODO: Imprimir
+        await JSRuntime.InvokeVoidAsync("window.print");
     }
 }

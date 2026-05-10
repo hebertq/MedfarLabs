@@ -65,21 +65,21 @@
                         }
 
                         @* Análisis / Diagnóstico - solo si IsOwner *@
-                        @if (c.IsOwner && (!string.IsNullOrEmpty(c.Diagnosis) || !string.IsNullOrEmpty(c.Summary)))
+                        @if (c.IsOwner && (!string.IsNullOrEmpty(c.AnalysisData) || !string.IsNullOrEmpty(c.Summary)))
                         {
                             <MudPaper Elevation="0" Class="pa-4 mt-2" Style="background-color: var(--mud-palette-background-grey); border-radius: 8px; border-left: 4px solid var(--mud-palette-primary);">
-                                @if (!string.IsNullOrEmpty(c.Summary))
+                                @if (!string.IsNullOrEmpty(c.AnalysisData))
+                                {
+                                    <div class="mb-3">
+                                        <MudText Typo="Typo.body2" Class="font-weight-bold text-primary mb-1">Análisis Clínico y Diagnóstico:</MudText>
+                                        <MudText Typo="Typo.body1">@c.AnalysisData</MudText>
+                                    </div>
+                                }
+                                else if (!string.IsNullOrEmpty(c.Summary))
                                 {
                                     <div class="mb-3">
                                         <MudText Typo="Typo.body2" Class="font-weight-bold text-primary mb-1">Análisis Clínico:</MudText>
                                         <MudText Typo="Typo.body1">@c.Summary</MudText>
-                                    </div>
-                                }
-                                @if (!string.IsNullOrEmpty(c.Diagnosis))
-                                {
-                                    <div>
-                                        <MudText Typo="Typo.body2" Class="font-weight-bold text-primary mb-1">Diagnóstico Específico:</MudText>
-                                        <MudText Typo="Typo.body1">@c.Diagnosis</MudText>
                                     </div>
                                 }
                             </MudPaper>

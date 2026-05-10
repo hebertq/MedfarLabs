@@ -51,6 +51,7 @@ namespace MedFarLab.Application.Features.Patient.Models
         public string Diagnosis { get; set; } = string.Empty;
         public string Pathology { get; set; } = string.Empty;
         public string DiagnosisDescription { get; set; } = string.Empty;
+        public string AnalysisData { get; set; } = string.Empty;
     }
 
     public class ActivePrescriptionVM

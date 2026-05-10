@@ -132,6 +132,11 @@ namespace MedFarLab.Pwa.Pages.Care.Consultation
                         ObjectiveInput = response.Data.Objective;
                         AnalysisInput = response.Data.Analysis;
                         PlanInput = response.Data.Plan;
+                        
+                        if (response.Data.StatusId == 2)
+                        {
+                            ReadOnly = true;
+                        }
 
                         CurrentVitals.Systolic = response.Data.Systolic?.ToString() ?? "";
                         CurrentVitals.Diastolic = response.Data.Diastolic?.ToString() ?? "";
