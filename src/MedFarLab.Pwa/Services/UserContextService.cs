@@ -10,13 +10,12 @@ namespace MedFarLab.Pwa.Services
 
         public UserContextService(AuthenticationStateProvider auth) { _auth = auth; }
 
-        private ClaimsPrincipal? _user;
-        private async Task<ClaimsPrincipal> GetUserAsync()
+        private ClaimsPrincipal? _cachedUser;
+
+        public async Task InitializeAsync()
         {
-            if (_user != null) return _user;
             var state = await _auth.GetAuthenticationStateAsync();
-            _user = state.User;
-            return _user;
+            _cachedUser = state.User;
         }
 
         public long UserId => long.TryParse(GetClaim("nameid") ?? GetClaim(ClaimTypes.NameIdentifier), out var val) ? val : 0;
@@ -32,10 +31,7 @@ namespace MedFarLab.Pwa.Services
 
         private string? GetClaim(string type)
         {
-            // We use synchronous access here for simplicity in properties. 
-            // In a real app we might need to await the AuthState.
-            // But Blazor WASM usually has the auth state synchronously available after initial load.
-            return _auth.GetAuthenticationStateAsync().GetAwaiter().GetResult().User?.FindFirst(type)?.Value;
+            return _cachedUser?.FindFirst(type)?.Value;
         }
     }
 }

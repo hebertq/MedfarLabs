@@ -42,7 +42,7 @@
                 <MudAvatar Color="Color.Primary" Size="Size.Large">@(PatientInitials)</MudAvatar>
                 <div>
                     <MudText Typo="Typo.h5" Class="brand-text">@PatientName</MudText>
-                    <MudText Typo="Typo.body2" Color="Color.Default">Expediente: #@MedicalRecordId | Edad: 34 años | Sexo: M</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Default">Expediente: #@MedicalRecordId | Edad: @PatientAge años | Sexo: @PatientGender</MudText>
                     <div class="d-flex flex-wrap gap-2 mt-1">
                         @if (ReadOnly)
                         {

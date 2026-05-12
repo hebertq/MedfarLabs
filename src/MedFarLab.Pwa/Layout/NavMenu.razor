@@ -9,7 +9,7 @@
 <MudNavMenu Class="pt-4">
     @if (!AppState.IsMasterAdmin)
     {
-        if (AppState.DynamicMenus == null)
+        if (MenuService.NavItems == null || !MenuService.NavItems.Any())
         {
             <div class="pa-4 d-flex justify-center flex-column align-center">
                 <MedFarLab.Pwa.Shared.Components.MedFarSkeleton Type="MedFarLab.Pwa.Shared.Components.MedFarSkeletonType.List" />
@@ -17,7 +17,7 @@
         }
         else
         {
-            var sidebarMenus = AppState.DynamicMenus.ToList();
+            var sidebarMenus = MenuService.NavItems.ToList();
             foreach (var menu in sidebarMenus)
             {
                 if (menu.SubMenus != null && menu.SubMenus.Any())
@@ -48,37 +48,3 @@
         <MudNavLink Href="/admin/laboratory/templates" Icon="@Icons.Material.Filled.Science" IconColor="Color.Info" Match="NavLinkMatch.Prefix">Plantillas Globales Lab</MudNavLink>
     }
 </MudNavMenu>
-
-@code {
-    [Parameter] public bool IsMobile { get; set; } = false;
-
-    protected override void OnInitialized()
-    {
-        AppState.OnChange += StateHasChanged;
-    }
-
-    private string GetMudIcon(string? iconName)
-    {
-        if (string.IsNullOrEmpty(iconName)) return Icons.Material.Filled.Folder;
-        
-        var shortName = iconName.Replace("Icons.Material.Filled.", "");
-        
-        return shortName switch
-        {
-            "Dashboard" => Icons.Material.Filled.Dashboard,
-            "CalendarMonth" => Icons.Material.Filled.CalendarMonth,
-            "FolderShared" => Icons.Material.Filled.FolderShared,
-            "LocalPharmacy" => Icons.Material.Filled.LocalPharmacy,
-            "Inventory" => Icons.Material.Filled.Inventory,
-            "Science" => Icons.Material.Filled.Science,
-            "Biotech" => Icons.Material.Filled.Biotech,
-            "Receipt" => Icons.Material.Filled.Receipt,
-            _ => Icons.Material.Filled.Folder
-        };
-    }
-
-    public void Dispose()
-    {
-        AppState.OnChange -= StateHasChanged;
-    }
-}

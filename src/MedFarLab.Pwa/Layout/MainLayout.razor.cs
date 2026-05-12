@@ -44,6 +44,7 @@ namespace MedFarLab.Pwa.Layout
 
         protected override async Task OnInitializedAsync()
         {
+            await UserCtx.InitializeAsync();
             NavManager.LocationChanged += OnLocationChanged;
 
             if (AppState.UserId == 0)

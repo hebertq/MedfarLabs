@@ -32,43 +32,7 @@ else if (Patient != null)
     </MedFarPageHeader>
 
     <!-- TOP CLINICAL ALERTS -->
-    @if (PatientAllergies.Any() || CriticalRiskAlerts.Any() || (Patient.ActivePrescriptions != null && Patient.ActivePrescriptions.Any()))
-    {
-        <MudPaper Class="d-flex flex-column flex-md-row align-start align-md-center pa-4 mb-6 shadow-float" Style="border-left: 6px solid var(--mud-palette-error); border-radius: 12px; background-color: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px);">
-            <div class="d-flex align-center mr-6 mb-3 mb-md-0" style="min-width: 180px;">
-                <MudIcon Icon="@Icons.Material.Filled.MedicalInformation" Color="Color.Error" Size="Size.Large" Class="mr-3" />
-                <MudText Typo="Typo.h6" Style="font-weight: 600; color: var(--mud-palette-dark);">Atención Clínica</MudText>
-            </div>
-            
-            <MudGrid Spacing="2">
-                @if (PatientAllergies.Any())
-                {
-                    <MudItem xs="12" sm="6" md="4">
-                        <MudText Typo="Typo.caption" Class="text-muted d-block">Alergias</MudText>
-                        <MudText Typo="Typo.body2" Color="Color.Error" Style="font-weight: 600;">@string.Join(", ", PatientAllergies)</MudText>
-                    </MudItem>
-                }
-                @if (CriticalRiskAlerts.Any())
-                {
-                    <MudItem xs="12" sm="6" md="4">
-                        <MudText Typo="Typo.caption" Class="text-muted d-block">Riesgos Críticos</MudText>
-                        <MudText Typo="Typo.body2" Style="font-weight: 500; color: var(--mud-palette-dark);">@string.Join(", ", CriticalRiskAlerts)</MudText>
-                    </MudItem>
-                }
-                @if (Patient.ActivePrescriptions != null && Patient.ActivePrescriptions.Any())
-                {
-                    <MudItem xs="12" sm="12" md="4">
-                        <MudText Typo="Typo.caption" Class="text-muted d-block">Medicamentos Activos</MudText>
-                        <MudText Typo="Typo.body2" Style="font-weight: 500; color: var(--mud-palette-dark);">@string.Join(", ", Patient.ActivePrescriptions.Select(p => p.MedicationName))</MudText>
-                    </MudItem>
-                }
-            </MudGrid>
-        </MudPaper>
-    }
-    else
-    {
-        <StickyPatientAlerts Allergies="@PatientAllergies" CriticalAlerts="@CriticalRiskAlerts" />
-    }
+    <StickyPatientAlerts Allergies="@PatientAllergies" CriticalAlerts="@CriticalRiskAlerts" />
 
     <MudGrid Class="mt-4 fade-in" Spacing="4">
         @* Left Column: Consultations Timeline *@

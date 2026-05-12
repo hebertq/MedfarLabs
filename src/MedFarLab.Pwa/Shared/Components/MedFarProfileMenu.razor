@@ -11,9 +11,20 @@
          PopoverClass="mf-profile-popover">
 
     <ActivatorContent>
-        <MudIconButton Icon="@Icons.Material.Filled.Settings" 
-                       Color="Color.Default" 
-                       Edge="Edge.End" />
+        <div class="mf-profile-trigger d-flex align-center cursor-pointer" style="gap: 8px;">
+            <MudAvatar Color="Color.Primary" Size="Size.Small">
+                @UserCtx.FullName?.FirstOrDefault()
+            </MudAvatar>
+            <div class="mf-profile-info d-none d-sm-block">
+                <MudText Typo="Typo.body2" Class="font-weight-bold" Style="line-height: 1.2;">
+                    @UserCtx.FullName
+                </MudText>
+                <MudText Typo="Typo.caption" Color="Color.Secondary" Style="line-height: 1;">
+                    @UserCtx.PrimaryRole
+                </MudText>
+            </div>
+            <MudIcon Icon="@Icons.Material.Filled.ExpandMore" Size="Size.Small" Class="d-none d-sm-block" />
+        </div>
     </ActivatorContent>
 
     <ChildContent>
@@ -58,7 +69,7 @@
                         <MudDivider Class="my-1"/>
                     }
 
-                    <MudMenuItem Icon="@GetMudIcon(item.Icon)"
+                    <MudMenuItem Icon="@MedFarLab.Pwa.Services.MedFarIconService.Resolve(item.Icon)"
                                  OnClick="@(() => Navegar(item.Route))"
                                  Class="mf-settings-item">
                         @item.Title
@@ -102,35 +113,6 @@
 @code {
     private void Navegar(string route) => Nav.NavigateTo(route);
 
-    private string GetMudIcon(string? iconName)
-    {
-        if (string.IsNullOrEmpty(iconName)) return Icons.Material.Filled.Circle;
-        
-        var shortName = iconName.Replace("Icons.Material.Filled.", "");
-        
-        return shortName switch
-        {
-            "Person" => Icons.Material.Filled.Person,
-            "Lock" => Icons.Material.Filled.Lock,
-            "Settings" => Icons.Material.Filled.Settings,
-            "Notifications" => Icons.Material.Filled.Notifications,
-            "NoteAlt" => Icons.Material.Filled.NoteAlt,
-            "Receipt" => Icons.Material.Filled.Receipt,
-            "Business" => Icons.Material.Filled.Business,
-            "Group" => Icons.Material.Filled.Group,
-            "Science" => Icons.Material.Filled.Science,
-            "Biotech" => Icons.Material.Filled.Biotech,
-            "LocalPharmacy" => Icons.Material.Filled.LocalPharmacy,
-            "Dashboard" => Icons.Material.Filled.Dashboard,
-            "Key" => Icons.Material.Filled.Key,
-            "Assignment" => Icons.Material.Filled.Assignment,
-            "Print" => Icons.Material.Filled.Print,
-            "Storefront" => Icons.Material.Filled.Storefront,
-            "Schedule" => Icons.Material.Filled.Schedule,
-            "MonitorHeart" => Icons.Material.Filled.MonitorHeart,
-            _ => Icons.Material.Filled.SettingsApplications
-        };
-    }
 
     private async Task CerrarSesion()
     {

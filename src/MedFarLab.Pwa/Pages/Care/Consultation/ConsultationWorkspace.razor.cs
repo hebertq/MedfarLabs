@@ -127,6 +127,8 @@ namespace MedFarLab.Pwa.Pages.Care.Consultation
                         DoctorUserId = response.Data.DoctorUserId;
                         PatientName = response.Data.PatientName;
                         PatientInitials = response.Data.PatientInitials;
+                        PatientAge = response.Data.PatientAge;
+                        PatientGender = response.Data.PatientGender;
                         
                         SubjectiveInput = response.Data.Subjective;
                         ObjectiveInput = response.Data.Objective;
@@ -675,6 +677,12 @@ namespace MedFarLab.Pwa.Pages.Care.Consultation
                 StateHasChanged();
             }
         }
+
+        public long DoctorUserId { get; set; }
+        public string PatientName { get; set; } = string.Empty;
+        public string PatientInitials { get; set; } = string.Empty;
+        public int PatientAge { get; set; }
+        public string PatientGender { get; set; } = string.Empty;
 
         public class VitalsState
         {

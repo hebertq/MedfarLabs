@@ -14,5 +14,7 @@ namespace MedFarLab.Pwa.Services
         bool IsClinica => OrganizationTypeId is 124 or 3 or 126;
         bool IsLaboratorio => OrganizationTypeId == 15;
         bool IsFarmacia => OrganizationTypeId == 125;
+
+        Task InitializeAsync();
     }
 }
