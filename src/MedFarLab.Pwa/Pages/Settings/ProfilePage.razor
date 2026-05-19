@@ -1,14 +1,67 @@
 @page "/settings/profile"
 @layout SettingsLayout
 @using MudBlazor
+@using MedFarLab.Pwa.Pages.Settings.Components
+@inject MedFarLab.Pwa.Services.IUserContextService UserCtx
 
-<MudText Typo="Typo.h5" Class="mb-1">Gestione su información personal y firma</MudText>
-<MudDivider Class="mb-4"/>
+<PageTitle>Mi Perfil | MedFarLab</PageTitle>
 
-<div class="d-flex flex-column align-center justify-center pa-10">
-    <MudIcon Icon="@Icons.Material.Filled.Build" Size="Size.Large" Color="Color.Primary" Class="mb-4" />
-    <MudText Typo="Typo.h5">Módulo en Construcción</MudText>
-    <MudText Typo="Typo.body1" Color="Color.Secondary" Class="mt-2 text-center">
-        La página <b>Perfil Personal</b> se encuentra en desarrollo activo para la siguiente fase.
-    </MudText>
+<div class="glass-header mb-4">
+    <div>
+        <MudText Typo="Typo.h5" Class="text-primary fw-bold">Mi Perfil</MudText>
+        <MudText Typo="Typo.body2" Class="text-muted">Gestione su información personal y rol en el sistema.</MudText>
+    </div>
 </div>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="pa-0">
+    <MudCard Class="surface-glass rounded-xl mb-4" Elevation="1">
+        <MudCardContent Class="pa-6">
+            <MudGrid>
+                <MudItem xs="12" sm="4" Class="d-flex flex-column justify-center align-center">
+                    <MudAvatar Color="Color.Primary" Style="height: 120px; width: 120px; font-size: 3rem;" Class="mb-3">
+                        @(UserCtx.FullName?.FirstOrDefault() ?? 'U')
+                    </MudAvatar>
+                    <MudChip T="string" Color="Color.Secondary" Size="Size.Small">@UserCtx.PrimaryRole</MudChip>
+                </MudItem>
+                <MudItem xs="12" sm="8" Class="d-flex flex-column justify-center text-center text-sm-start">
+                    <MudText Typo="Typo.h5" Class="font-weight-bold mb-1">@UserCtx.FullName</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">ID Usuario: @UserCtx.UserId</MudText>
+                    
+                    <MudDivider Class="my-3"/>
+                    
+                    <MudText Typo="Typo.subtitle2" Class="font-weight-bold">Organización:</MudText>
+                    <MudText Typo="Typo.body2" Class="mb-2">@UserCtx.OrganizationName (@UserCtx.OrgTypeName)</MudText>
+                    
+                    <MudText Typo="Typo.subtitle2" Class="font-weight-bold">Permisos Administrativos:</MudText>
+                    @if (UserCtx.IsAdmin)
+                    {
+                        <MudChip T="string" Color="Color.Success" Variant="Variant.Outlined" Size="Size.Small" Class="mt-1">Administrador</MudChip>
+                    }
+                    else
+                    {
+                        <MudChip T="string" Color="Color.Default" Variant="Variant.Outlined" Size="Size.Small" Class="mt-1">Usuario Estándar</MudChip>
+                    }
+                </MudItem>
+            </MudGrid>
+        </MudCardContent>
+    </MudCard>
+
+    @* Componentes dinámicos según el rol u organización *@
+    @if (UserCtx.IsAdmin)
+    {
+        <AdminProfile />
+    }
+    else if (UserCtx.OrgTypeName != null && UserCtx.OrgTypeName.Contains("Clínica", StringComparison.OrdinalIgnoreCase))
+    {
+        <ClinicalProfile />
+    }
+    else if (UserCtx.OrgTypeName != null && UserCtx.OrgTypeName.Contains("Laboratorio", StringComparison.OrdinalIgnoreCase))
+    {
+        <LaboratoryProfile />
+    }
+    else
+    {
+        @* Si no es clínica ni laboratorio (por ejemplo, Farmacia), podríamos tener un PharmacyProfile o simplemente no mostrar componentes extra *@
+    }
+
+</MudContainer>

@@ -10,6 +10,36 @@
 <MudDialogProvider MaxWidth="MaxWidth.Medium" FullWidth="false" CloseButton="true" BackdropClick="false"/>
 <MudPopoverProvider />
 
+@{
+    RenderFragment navMenuContent =
+    @<MudNavMenu>
+        @if (MenuService.SettingsGroups != null && MenuService.SettingsGroups.Any())
+        {
+            @foreach (var grupo in MenuService.SettingsGroups)
+            {
+                <div class="mt-4 mb-1 px-4">
+                    <MudText Typo="Typo.overline" Color="Color.Secondary">
+                        @MenuService.GetGroupLabel(grupo.Key)
+                    </MudText>
+                </div>
+                
+                @foreach (var item in grupo)
+                {
+                    <MudNavLink Href="@item.Route" 
+                                Icon="@GetMudIcon(item.Icon)"
+                                Match="NavLinkMatch.All">
+                        @item.Title
+                    </MudNavLink>
+                }
+            }
+        }
+        else
+        {
+            <MudText Typo="Typo.caption" Color="Color.Secondary">Cargando...</MudText>
+        }
+    </MudNavMenu>;
+}
+
 <MudLayout Class="@(ThemeService.IsDarkMode ? "theme-dark" : "")">
     <!-- AppBar glassmorphism (Settings Mode) -->
     <MudAppBar Elevation="0" Class="mf-appbar surface-glass">
@@ -18,12 +48,25 @@
                        Color="Color.Primary"
                        OnClick="@GoBackToDashboard" 
                        Title="Regresar al Dashboard" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" 
+                       Color="Color.Primary" 
+                       Edge="Edge.Start" 
+                       OnClick="@DrawerToggle" 
+                       Class="d-md-none ml-2" 
+                       Title="Menú de Ajustes" />
         <div class="mf-appbar-brand ml-4">
             <MudText Typo="Typo.h6" Color="Color.Primary" Class="font-weight-bold">Ajustes del Sistema</MudText>
         </div>
         <MudSpacer/>
         <MedFarProfileMenu />
     </MudAppBar>
+
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="1" Variant="@DrawerVariant.Temporary" ClipMode="DrawerClipMode.Never">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6" Color="Color.Primary" Class="font-weight-bold">Opciones</MudText>
+        </MudDrawerHeader>
+        @navMenuContent
+    </MudDrawer>
 
     <MudMainContent Class="mf-main-content">
         <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
@@ -32,33 +75,7 @@
                 <MudItem xs="12" md="3" Class="d-none d-md-block">
                     <MudPaper Elevation="0" Class="pa-4 surface-glass">
                         <MudText Typo="Typo.h6" Class="mb-4 font-weight-bold">Opciones</MudText>
-                        
-                        <MudNavMenu>
-                            @if (MenuService.SettingsGroups != null && MenuService.SettingsGroups.Any())
-                            {
-                                @foreach (var grupo in MenuService.SettingsGroups)
-                                {
-                                    <div class="mt-4 mb-1 px-4">
-                                        <MudText Typo="Typo.overline" Color="Color.Secondary">
-                                            @MenuService.GetGroupLabel(grupo.Key)
-                                        </MudText>
-                                    </div>
-                                    
-                                    @foreach (var item in grupo)
-                                    {
-                                        <MudNavLink Href="@item.Route" 
-                                                    Icon="@GetMudIcon(item.Icon)"
-                                                    Match="NavLinkMatch.All">
-                                            @item.Title
-                                        </MudNavLink>
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                <MudText Typo="Typo.caption" Color="Color.Secondary">Cargando...</MudText>
-                            }
-                        </MudNavMenu>
+                        @navMenuContent
                     </MudPaper>
                 </MudItem>
 
@@ -74,6 +91,13 @@
 </MudLayout>
 
 @code {
+    private bool _drawerOpen;
+
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 

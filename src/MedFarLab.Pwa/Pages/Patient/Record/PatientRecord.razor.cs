@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using MediatR;
 using MedFarLab.Application.Features.Patient.Queries.GetPatientRecord;
 using MedFarLab.Application.Features.Patient.Models;
+using MedfarLabs.Core.Domain.Interfaces.Http;
 using Microsoft.JSInterop;
+using MedFarLab.Pwa.State;
 
 namespace MedFarLab.Pwa.Pages.Patient.Record;
 
@@ -14,11 +13,11 @@ public partial class PatientRecord : ComponentBase
 {
     [Inject] private NavigationManager NavManager { get; set; } = default!;
     [Inject] private ISender Mediator { get; set; } = default!;
-    [Inject] private MedFarLab.Pwa.State.AppState AppState { get; set; } = default!;
+    [Inject] private AppState AppState { get; set; } = default!;
     [Inject] private ISnackbar Snackbar { get; set; } = default!;
     [Inject] private IDialogService DialogService { get; set; } = default!;
-    [Inject] private MedfarLabs.Core.Domain.Interfaces.Http.IExternalServiceClient ApiClient { get; set; } = default!;
-    [Inject] private Microsoft.JSInterop.IJSRuntime JSRuntime { get; set; } = default!;
+    [Inject] private IExternalServiceClient ApiClient { get; set; } = default!;
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
     [Parameter]
     public string PatientId { get; set; } = string.Empty;
@@ -108,7 +107,7 @@ public partial class PatientRecord : ComponentBase
             var dialog = DialogService.Show<AddAntecedentDialog>("Nuevo Antecedente", parameters, options);
             var result = await dialog.Result;
 
-            if (!result.Canceled)
+            if (!result!.Canceled)
             {
                 await LoadData(); // Reload data after adding
             }

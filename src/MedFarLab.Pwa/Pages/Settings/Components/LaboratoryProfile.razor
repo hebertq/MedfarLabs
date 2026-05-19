@@ -1,0 +1,23 @@
+@using MudBlazor
+
+<MudCard Elevation="0" Class="mt-4 border-solid border-1 mud-border-lines-default rounded-lg">
+    <MudCardHeader>
+        <CardHeaderAvatar>
+            <MudIcon Icon="@Icons.Material.Filled.Science" Color="Color.Secondary" />
+        </CardHeaderAvatar>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Perfil de Laboratorio</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">Áreas de procesamiento y certificaciones</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <MudTextField T="string" Label="Área Principal" Value="@("Microbiología y Química")" ReadOnly="true" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudTextField T="string" Label="Certificación" Value="@("Técnico Superior")" ReadOnly="true" Variant="Variant.Outlined" />
+            </MudItem>
+        </MudGrid>
+    </MudCardContent>
+</MudCard>

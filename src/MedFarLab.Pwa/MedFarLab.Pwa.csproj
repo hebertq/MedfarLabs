@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-    <PackageReference Include="MedfarLabs.Core" Version="1.2.203" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.2" PrivateAssets="all" />

@@ -35,6 +35,8 @@ namespace MedFarLab.Pwa.Pages.Care.Consultation
         protected string PatientInitials { get; set; } = "Px";
         protected long MedicalRecordId { get; set; }
         protected long DoctorUserId { get; set; }
+        protected int PatientAge { get; set; }
+        protected string PatientGender { get; set; } = string.Empty;
 
         // Native SOAP UI Binding Fields (to avoid mutability issues with Core DTO Records)
         protected string SubjectiveInput { get; set; } = string.Empty;
@@ -678,11 +680,6 @@ namespace MedFarLab.Pwa.Pages.Care.Consultation
             }
         }
 
-        public long DoctorUserId { get; set; }
-        public string PatientName { get; set; } = string.Empty;
-        public string PatientInitials { get; set; } = string.Empty;
-        public int PatientAge { get; set; }
-        public string PatientGender { get; set; } = string.Empty;
 
         public class VitalsState
         {

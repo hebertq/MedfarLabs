@@ -1,0 +1,26 @@
+@using MudBlazor
+
+<MudCard Elevation="0" Class="mt-4 border-solid border-1 mud-border-lines-default rounded-lg">
+    <MudCardHeader>
+        <CardHeaderAvatar>
+            <MudIcon Icon="@Icons.Material.Filled.MedicalServices" Color="Color.Primary" />
+        </CardHeaderAvatar>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Credenciales Clínicas</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">Información médica y especialidades</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <MudTextField T="string" Label="Especialidad Principal" Value="@("Medicina General")" ReadOnly="true" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudTextField T="string" Label="Nº Colegiado / Licencia" Value="@("COL-123456")" ReadOnly="true" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField T="string" Label="Universidad / Formación" Value="@("Universidad Nacional")" ReadOnly="true" Variant="Variant.Outlined" />
+            </MudItem>
+        </MudGrid>
+    </MudCardContent>
+</MudCard>

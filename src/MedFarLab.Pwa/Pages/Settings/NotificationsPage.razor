@@ -1,14 +1,79 @@
 @page "/settings/notifications"
 @layout SettingsLayout
 @using MudBlazor
+@inject ISnackbar Snackbar
 
-<MudText Typo="Typo.h5" Class="mb-1">Preferencias de alertas y mensajería</MudText>
-<MudDivider Class="mb-4"/>
+<PageTitle>Notificaciones | MedFarLab</PageTitle>
 
-<div class="d-flex flex-column align-center justify-center pa-10">
-    <MudIcon Icon="@Icons.Material.Filled.Build" Size="Size.Large" Color="Color.Primary" Class="mb-4" />
-    <MudText Typo="Typo.h5">Módulo en Construcción</MudText>
-    <MudText Typo="Typo.body1" Color="Color.Secondary" Class="mt-2 text-center">
-        La página <b>Notificaciones</b> se encuentra en desarrollo activo para la siguiente fase.
-    </MudText>
+<div class="glass-header mb-4">
+    <div>
+        <MudText Typo="Typo.h5" Class="text-primary fw-bold">Preferencias de Notificaciones</MudText>
+        <MudText Typo="Typo.body2" Class="text-muted">Gestione cómo y cuándo desea recibir alertas del sistema.</MudText>
+    </div>
 </div>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="pa-0">
+    <MudCard Class="surface-glass rounded-xl mb-4" Elevation="1">
+        <MudCardContent Class="pa-6">
+            <MudText Typo="Typo.h6" Class="mb-1">Correos Electrónicos</MudText>
+            <MudText Typo="Typo.body2" Class="text-muted mb-4">Seleccione qué información desea recibir en su bandeja de entrada.</MudText>
+            
+            <div class="d-flex flex-column gap-2">
+                <MudSwitch @bind-Value="_emailNewAppointments" Color="Color.Primary" Label="Nuevas citas agendadas" />
+                <MudSwitch @bind-Value="_emailLabResults" Color="Color.Primary" Label="Resultados de laboratorio disponibles" />
+                <MudSwitch @bind-Value="_emailSystemUpdates" Color="Color.Primary" Label="Actualizaciones del sistema y avisos de facturación" />
+            </div>
+
+            <MudDivider Class="my-6" />
+
+            <MudText Typo="Typo.h6" Class="mb-1">Alertas Clínicas (Push / En Vivo)</MudText>
+            <MudText Typo="Typo.body2" Class="text-muted mb-4">Notificaciones emergentes urgentes dentro de la aplicación.</MudText>
+
+            <div class="d-flex flex-column gap-2">
+                <MudSwitch @bind-Value="_pushUrgentAlerts" Color="Color.Error" Label="Alertas críticas y resultados fuera de rango" />
+                <MudSwitch @bind-Value="_pushMessages" Color="Color.Info" Label="Mensajes directos de otros profesionales de la red" />
+            </div>
+
+            <div class="d-flex justify-end mt-8">
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           OnClick="SavePreferences" 
+                           Disabled="@_isProcessing"
+                           DisableElevation="true">
+                    @if (_isProcessing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                        <MudText Class="ms-2">Guardando</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Guardar Preferencias</MudText>
+                    }
+                </MudButton>
+            </div>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private bool _emailNewAppointments = true;
+    private bool _emailLabResults = true;
+    private bool _emailSystemUpdates = false;
+
+    private bool _pushUrgentAlerts = true;
+    private bool _pushMessages = true;
+
+    private bool _isProcessing = false;
+
+    private async Task SavePreferences()
+    {
+        _isProcessing = true;
+        
+        // Simular latencia de red y guardado en API
+        await Task.Delay(1000);
+        
+        Snackbar.Add("Sus preferencias de notificaciones han sido guardadas exitosamente.", Severity.Success);
+        
+        _isProcessing = false;
+    }
+}
